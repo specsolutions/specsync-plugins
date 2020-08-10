@@ -2,6 +2,22 @@
 
 _Note: Plugins are supported in SpecSync v3.1 or later_
 
+In the project that would like to use the plugin, the plugin assembly path (and optionally plugin parameters)
+have to be configured in `specsync.josn`. These can also be specified in parent config files as well.
+
+```
+  "toolSettings": {
+    "plugins": [
+      {
+        "assemblyPath": "plugin-path\MyCustomTestResultMatch.SpecSyncPlugin.dll",
+        "parameters": {
+          "key1": "value1"
+        }
+      }
+    ] 
+  },
+```
+
 ## test-result-match-plugin
 
 This plugin shows how to enable publishing test results for a test framework that can 
