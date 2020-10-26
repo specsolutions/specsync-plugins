@@ -1,8 +1,8 @@
 ﻿using System;
-using SpecSync.AzureDevOps.Synchronizer.Gherkin;
-using SpecSync.AzureDevOps.Synchronizer.PublishTestResults.Matchers;
+using SpecSync.AzureDevOps.Gherkin;
+using SpecSync.AzureDevOps.PublishTestResults.Matchers;
 
-namespace MyCustomTestResult.SpecSyncPlugin
+namespace MyCustomTestResultMatch.SpecSyncPlugin
 {
     public class CustomTestResultMatcher : GherkinTestRunnerResultMatcher
     {
@@ -25,7 +25,7 @@ namespace MyCustomTestResult.SpecSyncPlugin
 
             // The first parameter of the MatchResultSelector is a diagnostic message that helps users to 
             // understand why the matcher could not find a test.
-            // To see these messages, invoke SpecSync with an additional --diag option.
+            // To see these messages, invoke SpecSync with an additional --verbose option.
 
             return new MatchResultSelector($"<className> ends with '{featureName}' and <name> is '{scenarioName}'",
                 td => td.ClassName.EndsWith(featureName) &&
