@@ -20,6 +20,8 @@ namespace MsTestTestSource.SpecSyncPlugin
             args.ServiceRegistry.LocalTestCaseAnalyzerProvider
                 .Register(new MsTestTestAnalyzer());
 
+            //args.ServiceRegistry.TestResultLoaderProvider
+            //    .Register(new MyTestResultLoader());
             args.ServiceRegistry.TestResultMatcher
                 .Register(new MsTestUnitTestMatcher(), ServicePriority.High);
         }

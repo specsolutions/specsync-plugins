@@ -29,7 +29,10 @@
       {
         "tagPrefix": "story"
       }
-    ]
+    ],
+    "format": {
+      "useExpectedResult": true
+    }
   },
   "customizations": {
     "customFieldUpdates": {
