@@ -74,6 +74,12 @@ A sample configuration in the specsync.json file would look like this:
 ]
 ```
 
+In order to use the plugin, you have to specify `Excel` for the `--testResultFileFormat` (or `-f`) command line option:
+
+```
+dotnet specsync publish-test-results -r ExcelTestResults.xlsx -f Excel
+```
+
 Note: The plugin finds the matching scenarios by case-sensitive equality. You can define different matching rules by changing the `ExcelTestResultMatcher` class.
 
 Note: The plugin loads the test result and the error message from the Excel file. You can load additional test result data (e.g. duration or step results) by extending the `ExcelTestResultLoader` class.
