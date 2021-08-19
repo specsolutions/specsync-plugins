@@ -46,7 +46,7 @@ namespace ExcelTestResults.SpecSyncPlugin
             if (string.IsNullOrEmpty(columnName))
                 return null;
             return new MatchResultSelector($"[{columnName}] is {value}",
-                td => value.Equals(GetCellValue<int>(td, columnName)));
+                td => value.ToString().Equals(GetCellValue<object>(td, columnName).ToString()));
         }
 
         private MatchResultSelector CombineSelectors(params MatchResultSelector[] selectors)
