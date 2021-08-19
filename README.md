@@ -34,6 +34,50 @@ For diagnosing the plugin and the test results loaded from the TRX file, you can
 As an example, the sample plugin finds the test results if their `className` ends with the feature name and 
 if the `name` is exacly the scenario name. Other matchers often use regular expressions as well.
 
+## excel-test-results-plugin
+
+The plugin shows how to publish test results for synchronized scenarios from an Excel file.
+
+The current implementation of the plugin can match
+
+* Feature name
+* Feature file name (without folder names)
+* Scenario name
+* Test Case ID
+
+For that, you need to provide an Excel result specification (see `ExcelResultSpecification` class) in your customized version of the plugin (check the `ExcelTestResultsPlugin` class), 
+or in the specsync.json configuration file with the following options:
+
+* `TestResultSheetName`: The sheet name that contains the test results. Optional, uses the first sheet if not specified.
+* `FeatureColumnName`: The column name that contains the feature name. Optional, should be specified when scenario names are not globally unique and `TestCaseIdColumnName` is not specified.
+* `FeatureFileColumnName`: The column name that contains the feature file name. Optional, should be specified when scenario names are not globally unique and `TestCaseIdColumnName` is not specified.
+* `ScenarioColumnName`: The column name contains the scenario name. Optional, must be specified when `TestCaseIdColumnName` is not specified.
+* `OutcomeColumnName`: The column name contains the outcome (Passed, Failed, NotExecuted). Mandatory.
+* `TestCaseIdColumnName`: The column name contains the Test Case ID. Optional, must be specified when `ScenarioColumnName` is not specified.
+* `TestNameColumnName`: The column name contains the name (displayed in Azure DevOps). Optional, the first column is used if not specified.
+* `ErrorMessageColumnName`: The column name contains the error message. Optional, no error message is recoded if not specified.
+
+A sample configuration in the specsync.json file would look like this:
+
+```
+"plugins": [
+  {
+    "assemblyPath": "<path-to-plugin>\\ExcelTestResults.SpecSyncPlugin.dll",
+    "parameters": {
+      "OutcomeColumnName": "Result",
+      "FeatureColumnName": "Feature",
+      "ScenarioColumnName": "Scenario",
+      "TestNameColumnName": "Test Name",
+      "ErrorMessageColumnName": "Error"
+    }
+  }
+]
+```
+
+Note: The plugin finds the matching scenarios by case-sensitive equality. You can define different matching rules by changing the `ExcelTestResultMatcher` class.
+
+Note: The plugin loads the test result and the error message from the Excel file. You can load additional test result data (e.g. duration or step results) by extending the `ExcelTestResultLoader` class.
+
 ## custom-test-source-plugin
 
 This plugin shows how to use SpecSync to synchronize a custom local test source. The local test source 
