@@ -96,3 +96,23 @@ This plugin makes a normal MsTest test to be available as a test source for Spec
 * a custom `ITestRunnerResultMatcher` to connect back the test results from a TRX file to the parsed test method.
 
 The plugins that override local test source require a SpecSync Enterprise license to run. Please [contact us](https://specsolutions.gitbook.io/specsync/contact/specsync-support) to get an evaluation license that you can use to try out this plugin.
+
+## scenario-outline-as-normal-test-case-format-plugin
+
+_Note: This plugin is supported in SpecSync v3.3 or later_
+
+This plugin shows how to use SpecSync to drastically change the format of 
+Test Cases synchronized from scenarios. 
+
+This plugin changes the format of Test Cases synchronized from scenario 
+outlines. Normally from scenario outlines SpecSync synchronizes a parametrized 
+Test Case with the different examples as parameters, but with this plugin a 
+"normal" (non-parametrized) Test Case is created and the values from the 
+different examples are added as extra steps. This is implemented by a custom
+`ILocalTestCaseAnalyzer` implementation (`ScenarioOutlineAsNormalTestCaseGherkinAnalyzer`)
+that changes the default behavior of the built-in `GherkinLocalTestCaseAnalyzer`
+class.
+
+The plugins that override local test case analyzer require a SpecSync 
+Enterprise license to run. Please [contact us](https://specsolutions.gitbook.io/specsync/contact/specsync-support) 
+to get an evaluation license that you can use to try out this plugin.
