@@ -1,9 +1,9 @@
 # Sample SpecSync for AzureDevOps plugins
 
-_Note: Plugins are supported in SpecSync v3.1 or later_
+_Note: The `main` branch contains sample plugins for SpecSync v3.3. In order to find samples for SpecSync v3.2, please use the branch `specsync-v3.2`._
 
 In the project that would like to use the plugin, the plugin assembly path (and optionally plugin parameters)
-have to be configured in `specsync.josn`. These can also be specified in parent config files as well.
+have to be configured in `specsync.json`. These can also be specified in parent config files as well.
 
 ```
   "toolSettings": {
@@ -17,6 +17,8 @@ have to be configured in `specsync.josn`. These can also be specified in parent 
     ] 
   },
 ```
+
+You can find more information about SpecSync plugins in the [SpecSync documentation](https://speclink.me/specsync-plugins).
 
 ## test-result-match-plugin
 

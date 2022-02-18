@@ -12,7 +12,7 @@ namespace MsTestTestSource.SpecSyncPlugin
 
         public void Initialize(PluginInitializeArgs args)
         {
-            args.Tracer.LogVerbose("Initializing MsTest test source plugin...");
+            args.Tracer.LogVerbose($"Initializing '{Name}' plugin...");
             args.ServiceRegistry.BddProjectLoaderProvider
                 .Register(new MsTestTestSourceLoader());
             args.ServiceRegistry.LocalTestCaseContainerParserProvider
@@ -20,7 +20,7 @@ namespace MsTestTestSource.SpecSyncPlugin
             args.ServiceRegistry.LocalTestCaseAnalyzerProvider
                 .Register(new MsTestTestAnalyzer());
 
-            args.ServiceRegistry.TestResultMatcher
+            args.ServiceRegistry.TestResultMatcherProvider
                 .Register(new MsTestUnitTestMatcher(), ServicePriority.High);
         }
     }

@@ -12,8 +12,8 @@ namespace MyCustomTestResultMatch.SpecSyncPlugin
 
         public void Initialize(PluginInitializeArgs args)
         {
-            args.Tracer.LogVerbose("Initializing custom plugin...");
-            args.ServiceRegistry.TestResultMatcher.Register(new CustomTestResultMatcher(), ServicePriority.High);
+            args.Tracer.LogVerbose($"Initializing {Name} plugin...");
+            args.ServiceRegistry.TestResultMatcherProvider.Register(new CustomTestResultMatcher(), ServicePriority.High);
         }
     }
 }

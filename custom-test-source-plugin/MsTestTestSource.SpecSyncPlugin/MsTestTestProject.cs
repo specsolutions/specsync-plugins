@@ -8,12 +8,11 @@ namespace MsTestTestSource.SpecSyncPlugin
     public class MsTestTestProject : IBddProject
     {
         public string Type => "MsTest Test project";
+        public CultureInfo DefaultCulture => null;
+        public IEnumerable<ISourceFile> LocalTestContainerFiles => LocalTestContainerFilesInternal;
         public string ProjectFolder { get; }
         public string AssemblyPath { get; }
-        internal List<TestClassSource> FeatureFilesInternal { get; } = new List<TestClassSource>();
-        public IEnumerable<ISourceFile> FeatureFiles => FeatureFilesInternal;
-        public CultureInfo DefaultFeatureFileLanguage => null;
-        public bool IsSpecFlowProject => false;
+        internal List<TestClassSource> LocalTestContainerFilesInternal { get; } = new List<TestClassSource>();
 
         public MsTestTestProject(string projectFolder, string assemblyPath)
         {

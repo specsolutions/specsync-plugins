@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.2.0" />
+    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.3.0" />
 
     <PackageReference Include="ExcelDataReader" Version="3.6.0" />
     <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />

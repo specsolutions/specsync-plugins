@@ -23,7 +23,7 @@ namespace ExcelTestResults.SpecSyncPlugin
             var scenarioName = scenarioLocalTestCase.Name;
             var featureName = featureFileLocalTestCaseContainer.Name;
             var featureFileName = Path.GetFileName(featureFileLocalTestCaseContainer.SourceFile.ProjectRelativePath);
-            var testCaseId = scenarioLocalTestCase.TestCaseLink.TestCaseId;
+            var testCaseId = scenarioLocalTestCase.TestCaseLink.TestCaseId.GetNumericId();
 
             return CombineSelectors(
                 CreateColumnMatch(_excelResultSpecification.FeatureFileColumnName, featureFileName),

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.2.2" />
+    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.3.0" />
     <PackageReference Include="dnlib" Version="3.3.2" />
   </ItemGroup>
 

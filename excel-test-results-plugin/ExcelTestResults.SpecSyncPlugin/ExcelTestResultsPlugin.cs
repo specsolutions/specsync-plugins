@@ -12,7 +12,7 @@ namespace ExcelTestResults.SpecSyncPlugin
 
         public void Initialize(PluginInitializeArgs args)
         {
-            args.Tracer.LogVerbose("Initializing custom plugin...");
+            args.Tracer.LogVerbose($"Initializing '{Name}' plugin...");
 
             // The Excel structure specification can be specified in the plugin, like:
             //    var specification = new ExcelResultSpecification
@@ -38,7 +38,7 @@ namespace ExcelTestResults.SpecSyncPlugin
             var specification = ExcelResultSpecification.FromPluginParameters(args.Parameters);
 
             args.ServiceRegistry.TestResultLoaderProvider.Register(new ExcelTestResultLoader(specification), ServicePriority.High);
-            args.ServiceRegistry.TestResultMatcher.Register(new ExcelTestResultMatcher(specification), ServicePriority.High);
+            args.ServiceRegistry.TestResultMatcherProvider.Register(new ExcelTestResultMatcher(specification), ServicePriority.High);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace MsTestTestSource.SpecSyncPlugin
                 td => td.MethodName.Equals(localTestCase.Name) && td.ClassName.Equals(localTestCaseContainer.Name));
         }
 
-        public IDictionary<string, string> GetDataRow(TestRunTestResult result, ILocalTestCase localTestCase, ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
+        public IDictionary<string, string> GetDataRow(TestRunTestResult testResult, TestRunTestDefinition testDefinition, ILocalTestCase localTestCase, ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
         {
             return null; // for data-driven tests the parameters could be listed here (optional)
         }

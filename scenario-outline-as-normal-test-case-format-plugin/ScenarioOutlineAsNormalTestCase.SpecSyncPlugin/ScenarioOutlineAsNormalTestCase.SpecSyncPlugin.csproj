@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.3.0-pre20220201-1" />
+    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.3.0" />
   </ItemGroup>
 
 </Project>

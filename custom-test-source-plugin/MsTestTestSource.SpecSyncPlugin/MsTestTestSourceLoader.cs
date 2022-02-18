@@ -27,7 +27,7 @@ namespace MsTestTestSource.SpecSyncPlugin
 
             foreach (var type in assembly.GetExportedTypes().Where(IsTestClass))
             {
-                project.FeatureFilesInternal.Add(new TestClassSource(type));
+                project.LocalTestContainerFilesInternal.Add(new TestClassSource(type));
 
                 Console.WriteLine($"  {type}");
                 foreach (var customAttributeData in type.GetCustomAttributesData())
