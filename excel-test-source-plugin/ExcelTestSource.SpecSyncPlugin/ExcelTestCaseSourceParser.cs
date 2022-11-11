@@ -36,13 +36,17 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
             for (int rowIndex = 0; rowIndex < testCaseRows.Length; rowIndex++)
             {
                 var row = testCaseRows[rowIndex];
-                var idCellValue = row.Cell(idColumn).GetString();
-                if (string.IsNullOrWhiteSpace(idCellValue))
-                    continue;
-                args.Tracer.TraceInformation(idCellValue);
-                var testCaseId = int.Parse(idCellValue);
                 var testCaseTitle = row.Cell(titleColumn).GetString();
-                var testCaseLink = new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(testCaseId), "");
+                if (string.IsNullOrWhiteSpace(testCaseTitle))
+                    continue;
+
+                var idCellValue = row.Cell(idColumn).GetString();
+                TestCaseLink testCaseLink = null;
+                if (!string.IsNullOrWhiteSpace(idCellValue))
+                {
+                    var testCaseId = int.Parse(idCellValue);
+                    testCaseLink = new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(testCaseId), "");
+                }
 
                 var tags = new List<ILocalTestCaseTag>();
                 var tagsCellValue = row.Cell(tagsColumn).GetString();
@@ -72,12 +76,15 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                         });
                 }
 
-                var testCase = new ExcelLocalTestCase(testCaseTitle, tags.ToArray(), testCaseLink, steps.ToArray());
+                var testCase = new ExcelLocalTestCase(testCaseTitle, tags.ToArray(), testCaseLink, steps.ToArray(),
+                    worksheet, row.RowNumber(), idColumn);
 
                 localTestCases.Add(testCase);
             }
         }
 
-        return new ExcelTestCaseContainer(Path.GetFileNameWithoutExtension(filePath), args.BddProject, args.SourceFile, localTestCases.ToArray());
+        var updater = new ExcelUpdater(wb);
+
+        return new ExcelTestCaseContainer(Path.GetFileNameWithoutExtension(filePath), args.BddProject, args.SourceFile, localTestCases.ToArray(), updater);
     }
 }
