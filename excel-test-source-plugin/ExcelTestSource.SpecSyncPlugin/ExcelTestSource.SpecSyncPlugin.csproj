@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.97.0" />
-    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.4.0-pre20221111-1" />
+    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.4.0-pre20221114-1" />
   </ItemGroup>
 
 </Project>

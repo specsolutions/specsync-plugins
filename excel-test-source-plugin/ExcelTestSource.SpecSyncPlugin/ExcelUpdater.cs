@@ -7,13 +7,15 @@ namespace ExcelTestSource.SpecSyncPlugin;
 public class ExcelUpdater : LocalTestCaseContainerUpdaterBase
 {
     private readonly XLWorkbook _workbook;
+    private readonly string _filePath;
     private bool _isDirty = false;
 
     public override bool IsDirty => _isDirty;
 
-    public ExcelUpdater(XLWorkbook workbook)
+    public ExcelUpdater(XLWorkbook workbook, string filePath)
     {
         _workbook = workbook;
+        _filePath = filePath;
     }
 
     public override bool Flush()
@@ -21,7 +23,7 @@ public class ExcelUpdater : LocalTestCaseContainerUpdaterBase
         if (!IsDirty)
             return false;
 
-        _workbook.Save();
+        _workbook.SaveAs(_filePath);
         _isDirty = false;
         return true;
     }

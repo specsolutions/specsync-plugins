@@ -10,7 +10,10 @@
     ]
   },
   "remote": {
-    "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo"
+    "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
+    "testSuite": {
+      "name": "ExcelTestSource"
+    }
   },
   "synchronization": {
     "format": {
