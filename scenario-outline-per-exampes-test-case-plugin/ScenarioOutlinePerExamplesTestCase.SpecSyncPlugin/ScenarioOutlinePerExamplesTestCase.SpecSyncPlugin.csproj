@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.4.0-pre20221207-1" />
+  </ItemGroup>
+
+</Project>
