@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin", "ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin\ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin.csproj", "{A92B8070-CF00-498A-A745-7D88B39A7A22}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase", "SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase\SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase.csproj", "{A92B8070-CF00-498A-A745-7D88B39A7A22}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SampleProject", "SampleProject\", "{4E50939C-6480-4E5E-AA7D-6B4974377201}"
 	ProjectSection(WebsiteProperties) = preProject

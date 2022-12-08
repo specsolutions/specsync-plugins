@@ -1,11 +1,11 @@
 ﻿using System;
-using ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin;
 using SpecSync.Analyzing;
+using SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase;
 using SpecSync.Plugins;
 
 [assembly: SpecSyncPlugin(typeof(ScenarioOutlinePerExamplesTestCasePlugin))]
 
-namespace ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin
+namespace SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase
 {
     public class ScenarioOutlinePerExamplesTestCasePlugin : ISpecSyncPlugin
     {

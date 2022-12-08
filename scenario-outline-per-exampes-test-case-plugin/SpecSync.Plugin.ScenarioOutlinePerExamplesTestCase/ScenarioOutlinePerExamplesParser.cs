@@ -8,7 +8,7 @@ using SpecSync.Parsing;
 using SpecSync.Utils;
 using SpecSync.Utils.Code;
 
-namespace ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin
+namespace SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase
 {
     public class ScenarioOutlinePerExamplesParser : GherkinLocalTestCaseContainerParser
     {

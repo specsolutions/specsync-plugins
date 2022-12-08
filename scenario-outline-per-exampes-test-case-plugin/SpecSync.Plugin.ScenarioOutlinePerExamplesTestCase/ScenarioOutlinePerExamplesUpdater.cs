@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using SpecSync.Analyzing;
 using SpecSync.Configuration;
 using SpecSync.Gherkin;
@@ -8,7 +6,7 @@ using SpecSync.Parsing;
 using SpecSync.Tracing;
 using SpecSync.Utils.Code;
 
-namespace ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin
+namespace SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase
 {
     public class ScenarioOutlinePerExamplesUpdater : FeatureFileUpdater
     {

@@ -6,9 +6,9 @@
     "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
     "plugins": [
       {
-        "packageId": "ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin",
-        "packageVersion": "1.0.0",
-        "packageSource": "..\\ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin\\bin\\Debug"
+        "packageId": "SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase",
+        "packageVersion": "0.9.0",
+        "packageSource": "..\\SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase\\bin\\Debug"
       }
     ]
   },

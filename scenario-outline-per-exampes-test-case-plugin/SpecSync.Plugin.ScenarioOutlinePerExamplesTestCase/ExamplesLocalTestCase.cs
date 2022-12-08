@@ -4,7 +4,7 @@ using Gherkin.Ast;
 using SpecSync.Gherkin;
 using SpecSync.Parsing;
 
-namespace ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin
+namespace SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase
 {
     public class ExamplesLocalTestCase : ScenarioLocalTestCase
     {
