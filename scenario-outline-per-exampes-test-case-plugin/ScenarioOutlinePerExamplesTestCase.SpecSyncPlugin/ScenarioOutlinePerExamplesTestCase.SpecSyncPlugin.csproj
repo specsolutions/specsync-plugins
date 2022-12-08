@@ -2,10 +2,33 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>A SpecSync plugin that synchronizes scenario outlines with multiple "Examples" blocks as multiple Test Cases.</Description>
+    <RepositoryUrl>https://github.com/specsolutions/specsync-sample-plugins</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>SpecSync-Icon.png</PackageIcon>
+    <PackageProjectUrl>https://speclink.me/specsync</PackageProjectUrl>
+    <Copyright>Copyright © 2016-$([System.DateTime]::UtcNow.ToString("yyyy")) Spec Solutions</Copyright>
+    <PackageTags>specsync plugin gherkin bdd cucumber specflow</PackageTags>
+    <PackageReleaseNotes>Please check https://github.com/specsolutions/specsync-sample-plugins/releases for release note details.</PackageReleaseNotes>
+    <Authors>Spec Solutions</Authors>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.4.0-pre20221207-1" />
+    <PackageReference Include="SpecSync.PluginDependency" Version="3.4.0-pre20221208-1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)\..\..\Resources\SpecSync-Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+      <Visible>false</Visible>
+    </None>
+    <Content Include="$(MSBuildThisFileDirectory)\..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+      <Visible>false</Visible>
+    </Content>
   </ItemGroup>
 
 </Project>

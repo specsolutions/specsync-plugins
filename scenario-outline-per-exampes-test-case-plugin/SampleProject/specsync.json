@@ -3,9 +3,12 @@
   "compatibilityVersion": "1.0",
 
   "toolSettings": {
+    "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
     "plugins": [
       {
-        "assemblyPath": "..\\ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin\\bin\\Debug\\netstandard2.0\\ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin.dll"
+        "packageId": "ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin",
+        "packageVersion": "1.0.0",
+        "packageSource": "..\\ScenarioOutlinePerExamplesTestCase.SpecSyncPlugin\\bin\\Debug"
       }
     ]
   },
