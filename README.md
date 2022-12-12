@@ -86,6 +86,33 @@ Note: The plugin finds the matching scenarios by case-sensitive equality. You ca
 
 Note: The plugin loads the test result and the error message from the Excel file. You can load additional test result data (e.g. duration or step results) by extending the `ExcelTestResultLoader` class.
 
+## mstest-test-source-plugin
+
+Allows synchronizing "C# MsTest Tests" and publish results from TRX result files.
+
+The plugin processes the C# files in the configured folder tree and searches for *MsTest* test methods, like:
+
+```
+[TestMethod]
+[TestCategory("MyCategory")]
+public void OnePassingTest()
+{
+    ...
+}
+```
+
+These test methods are the potential local test cases to be synchronized. 
+
+Once the methods are linked to a newly created Azure DevOps Test Case, the Test Case ID is inserted into the 
+C# file as a `[TestCategory]` attribute using a "SpecSync tag" (see below).
+
+
+#### Speifying tags for SpecSync
+
+* Specify tags for the tests, using the `[TestCategory]` attribute:
+    * `[TestCategory("my_tag")]` or `[TestCategory("story:123")]`
+
+
 ## custom-test-source-plugin
 
 This plugin shows how to use SpecSync to synchronize a custom local test source. The local test source 

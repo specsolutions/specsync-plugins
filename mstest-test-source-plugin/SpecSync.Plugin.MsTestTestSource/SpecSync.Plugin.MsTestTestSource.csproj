@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <!-- this setting is needed to copy Microsoft.CodeAnalysis.* to the output -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <Version>0.9.0</Version>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>A SpecSync plugin that synchronizes C# MsTes test methods as Test Cases.</Description>
+    <RepositoryUrl>https://github.com/specsolutions/specsync-sample-plugins</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>SpecSync-Icon.png</PackageIcon>
+    <PackageProjectUrl>https://speclink.me/specsync</PackageProjectUrl>
+    <Copyright>Copyright © 2016-$([System.DateTime]::UtcNow.ToString("yyyy")) Spec Solutions</Copyright>
+    <PackageTags>specsync plugin mstest c#</PackageTags>
+    <PackageReleaseNotes>Please check https://github.com/specsolutions/specsync-sample-plugins/releases for release note details.</PackageReleaseNotes>
+    <Authors>Spec Solutions</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SpecSync.PluginDependency.CSharpSource" Version="3.4.0-pre20221212-1" />
+    <PackageReference Include="dnlib" Version="3.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)\..\..\Resources\SpecSync-Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+      <Visible>false</Visible>
+    </None>
+    <Content Include="$(MSBuildThisFileDirectory)\..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\Microsoft.CodeAnalysis*.dll;$(OutputPath)\SpecSync.PluginDependency.CSharpSource*.dll;$(OutputPath)\*.deps.json;$(OutputPath)\*.pdb">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\netstandard2.0\</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
+
+</Project>
