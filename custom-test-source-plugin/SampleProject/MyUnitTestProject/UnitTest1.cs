@@ -9,8 +9,8 @@ namespace MyUnitTestProject
         [TestMethod]
         [TestCategory("MyCategory")]
         [TestCategory("OtherCategory")]
-        [TestCategory("tc:<enter-a-test-case-number-here>")]
-        [TestCategory("story:<enter-a-user-story-number-here>")]
+        [TestCategory("tc:150")]
+        [TestCategory("story:131")]
         public void OnePassingTest()
         {
             // Step: This is the first step

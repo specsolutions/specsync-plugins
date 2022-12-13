@@ -13,9 +13,9 @@
     ]
   },
   "remote": {
-    "projectUrl": "<enter-your-ado-project-url-here>",
+    "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
     "testSuite": {
-      "name": "MsTest Tests"
+      "name": "Custom Test Source"
     }
   },
   "local": {
