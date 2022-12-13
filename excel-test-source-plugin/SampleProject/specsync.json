@@ -23,6 +23,9 @@
       {
         "tagPrefix": "story"
       }
-    ]
+    ],
+    "fieldUpdates": {
+      "Description": "{local-test-case-description}"
+    }
   }
 }

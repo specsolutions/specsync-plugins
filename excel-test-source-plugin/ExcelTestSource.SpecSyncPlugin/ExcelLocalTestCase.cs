@@ -7,7 +7,7 @@ namespace ExcelTestSource.SpecSyncPlugin;
 public class ExcelLocalTestCase : ILocalTestCase
 {
     public string Name { get; }
-    public string Description => null;
+    public string Description { get; }
     public string TestedRule => null;
     public ILocalTestCaseTag[] Tags { get; }
     public TestCaseLink TestCaseLink { get; }
@@ -20,7 +20,7 @@ public class ExcelLocalTestCase : ILocalTestCase
     public int TestCaseRowNumber { get; }
     public string IdColumn { get; }
 
-    public ExcelLocalTestCase(string name, ILocalTestCaseTag[] tags, TestCaseLink testCaseLink, TestStepSourceData[] steps, IXLWorksheet worksheet, int testCaseRowNumber, string idColumn)
+    public ExcelLocalTestCase(string name, ILocalTestCaseTag[] tags, TestCaseLink testCaseLink, TestStepSourceData[] steps, IXLWorksheet worksheet, int testCaseRowNumber, string idColumn, string description)
     {
         Name = name;
         Tags = tags;
@@ -29,5 +29,6 @@ public class ExcelLocalTestCase : ILocalTestCase
         Worksheet = worksheet;
         TestCaseRowNumber = testCaseRowNumber;
         IdColumn = idColumn;
+        Description = description;
     }
 }

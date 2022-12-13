@@ -48,6 +48,7 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
             var stepActionColumn = GetFieldColumn(headerRow, "Step Action", true);
             var stepExpectedValueColumn = GetFieldColumn(headerRow, "Step Expected", true);
             var tagsColumn = GetFieldColumn(headerRow, "Tags", false);
+            var descriptionColumn = GetFieldColumn(headerRow, "Description", false);
 
             for (int rowIndex = 0; rowIndex < testCaseRows.Length; rowIndex++)
             {
@@ -95,8 +96,14 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                         });
                 }
 
+                string description = null;
+                if (descriptionColumn != null)
+                {
+                    description = row.Cell(descriptionColumn).GetString();
+                }
+
                 var testCase = new ExcelLocalTestCase(testCaseTitle, tags.ToArray(), testCaseLink, steps.ToArray(),
-                    worksheet, row.RowNumber(), idColumn);
+                    worksheet, row.RowNumber(), idColumn, description);
 
                 localTestCases.Add(testCase);
             }
