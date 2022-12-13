@@ -7,6 +7,7 @@ using SpecSync.Analyzing;
 using SpecSync.Parsing;
 using SpecSync.Synchronization;
 using SpecSync.Tracing;
+using SpecSync.Utils;
 
 namespace ExcelTestSource.SpecSyncPlugin;
 
@@ -17,15 +18,16 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
     public bool CanProcess(LocalTestCaseContainerParseArgs args) 
         => ".xlsx".Equals(Path.GetExtension(args.SourceFile.ProjectRelativePath), StringComparison.InvariantCultureIgnoreCase);
 
+    private string GetFieldColumn(IXLRow headerRow, string field, bool throwIfMissing)
+    {
+        var cell = headerRow.Cells().FirstOrDefault(c => field.Equals(c.GetString(), StringComparison.InvariantCultureIgnoreCase));
+        if (cell == null && throwIfMissing)
+            throw new SpecSyncException($"Unable to find column '{field}' on worksheet {headerRow.Worksheet.Name}");
+        return cell?.WorksheetColumn().ColumnLetter();
+    }
+
     public ILocalTestCaseContainer Parse(LocalTestCaseContainerParseArgs args)
     {
-        const string idColumn = "A";
-        const string titleColumn = "C";
-        const string stepIndexColumn = "D";
-        const string stepActionColumn = "E";
-        const string stepExpectedValueColumn = "F";
-        const string tagsColumn = "J";
-
         var filePath = args.BddProject.GetFullPath(args.SourceFile.ProjectRelativePath);
         var wb = OpenWorkbook(filePath, out var isReadOnly, args);
 
@@ -33,7 +35,20 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
 
         foreach (var worksheet in wb.Worksheets)
         {
+            var headerRow = worksheet.RowsUsed().FirstOrDefault();
+            if (headerRow == null)
+                continue;
             var testCaseRows = worksheet.RowsUsed().Skip(1).ToArray();
+            if (testCaseRows.Length == 0)
+                continue;
+
+            var idColumn = GetFieldColumn(headerRow, "ID", true);
+            var titleColumn = GetFieldColumn(headerRow, "Title", true);
+            var stepIndexColumn = GetFieldColumn(headerRow, "Test Step", true);
+            var stepActionColumn = GetFieldColumn(headerRow, "Step Action", true);
+            var stepExpectedValueColumn = GetFieldColumn(headerRow, "Step Expected", true);
+            var tagsColumn = GetFieldColumn(headerRow, "Tags", false);
+
             for (int rowIndex = 0; rowIndex < testCaseRows.Length; rowIndex++)
             {
                 var row = testCaseRows[rowIndex];
@@ -50,10 +65,13 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                 }
 
                 var tags = new List<ILocalTestCaseTag>();
-                var tagsCellValue = row.Cell(tagsColumn).GetString();
-                if (!string.IsNullOrWhiteSpace(tagsCellValue))
+                if (tagsColumn != null)
                 {
-                    tags.AddRange(tagsCellValue.Split(',').Select(t => new LocalTestCaseTag(t.Trim())));
+                    var tagsCellValue = row.Cell(tagsColumn).GetString();
+                    if (!string.IsNullOrWhiteSpace(tagsCellValue))
+                    {
+                        tags.AddRange(tagsCellValue.Split(',').Select(t => new LocalTestCaseTag(t.Trim())));
+                    }
                 }
 
                 var steps = new List<TestStepSourceData>();
