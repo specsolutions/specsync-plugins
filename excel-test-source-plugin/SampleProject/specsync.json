@@ -6,15 +6,15 @@
     "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
     "plugins": [
       {
-        "packageId": "ExcelTestSource.SpecSyncPlugin",
+        "packageId": "SpecSync.Plugin.ExcelTestSource",
         "packageVersion": "0.9.0",
-        "packageSource": "..\\ExcelTestSource.SpecSyncPlugin\\bin\\Debug",
+        "packageSource": "..\\SpecSync.Plugin.ExcelTestSource\\bin\\Debug",
 
         "parameters": {
           "fieldUpdateColumns": [
             {
               "columnName": "Priority",
-              "fieldName": "Priority", // can be omitted if the same as 'columnName'
+              "fieldName": "Priority" // can be omitted if the same as 'columnName'
               // "tagNamePrefix": "priority:" -- if specified the field update has to be configured manually using synchronization/fieldUpdates
             },
             {

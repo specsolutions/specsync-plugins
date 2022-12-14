@@ -154,6 +154,9 @@ to get an evaluation license that you can use to try out this plugin.
 This plugin shows how to use SpecSync to synchronize a local test cases from Excel file using the format that 
 Azure DevOps uses when you export Test Cases to CSV. 
 
+* Plugin source: https://github.com/specsolutions/specsync-sample-plugins/tree/main/excel-test-source-plugin/SpecSync.Plugin.ExcelTestSource
+* Sample project: https://github.com/specsolutions/specsync-sample-plugins/tree/main/excel-test-source-plugin/SampleProject
+
 If the Excel contains new Test Case rows (where the ID cell is empty), SpecSync will create a new Test Case and 
 set the ID cell value with the ID of the created Test Case.
 
