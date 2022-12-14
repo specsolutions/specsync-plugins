@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="ClosedXML" Version="0.97.0" />
-    <PackageReference Include="SpecSync.PluginDependency" Version="3.4.0-pre20221213-1" />
+    <PackageReference Include="SpecSync.PluginDependency" Version="3.4.0-pre20221214-1" />
   </ItemGroup>
 
   <ItemGroup>

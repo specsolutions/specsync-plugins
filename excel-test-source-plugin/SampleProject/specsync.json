@@ -19,6 +19,10 @@
     }
   },
   "synchronization": {
+    "automation": {
+      "enabled": true,
+      "automatedTestType": "Script"
+    },
     "format": {
       "useExpectedResult": true
     },

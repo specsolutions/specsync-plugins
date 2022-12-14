@@ -49,6 +49,8 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
             var stepExpectedValueColumn = GetFieldColumn(headerRow, "Step Expected", true);
             var tagsColumn = GetFieldColumn(headerRow, "Tags", false);
             var descriptionColumn = GetFieldColumn(headerRow, "Description", false);
+            var automationStatusColumn = GetFieldColumn(headerRow, "Automation Status", false);
+            var automatedTestNameColumn = GetFieldColumn(headerRow, "Automated Test Name", false);
 
             for (int rowIndex = 0; rowIndex < testCaseRows.Length; rowIndex++)
             {
@@ -102,8 +104,21 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                     description = row.Cell(descriptionColumn).GetString();
                 }
 
+                if (automationStatusColumn != null)
+                {
+                    var automationStatus = row.Cell(automationStatusColumn).GetString();
+                    if ("manual".Equals(automationStatus, StringComparison.InvariantCultureIgnoreCase))
+                        tags.Add(new LocalTestCaseTag(ExcelTestSourcePlugin.ManualTagName));
+                }
+
+                string automatedTestName = null;
+                if (automatedTestNameColumn != null)
+                {
+                    automatedTestName = row.Cell(automatedTestNameColumn).GetString();
+                }
+
                 var testCase = new ExcelLocalTestCase(testCaseTitle, tags.ToArray(), testCaseLink, steps.ToArray(),
-                    worksheet, row.RowNumber(), idColumn, description);
+                    worksheet, row.RowNumber(), idColumn, description, automatedTestName);
 
                 localTestCases.Add(testCase);
             }
