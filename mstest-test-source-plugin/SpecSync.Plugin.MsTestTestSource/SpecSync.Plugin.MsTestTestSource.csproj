@@ -19,7 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpecSync.PluginDependency.CSharpSource" Version="3.4.0-pre20221212-1" />
+    <PackageReference Include="SpecSync.PluginDependency.CSharpSource" Version="3.4.0-pre20221213-1" />
   </ItemGroup>
 
   <ItemGroup>
