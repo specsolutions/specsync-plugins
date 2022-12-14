@@ -90,6 +90,9 @@ Note: The plugin loads the test result and the error message from the Excel file
 
 Allows synchronizing "C# MsTest Tests" and publish results from TRX result files.
 
+* Plugin source: https://github.com/specsolutions/specsync-sample-plugins/tree/main/mstest-test-source-plugin/SpecSync.Plugin.MsTestTestSource
+* Sample project: https://github.com/specsolutions/specsync-sample-plugins/tree/main/mstest-test-source-plugin/SampleProject
+
 The plugin processes the C# files in the configured folder tree and searches for *MsTest* test methods, like:
 
 ```
@@ -107,7 +110,7 @@ Once the methods are linked to a newly created Azure DevOps Test Case, the Test 
 C# file as a `[TestCategory]` attribute using a "SpecSync tag" (see below).
 
 
-#### Speifying tags for SpecSync
+#### Specifying tags for SpecSync
 
 * Specify tags for the tests, using the `[TestCategory]` attribute:
     * `[TestCategory("my_tag")]` or `[TestCategory("story:123")]`
