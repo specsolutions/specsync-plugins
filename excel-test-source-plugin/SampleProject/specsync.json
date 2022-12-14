@@ -3,9 +3,12 @@
   "compatibilityVersion": "1.0",
 
   "toolSettings": {
+    "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
     "plugins": [
       {
-        "assemblyPath": "..\\ExcelTestSource.SpecSyncPlugin\\bin\\Debug\\netstandard2.0\\ExcelTestSource.SpecSyncPlugin.dll"
+        "packageId": "ExcelTestSource.SpecSyncPlugin",
+        "packageVersion": "0.9.0",
+        "packageSource": "..\\ExcelTestSource.SpecSyncPlugin\\bin\\Debug"
       }
     ]
   },
