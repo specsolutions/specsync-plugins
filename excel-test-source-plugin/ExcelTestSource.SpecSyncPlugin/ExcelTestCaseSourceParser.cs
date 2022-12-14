@@ -13,6 +13,13 @@ namespace ExcelTestSource.SpecSyncPlugin;
 
 public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
 {
+    private readonly List<FieldUpdaterColumnParameter> _fieldUpdaterColumnParameters;
+
+    public ExcelTestCaseSourceParser(List<FieldUpdaterColumnParameter> fieldUpdaterColumnParameters)
+    {
+        _fieldUpdaterColumnParameters = fieldUpdaterColumnParameters;
+    }
+
     public string ServiceDescription => "Excel Test Case source parser";
 
     public bool CanProcess(LocalTestCaseContainerParseArgs args) 
@@ -115,6 +122,16 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                 if (automatedTestNameColumn != null)
                 {
                     automatedTestName = row.Cell(automatedTestNameColumn).GetString();
+                }
+
+                foreach (var fieldUpdaterColumnParameter in _fieldUpdaterColumnParameters)
+                {
+                    var column = GetFieldColumn(headerRow, fieldUpdaterColumnParameter.ColumnName, false);
+                    if (column != null)
+                    {
+                        var value = row.Cell(column).GetString() ?? "";
+                        tags.Add(new LocalTestCaseTag($"{fieldUpdaterColumnParameter.TagNamePrefix ?? fieldUpdaterColumnParameter.GeneratedTagNamePrefix}{value}"));
+                    }
                 }
 
                 var testCase = new ExcelLocalTestCase(testCaseTitle, tags.ToArray(), testCaseLink, steps.ToArray(),
