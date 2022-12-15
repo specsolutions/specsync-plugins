@@ -7,7 +7,7 @@
     "plugins": [
       {
         "packageId": "SpecSync.Plugin.ExcelTestSource",
-        "packageVersion": "0.9.0",
+        "packageVersion": "1.0.0-local",
         "packageSource": "..\\SpecSync.Plugin.ExcelTestSource\\bin\\Debug",
 
         "parameters": {
