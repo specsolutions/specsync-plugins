@@ -114,7 +114,7 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                 if (automationStatusColumn != null)
                 {
                     var automationStatus = row.Cell(automationStatusColumn).GetString();
-                    if ("manual".Equals(automationStatus, StringComparison.InvariantCultureIgnoreCase))
+                    if (!"automated".Equals(automationStatus, StringComparison.InvariantCultureIgnoreCase))
                         tags.Add(new LocalTestCaseTag(ExcelTestSourcePlugin.ManualTagName));
                 }
 
