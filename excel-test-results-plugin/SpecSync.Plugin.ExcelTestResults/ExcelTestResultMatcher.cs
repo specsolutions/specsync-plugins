@@ -1,19 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using SpecSync.AzureDevOps.Gherkin;
-using SpecSync.AzureDevOps.PublishTestResults;
-using SpecSync.AzureDevOps.PublishTestResults.Matchers;
+using SpecSync.Gherkin;
+using SpecSync.PublishTestResults;
+using SpecSync.PublishTestResults.Matchers;
 
-namespace ExcelTestResults.SpecSyncPlugin
+namespace SpecSync.Plugin.ExcelTestResults
 {
     public class ExcelTestResultMatcher : GherkinTestRunnerResultMatcher
     {
-        private readonly ExcelResultSpecification _excelResultSpecification;
+        private readonly ExcelResultParameters _excelResultParameters;
 
-        public ExcelTestResultMatcher(ExcelResultSpecification excelResultSpecification)
+        public ExcelTestResultMatcher(ExcelResultParameters excelResultParameters)
         {
-            _excelResultSpecification = excelResultSpecification;
+            _excelResultParameters = excelResultParameters;
         }
 
         public override string ServiceDescription => "Excel Test Result";
@@ -26,27 +26,22 @@ namespace ExcelTestResults.SpecSyncPlugin
             var testCaseId = scenarioLocalTestCase.TestCaseLink.TestCaseId.GetNumericId();
 
             return CombineSelectors(
-                CreateColumnMatch(_excelResultSpecification.FeatureFileColumnName, featureFileName),
-                CreateColumnMatch(_excelResultSpecification.FeatureColumnName, featureName),
-                CreateColumnMatch(_excelResultSpecification.ScenarioColumnName, scenarioName),
-                CreateNumericColumnMatch(_excelResultSpecification.TestCaseIdColumnName, testCaseId)
+                CreateColumnMatch(_excelResultParameters.FeatureFileColumnName, featureFileName),
+                CreateColumnMatch(_excelResultParameters.FeatureColumnName, featureName),
+                CreateColumnMatch(_excelResultParameters.ScenarioColumnName, scenarioName),
+                CreateNumericColumnMatch(_excelResultParameters.TestCaseIdColumnName, testCaseId)
             );
         }
 
         private MatchResultSelector CreateColumnMatch(string columnName, string value)
         {
-            if (string.IsNullOrEmpty(columnName))
-                return null;
-            return new MatchResultSelector($"[{columnName}] is '{value}'",
-                td => value.Equals(GetCellValue<string>(td, columnName), StringComparison.OrdinalIgnoreCase));
+            return new MatchResultSelector($"[{columnName}] is '{value}' (if specified)",
+                td => EqualsToStringIfSpecified(td, columnName, value));
         }
 
         private MatchResultSelector CreateNumericColumnMatch(string columnName, int value)
         {
-            if (string.IsNullOrEmpty(columnName))
-                return null;
-            return new MatchResultSelector($"[{columnName}] is {value}",
-                td => value.ToString().Equals(GetCellValue<object>(td, columnName).ToString()));
+            return CreateColumnMatch(columnName, value.ToString());
         }
 
         private MatchResultSelector CombineSelectors(params MatchResultSelector[] selectors)
@@ -56,6 +51,12 @@ namespace ExcelTestResults.SpecSyncPlugin
                 string.Join(" and ", validSelectors.Select(s => s.DiagMessage)),
                 td => validSelectors.All(s => s.Func(td))
             );
+        }
+
+        private bool EqualsToStringIfSpecified(TestRunTestDefinition testDefinition, string columnName, string value)
+        {
+            var cellValue = GetCellValue<string>(testDefinition, columnName);
+            return string.IsNullOrEmpty(cellValue) || value.Equals(cellValue, StringComparison.OrdinalIgnoreCase);
         }
 
         private T GetCellValue<T>(TestRunTestDefinition testDefinition, string columnName)

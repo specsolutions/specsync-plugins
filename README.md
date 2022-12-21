@@ -20,6 +20,13 @@ have to be configured in `specsync.json`. These can also be specified in parent 
 
 You can find more information about SpecSync plugins in the [SpecSync documentation](https://speclink.me/specsync-plugins).
 
+Currently the following plugins are available:
+
+* [SpecSync.Plugin.ExcelTestResults](excel-test-results-plugin): This plugin can be used to provide test results for Ghekin scenarios from an Excel file. This might 
+be useful when manual test executions have to be recorded.
+
+
+
 ## test-result-match-plugin
 
 This plugin shows how to enable publishing test results for a test framework that can 
@@ -36,55 +43,6 @@ For diagnosing the plugin and the test results loaded from the TRX file, you can
 As an example, the sample plugin finds the test results if their `className` ends with the feature name and 
 if the `name` is exacly the scenario name. Other matchers often use regular expressions as well.
 
-## excel-test-results-plugin
-
-The plugin shows how to publish test results for synchronized scenarios from an Excel file.
-
-The current implementation of the plugin can match
-
-* Feature name
-* Feature file name (without folder names)
-* Scenario name
-* Test Case ID
-
-For that, you need to provide an Excel result specification (see `ExcelResultSpecification` class) in your customized version of the plugin (check the `ExcelTestResultsPlugin` class), 
-or in the specsync.json configuration file with the following options:
-
-* `TestResultSheetName`: The sheet name that contains the test results. Optional, uses the first sheet if not specified.
-* `FeatureColumnName`: The column name that contains the feature name. Optional, should be specified when scenario names are not globally unique and `TestCaseIdColumnName` is not specified.
-* `FeatureFileColumnName`: The column name that contains the feature file name. Optional, should be specified when scenario names are not globally unique and `TestCaseIdColumnName` is not specified.
-* `ScenarioColumnName`: The column name contains the scenario name. Optional, must be specified when `TestCaseIdColumnName` is not specified.
-* `OutcomeColumnName`: The column name contains the outcome (Passed, Failed, NotExecuted). Mandatory.
-* `TestCaseIdColumnName`: The column name contains the Test Case ID. Optional, must be specified when `ScenarioColumnName` is not specified.
-* `TestNameColumnName`: The column name contains the name (displayed in Azure DevOps). Optional, the first column is used if not specified.
-* `ErrorMessageColumnName`: The column name contains the error message. Optional, no error message is recoded if not specified.
-
-A sample configuration in the specsync.json file would look like this:
-
-```
-"plugins": [
-  {
-    "assemblyPath": "<path-to-plugin>\\ExcelTestResults.SpecSyncPlugin.dll",
-    "parameters": {
-      "OutcomeColumnName": "Result",
-      "FeatureColumnName": "Feature",
-      "ScenarioColumnName": "Scenario",
-      "TestNameColumnName": "Test Name",
-      "ErrorMessageColumnName": "Error"
-    }
-  }
-]
-```
-
-In order to use the plugin, you have to specify `Excel` for the `--testResultFileFormat` (or `-f`) command line option:
-
-```
-dotnet specsync publish-test-results -r ExcelTestResults.xlsx -f Excel
-```
-
-Note: The plugin finds the matching scenarios by case-sensitive equality. You can define different matching rules by changing the `ExcelTestResultMatcher` class.
-
-Note: The plugin loads the test result and the error message from the Excel file. You can load additional test result data (e.g. duration or step results) by extending the `ExcelTestResultLoader` class.
 
 ## mstest-test-source-plugin
 
@@ -151,8 +109,7 @@ to get an evaluation license that you can use to try out this plugin.
 
 ## excel-test-source-plugin
 
-This plugin shows how to use SpecSync to synchronize a local test cases from Excel file using the format that 
-Azure DevOps uses when you export Test Cases to CSV. 
+This plugin can be used to synchronize a local test cases from Excel file using the format that Azure DevOps uses when you export Test Cases to CSV. 
 
 * Plugin source: https://github.com/specsolutions/specsync-sample-plugins/tree/main/excel-test-source-plugin/SpecSync.Plugin.ExcelTestSource
 * Sample project: https://github.com/specsolutions/specsync-sample-plugins/tree/main/excel-test-source-plugin/SampleProject
