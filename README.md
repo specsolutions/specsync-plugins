@@ -1,15 +1,21 @@
-# Sample SpecSync for AzureDevOps plugins
+# Sample SpecSync plugins
 
-_Note: The `main` branch contains sample plugins for SpecSync v3.3. In order to find samples for SpecSync v3.2, please use the branch `specsync-v3.2`._
+_Note: The `main` branch contains sample plugins for SpecSync v3.4. In order to find samples for SpecSync v3.3, please use the branch `specsync-v3.3`._
 
-In the project that would like to use the plugin, the plugin assembly path (and optionally plugin parameters)
-have to be configured in `specsync.json`. These can also be specified in parent config files as well.
+In the project that would like to use the plugin, the plugin package ID, version have to be specified in the SpecSync configuration file (`specsync.json`). 
+Most of the plugins are published to nuget.org, so SpecSync will automatically load them, but you can 
+also specify a custom NuGet package feed or simply a folder where the plugin package (.nupkg) file is stored.
+
+The sample projects in the plugin folders show how to load the plugins from a local folder.
+
+Some plugins can have plugin parameters as well, please check the plugin pages for the details.
 
 ```
   "toolSettings": {
     "plugins": [
       {
-        "assemblyPath": "plugin-path\MyCustomTestResultMatch.SpecSyncPlugin.dll",
+        "packageId": "SpecSync.Plugin.ExcelTestSource",
+        "packageVersion": "1.0.0",
         "parameters": {
           "key1": "value1"
         }
