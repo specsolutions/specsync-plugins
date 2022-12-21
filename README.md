@@ -20,11 +20,12 @@ have to be configured in `specsync.json`. These can also be specified in parent 
 
 You can find more information about SpecSync plugins in the [SpecSync documentation](https://speclink.me/specsync-plugins).
 
-Currently the following plugins are available:
+Currently the following plugins are available. For more details about the plugin, click on the name.
 
 * [SpecSync.Plugin.ExcelTestResults](excel-test-results-plugin): This plugin can be used to provide test results for Ghekin scenarios from an Excel file. This might 
 be useful when manual test executions have to be recorded.
 * [SpecSync.Plugin.ExcelTestSource](excel-test-source-plugin): This plugin can be used to synchronize a local test cases from Excel file using the format that Azure DevOps uses when you export Test Cases to CSV.
+* [SpecSync.Plugin.MsTestTestSource](mstest-test-source-plugin): Allows synchronizing "C# MsTest Tests" and publish results from TRX result files.
 
 
 
@@ -43,36 +44,6 @@ For diagnosing the plugin and the test results loaded from the TRX file, you can
 
 As an example, the sample plugin finds the test results if their `className` ends with the feature name and 
 if the `name` is exacly the scenario name. Other matchers often use regular expressions as well.
-
-
-## mstest-test-source-plugin
-
-Allows synchronizing "C# MsTest Tests" and publish results from TRX result files.
-
-* Plugin source: https://github.com/specsolutions/specsync-sample-plugins/tree/main/mstest-test-source-plugin/SpecSync.Plugin.MsTestTestSource
-* Sample project: https://github.com/specsolutions/specsync-sample-plugins/tree/main/mstest-test-source-plugin/SampleProject
-
-The plugin processes the C# files in the configured folder tree and searches for *MsTest* test methods, like:
-
-```
-[TestMethod]
-[TestCategory("MyCategory")]
-public void OnePassingTest()
-{
-    ...
-}
-```
-
-These test methods are the potential local test cases to be synchronized. 
-
-Once the methods are linked to a newly created Azure DevOps Test Case, the Test Case ID is inserted into the 
-C# file as a `[TestCategory]` attribute using a "SpecSync tag" (see below).
-
-
-#### Specifying tags for SpecSync
-
-* Specify tags for the tests, using the `[TestCategory]` attribute:
-    * `[TestCategory("my_tag")]` or `[TestCategory("story:123")]`
 
 
 ## custom-test-source-plugin

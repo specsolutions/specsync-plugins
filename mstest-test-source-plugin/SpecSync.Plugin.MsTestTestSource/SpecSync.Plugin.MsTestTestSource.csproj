@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <!-- this setting is needed to copy Microsoft.CodeAnalysis.* to the output -->
+    <LangVersion>10</LangVersion>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-    <Version>0.9.0</Version>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>local</VersionSuffix>
+
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Description>A SpecSync plugin that synchronizes C# MsTes test methods as Test Cases.</Description>
     <RepositoryUrl>https://github.com/specsolutions/specsync-sample-plugins</RepositoryUrl>
@@ -19,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpecSync.PluginDependency.CSharpSource" Version="3.4.0-pre20221213-1" />
+    <PackageReference Include="SpecSync.PluginDependency.CSharpSource" Version="3.4.0" />
   </ItemGroup>
 
   <ItemGroup>
