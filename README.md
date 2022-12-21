@@ -47,19 +47,6 @@ As an example, the sample plugin finds the test results if their `className` end
 if the `name` is exacly the scenario name. Other matchers often use regular expressions as well.
 
 
-## custom-test-source-plugin
-
-This plugin shows how to use SpecSync to synchronize a custom local test source. The local test source 
-is normally a scenario in a feature file, but you can implement different local test sources as well.
-
-This plugin makes a normal MsTest test to be available as a test source for SpecSync. For that it provides 
-
-* a custom `IBddProject` that lists the test classes and test methods from an assembly,
-* a custom `ILocalTestCaseContainerParser` that parses the `TestCategory` attributes on the test method to get the test case ID and the other related work items,
-* a custom `ITestRunnerResultMatcher` to connect back the test results from a TRX file to the parsed test method.
-
-The plugins that override local test source require a SpecSync Enterprise license to run. Please [contact us](https://specsolutions.gitbook.io/specsync/contact/specsync-support) to get an evaluation license that you can use to try out this plugin.
-
 ## scenario-outline-as-normal-test-case-format-plugin
 
 _Note: This plugin is supported in SpecSync v3.3 or later_
