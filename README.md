@@ -27,6 +27,7 @@ be useful when manual test executions have to be recorded.
 * [SpecSync.Plugin.ExcelTestSource](excel-test-source-plugin): This plugin can be used to synchronize a local test cases from Excel file using the format that Azure DevOps uses when you export Test Cases to CSV.
 * [SpecSync.Plugin.MsTestTestSource](mstest-test-source-plugin): Allows synchronizing "C# MsTest Tests" and publish results from TRX result files.
 * [SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase](scenario-outline-per-exampes-test-case-plugin): This plugin can be used to synchronize scenario outlines with multiple "Examples" blocks to multiple Test Cases (one for each Examples block).
+* [SpecSync.Plugin.ScenarioOutlineAsNormalTestCase](scenario-outline-as-normal-test-case-format-plugin): A SpecSync plugin that synchronizes scenario outlines as normal (non-data-driven) Test Cases.
 
 
 
@@ -45,24 +46,3 @@ For diagnosing the plugin and the test results loaded from the TRX file, you can
 
 As an example, the sample plugin finds the test results if their `className` ends with the feature name and 
 if the `name` is exacly the scenario name. Other matchers often use regular expressions as well.
-
-
-## scenario-outline-as-normal-test-case-format-plugin
-
-_Note: This plugin is supported in SpecSync v3.3 or later_
-
-This plugin shows how to use SpecSync to drastically change the format of 
-Test Cases synchronized from scenarios. 
-
-This plugin changes the format of Test Cases synchronized from scenario 
-outlines. Normally from scenario outlines SpecSync synchronizes a parametrized 
-Test Case with the different examples as parameters, but with this plugin a 
-"normal" (non-parametrized) Test Case is created and the values from the 
-different examples are added as extra steps. This is implemented by a custom
-`ILocalTestCaseAnalyzer` implementation (`ScenarioOutlineAsNormalTestCaseGherkinAnalyzer`)
-that changes the default behavior of the built-in `GherkinLocalTestCaseAnalyzer`
-class.
-
-The plugins that override local test case analyzer require a SpecSync 
-Enterprise license to run. Please [contact us](https://specsolutions.gitbook.io/specsync/contact/specsync-support) 
-to get an evaluation license that you can use to try out this plugin.
