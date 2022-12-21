@@ -10,12 +10,9 @@
         "packageVersion": "1.0.0-local",
         "packageSource": "..\\SpecSync.Plugin.ExcelTestResults\\bin\\Debug",
 
-        "parameters": { // the parameters are optional, the settings below represent the defaults
-          "OutcomeColumnName": "Result",
-          "FeatureColumnName": "Feature",
-          "ScenarioColumnName": "Scenario",
-          "TestNameColumnName": "Test Name",
-          "ErrorMessageColumnName": "Error"
+        "parameters": {
+          // You can rename columns with parameters. For example here the "Outcome" column is renamed to "Result"
+          "OutcomeColumnName": "Result"
         }
       }
     ]
