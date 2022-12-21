@@ -26,6 +26,7 @@ Currently the following plugins are available. For more details about the plugin
 be useful when manual test executions have to be recorded.
 * [SpecSync.Plugin.ExcelTestSource](excel-test-source-plugin): This plugin can be used to synchronize a local test cases from Excel file using the format that Azure DevOps uses when you export Test Cases to CSV.
 * [SpecSync.Plugin.MsTestTestSource](mstest-test-source-plugin): Allows synchronizing "C# MsTest Tests" and publish results from TRX result files.
+* [SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase](scenario-outline-per-exampes-test-case-plugin): This plugin can be used to synchronize scenario outlines with multiple "Examples" blocks to multiple Test Cases (one for each Examples block).
 
 
 

@@ -7,7 +7,7 @@
     "plugins": [
       {
         "packageId": "SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase",
-        "packageVersion": "0.9.0",
+        "packageVersion": "1.0.0-local",
         "packageSource": "..\\SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase\\bin\\Debug"
       }
     ]

@@ -27,7 +27,6 @@ Examples:
 	| commutativity | 70 | 50 | 120    |
 	| zero          | 0  | 42 | 42     |
 
-#@tc:137
 @tc:139
 @wrong
 Examples: Wrong test cases
