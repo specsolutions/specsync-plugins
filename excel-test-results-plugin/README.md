@@ -6,7 +6,7 @@ be useful when manual test executions have to be recorded.
 *You can find more information about the SpecSync sample plugins in the [repository page](https://github.com/specsolutions/specsync-sample-plugins#readme).*
 
 * Plugin package: [SpecSync.Plugin.ExcelTestResults](https://www.nuget.org/packages/SpecSync.Plugin.ExcelTestResults)
-* Plugin source: [SpecSync.Plugin.MsTestTestSource](SpecSync.Plugin.MsTestTestSource)
+* Plugin source: [SpecSync.Plugin.ExcelTestResults](SpecSync.Plugin.ExcelTestResults)
 * Sample project: [SampleProject](SampleProject)
 
 It can match the rest results to the local test cases (scenarios) with:
