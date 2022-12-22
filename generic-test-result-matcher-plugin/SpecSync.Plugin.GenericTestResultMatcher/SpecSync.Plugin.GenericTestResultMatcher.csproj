@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>local</VersionSuffix>
+
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>A SpecSync plugin that can be used to override test result matching rules.</Description>
+    <RepositoryUrl>https://github.com/specsolutions/specsync-sample-plugins</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>SpecSync-Icon.png</PackageIcon>
+    <PackageProjectUrl>https://speclink.me/specsync</PackageProjectUrl>
+    <Copyright>Copyright © 2016-$([System.DateTime]::UtcNow.ToString("yyyy")) Spec Solutions</Copyright>
+    <PackageTags>specsync plugin test-results</PackageTags>
+    <PackageReleaseNotes>Please check https://github.com/specsolutions/specsync-sample-plugins/releases for release note details.</PackageReleaseNotes>
+    <Authors>Spec Solutions</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SpecSync.PluginDependency" Version="3.4.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)\..\..\Resources\SpecSync-Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+      <Visible>false</Visible>
+    </None>
+    <Content Include="$(MSBuildThisFileDirectory)\..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\*.deps.json;$(OutputPath)\*.pdb">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\netstandard2.0\</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<testsuite errors="0" failures="1" skipped="0" tests="1" time="0.173">
+  <testcase classname="myClass" name="Test: Add two numbers" time="0.003">
+    <failure message="expected: &lt;11&gt; but was: &lt;10&gt;">
+      <![CDATA[error details]]>
+    </failure>
+  </testcase>
+</testsuite>
