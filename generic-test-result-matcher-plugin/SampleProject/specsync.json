@@ -11,8 +11,7 @@
         "packageSource": "..\\SpecSync.Plugin.GenericTestResultMatcher\\bin\\Debug",
 
         "parameters": {
-          "Name": "^Test\\: {local-test-case-name}$",
-          "ClassName": "^myClas"
+          "Name": "^Test\\: {local-test-case-name}$"
         }
       }
     ]
