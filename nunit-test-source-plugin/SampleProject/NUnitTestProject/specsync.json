@@ -1,0 +1,35 @@
+﻿{
+  "$schema": "http://schemas.specsolutions.eu/specsync4azuredevops-config-latest.json",
+  "compatibilityVersion": "3.4",
+
+  "toolSettings": {
+    "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
+    "plugins": [
+      {
+        "packageId": "SpecSync.Plugin.NUnitTestSource",
+        "packageVersion": "1.0.0-local",
+        "packageSource": "..\\..\\SpecSync.Plugin.NUnitTestSource\\bin\\Debug"
+      }
+    ]
+  },
+  "remote": {
+    "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
+    "testSuite": {
+      "name": "NUnit Tests"
+    }
+  },
+  "synchronization": {
+    "links": [
+      {
+        "tagPrefix": "story"
+      }
+    ],
+    "automation": {
+      "enabled": true,
+      "automatedTestType": "NUnit Unit Test"
+    },
+    "fieldUpdates": {
+      "Description": "<pre>{feature-file-path:HtmlEncode}:{br}{scenario-source:HtmlEncode}</pre>"
+    }
+  }
+}

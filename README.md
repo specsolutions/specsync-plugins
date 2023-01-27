@@ -32,6 +32,7 @@ Currently the following plugins are available. For more details about the plugin
 be useful when manual test executions have to be recorded.
 * [SpecSync.Plugin.ExcelTestSource](excel-test-source-plugin): This plugin can be used to synchronize a local test cases from Excel file using the format that Azure DevOps uses when you export Test Cases to CSV.
 * [SpecSync.Plugin.MsTestTestSource](mstest-test-source-plugin): Allows synchronizing "C# MsTest Tests" and publish results from TRX result files.
+* [SpecSync.Plugin.NUnitTestSource](nunit-test-source-plugin): Allows synchronizing "C# NUnit Tests" and publish results from TRX result files.
 * [SpecSync.Plugin.ScenarioOutlinePerExamplesTestCase](scenario-outline-per-exampes-test-case-plugin): This plugin can be used to synchronize scenario outlines with multiple "Examples" blocks to multiple Test Cases (one for each Examples block).
 * [SpecSync.Plugin.ScenarioOutlineAsNormalTestCase](scenario-outline-as-normal-test-case-format-plugin): A SpecSync plugin that synchronizes scenario outlines as normal (non-data-driven) Test Cases.
 * [SpecSync.Plugin.GenericTestResultMatcher](generic-test-result-matcher-plugin): A SpecSync plugin that can be used to override test result matching rules.
