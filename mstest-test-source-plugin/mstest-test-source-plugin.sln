@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecSync.Plugin.MsTestTestSource", "SpecSync.Plugin.MsTestTestSource\SpecSync.Plugin.MsTestTestSource.csproj", "{A92B8070-CF00-498A-A745-7D88B39A7A22}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MsTestTestProject", "SampleProject\MsTestTestProject\MsTestTestProject.csproj", "{C1B8ED97-56BD-44CC-A91D-16600921F961}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A92B8070-CF00-498A-A745-7D88B39A7A22} = {A92B8070-CF00-498A-A745-7D88B39A7A22}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleProject", "SampleProject", "{E1E73AB0-DA28-4329-956B-45BD180B6A9C}"
 	ProjectSection(SolutionItems) = preProject

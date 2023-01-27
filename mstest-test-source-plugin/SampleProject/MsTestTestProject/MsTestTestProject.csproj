@@ -11,7 +11,6 @@
     <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
-    <PackageReference Include="SpecSync.AzureDevOps.PluginDependency" Version="3.1.0-pre20200918-1" />
   </ItemGroup>
 
 </Project>
