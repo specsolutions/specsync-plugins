@@ -1,0 +1,57 @@
+﻿{
+  "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-latest.json",
+  "compatibilityVersion": "1.0",
+
+  "toolSettings": {
+    "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
+    "plugins": [
+      {
+        "packageId": "SpecSync.Plugin.ExcelTestSource",
+        "packageVersion": "1.0.0-local",
+        "packageSource": "..\\SpecSync.Plugin.ExcelTestSource\\bin\\Debug",
+
+        "parameters": {
+          "fieldUpdateColumns": [
+            {
+              "columnName": "Priority",
+              "fieldName": "Priority" // can be omitted if the same as 'columnName'
+              // "tagNamePrefix": "priority:" -- if specified the field update has to be configured manually using synchronization/fieldUpdates
+            },
+            {
+              "columnName": "Area Path"
+            },
+            {
+              "columnName": "Assigned To"
+            },
+            {
+              "columnName": "State"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "remote": {
+    "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
+    "testSuite": {
+      "name": "ExcelTestSource"
+    }
+  },
+  "synchronization": {
+    "automation": {
+      "enabled": true,
+      "automatedTestType": "Script"
+    },
+    "format": {
+      "useExpectedResult": true
+    },
+    "links": [
+      {
+        "tagPrefix": "story"
+      }
+    ],
+    "fieldUpdates": {
+      "Description": "{local-test-case-description}"
+    }
+  }
+}
