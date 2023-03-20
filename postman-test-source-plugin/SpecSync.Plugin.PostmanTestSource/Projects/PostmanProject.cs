@@ -11,13 +11,15 @@ public class PostmanProject : IBddProject
     public string Type => "Postman";
     public CultureInfo DefaultCulture => null;
     IEnumerable<ISourceFile> IBddProject.LocalTestContainerFiles => Collections;
-    public PostmanFolderCollection[] Collections { get; }
+    public PostmanFolderItem[] Collections { get; }
     public string ProjectFolder { get; }
 
-    public PostmanProject(IEnumerable<PostmanFolderCollection> folderCollections, string projectFolder)
+    public PostmanProject(IEnumerable<PostmanFolderItem> folderCollections, string projectFolder)
     {
-        Collections = folderCollections.ToArray();
         ProjectFolder = projectFolder;
+        Collections = folderCollections.ToArray();
+        foreach (var collection in Collections)
+            collection.BddProject = this;
     }
 
     public string GetFullPath(string projectRelativePath)

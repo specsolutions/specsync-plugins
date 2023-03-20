@@ -25,8 +25,8 @@ public class PostmanTestSourcePlugin : ISpecSyncPlugin
 
         args.ServiceRegistry.BddProjectLoaderProvider
             .Register(new PostmanCollectionLoader());
-        //args.ServiceRegistry.LocalTestCaseContainerParserProvider
-        //    .Register(new ExcelTestCaseSourceParser(fieldUpdaterColumnParameters));
+        args.ServiceRegistry.LocalTestCaseContainerParserProvider
+            .Register(new PostmanCollectionParser());
         //args.ServiceRegistry.LocalTestCaseAnalyzerProvider
         //    .Register(new ExcelTestCaseAnalyzer());
 

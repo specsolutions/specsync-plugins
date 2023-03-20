@@ -34,7 +34,8 @@
   "remote": {
     "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
     "testSuite": {
-      "name": "PostmanTestSource"
+      "name": "PostmanTestSource",
+      "testPlanId": 198
     }
   },
   "synchronization": {
