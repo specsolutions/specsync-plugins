@@ -9,24 +9,12 @@
         "packageId": "SpecSync.Plugin.PostmanTestSource",
         "packageVersion": "1.0.0-local",
         "packageSource": "..\\SpecSync.Plugin.PostmanTestSource\\bin\\Debug",
-
+      },
+      {
+        "packageId": "SpecSync.Plugin.GenericTestResultMatcher",
+        "packageVersion": "1.0.0",
         "parameters": {
-          "fieldUpdateColumns": [
-            {
-              "columnName": "Priority",
-              "fieldName": "Priority" // can be omitted if the same as 'columnName'
-              // "tagNamePrefix": "priority:" -- if specified the field update has to be configured manually using synchronization/fieldUpdates
-            },
-            {
-              "columnName": "Area Path"
-            },
-            {
-              "columnName": "Assigned To"
-            },
-            {
-              "columnName": "State"
-            }
-          ]
+          "Name": "^(.*\\/\\s*)?{local-test-case-name}$"
         }
       }
     ]
@@ -52,7 +40,7 @@
       }
     ],
     "fieldUpdates": {
-      //"Description": "{local-test-case-description}"
+      "Description": "{local-test-case-description:HTML}"
     }
   }
 }
