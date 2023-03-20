@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
-using SpecSync.Utils;
 using SpecSync.Utils.Code;
 
 namespace SpecSync.Plugin.PostmanTestSource.Projects;
@@ -15,6 +15,25 @@ public class PostmanTestItem : IPostmanItem, ILocalTestCase
     public PostmanTestItem(Item modelItem)
     {
         _modelItem = modelItem;
+    }
+
+    public IEnumerable<Item> GetRequestItems()
+    {
+        IEnumerable<Item> GetRequestItemsInternal(Item item)
+        {
+            if (item.Items == null || item.Items.Length == 0)
+            {
+                if (item.Request != null)
+                    yield return item;
+            }
+            else
+                foreach (var subItem in item.Items.SelectMany(GetRequestItemsInternal))
+                {
+                    yield return subItem;
+                }
+        }
+
+        return GetRequestItemsInternal(_modelItem);
     }
 
     #region ILocalTestCase implementation

@@ -11,4 +11,5 @@ public class Item : IHasItems
     [JsonProperty("item")] public Item[] Items { get; set; }
 
     public Request Request { get; set; }
+    [JsonProperty("event")] public Event[] Events { get; set; }
 }
