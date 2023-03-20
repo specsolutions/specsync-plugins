@@ -39,7 +39,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
     private void CreateRootItem(Collection collection, List<PostmanFolderItem> folderItems)
     {
-        var rootName = collection.Info.Name;
+        var rootName = collection.Info?.Name ?? "Collection";
         var testTree = new PostmanFolderItem(rootName, 
             collection.Items.Select(i => ProcessItem(i, folderItems, rootName)).ToList(), collection);
         folderItems.Insert(0, testTree);

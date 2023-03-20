@@ -2,6 +2,8 @@
 
 public class Request
 {
+    public string Description { get; set; }
+
     public Auth Auth { get; set; }
 
     public string Method { get; set; }
