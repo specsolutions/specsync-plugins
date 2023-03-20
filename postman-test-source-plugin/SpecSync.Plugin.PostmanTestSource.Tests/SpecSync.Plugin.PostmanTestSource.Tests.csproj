@@ -21,4 +21,10 @@
     <ProjectReference Include="..\SpecSync.Plugin.PostmanTestSource\SpecSync.Plugin.PostmanTestSource.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="sample_newman_result.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

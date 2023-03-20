@@ -20,5 +20,7 @@ public class PostmanTestSourcePlugin : ISpecSyncPlugin
             .Register(new PostmanCollectionParser());
         args.ServiceRegistry.LocalTestCaseAnalyzerProvider
             .Register(new PostmanTestItemAnalyzer());
+        args.ServiceRegistry.TestResultLoaderProvider
+            .Register(new NewmanJUnitXmlResultLoader());
     }
 }

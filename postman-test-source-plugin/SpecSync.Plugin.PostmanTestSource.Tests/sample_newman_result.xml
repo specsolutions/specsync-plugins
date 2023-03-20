@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Postman Echo" tests="37" time="10.605">
+  <testsuite name="Request Methods / GET Request" id="8b247054-3527-429b-87b9-04e783a0d960" timestamp="2023-03-20T15:06:17.799Z" tests="2" failures="0" errors="0" time="0.512">
+    <testcase name="response is ok" time="0.512" classname="PostmanEcho"/>
+    <testcase name="response body has json with request queries" time="0.512" classname="PostmanEcho"/>
+  </testsuite>
+  <testsuite name="Authentication Methods / Basic Auth" id="f24b172a-d758-47cc-9e39-13a629c4f347" timestamp="2023-03-20T15:06:17.799Z" tests="2" failures="2" errors="0" time="0.120">
+    <testcase name="response is ok" time="0.120" classname="PostmanEcho">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 2c49b8c3-0f1a-43f5-8a18-5d7f6c50c0ac.]]>
+        <![CDATA[Collection name: Postman Echo.]]>
+        <![CDATA[Request name: Authentication Methods / Basic Auth.]]>
+        <![CDATA[Test description: response is ok.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:9).]]>
+      </failure>
+    </testcase>
+    <testcase name="response body has json saying 'authenticated'" time="0.120" classname="PostmanEcho">
+      <failure type="AssertionFailure" message="expected undefined in response to contain property 'authenticated'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 2c49b8c3-0f1a-43f5-8a18-5d7f6c50c0ac.]]>
+        <![CDATA[Collection name: Postman Echo.]]>
+        <![CDATA[Request name: Authentication Methods / Basic Auth.]]>
+        <![CDATA[Test description: response body has json saying 'authenticated'.]]>
+        <![CDATA[Error message: expected undefined in response to contain property 'authenticated'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected undefined in response to contain property 'authenticated'
+   at Object.eval sandbox-script.js:2:9).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Utilities / Get UTF8 Encoded Response" id="e481ff70-fbaf-467e-9abd-cf49f47ed896" timestamp="2023-03-20T15:06:17.799Z" tests="3" failures="1" errors="0" time="0.223">
+    <testcase name="response is ok" time="0.223" classname="PostmanEcho"/>
+    <testcase name="response has charset in content-type header" time="0.223" classname="PostmanEcho"/>
+    <testcase name="response has chunked transfer encoding header" time="0.223" classname="PostmanEcho">
+      <failure type="AssertionFailure" message="expected response to have header with key 'transfer-encoding'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 2c49b8c3-0f1a-43f5-8a18-5d7f6c50c0ac.]]>
+        <![CDATA[Collection name: Postman Echo.]]>
+        <![CDATA[Request name: Utilities / Get UTF8 Encoded Response.]]>
+        <![CDATA[Test description: response has chunked transfer encoding header.]]>
+        <![CDATA[Error message: expected response to have header with key 'transfer-encoding'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have header with key 'transfer-encoding'
+   at Object.eval sandbox-script.js:3:19).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Server Events / GET Server events" id="fa2d2b0f-b5e5-48e8-8e6c-97a3562cdc07" timestamp="2023-03-20T15:06:17.799Z" tests="0" failures="0" errors="1" time="0.000">
+    <system-err><![CDATA[Iteration: 0
+RequestError: Error: getaddrinfo ENOTFOUND postman-echox.com
+    at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:71:26)
+
+---
+]]></system-err>
+  </testsuite>
+  <testsuite name="Server Events / POST Server events" id="e560e1b1-37eb-4f02-b1e4-7a31323bc678" timestamp="2023-03-20T15:06:17.799Z" tests="0" failures="0" errors="0" time="3.231"/>
+</testsuites>
