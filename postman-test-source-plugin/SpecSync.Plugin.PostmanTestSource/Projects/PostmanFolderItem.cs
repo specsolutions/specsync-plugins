@@ -33,8 +33,8 @@ public class PostmanFolderItem : ISourceFile, IPostmanItem, ILocalTestCaseContai
     public PostmanFolderItem(string projectRelativePath, IList<IPostmanItem> subItems, Collection collection)
         : this(projectRelativePath, subItems, (IHasItems)collection)
     {
-        Name = collection.Info.Name;
-        Description = collection.Info.Description;
+        Name = collection.Info?.Name ?? "Collection";
+        Description = collection.Info?.Description;
     }
 
     #region ILocalTestCaseContainer implementation

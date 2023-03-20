@@ -10,7 +10,7 @@ public class PostmanCollectionLoaderTests : TestBase
 {
 
     [TestMethod]
-    public void ShouldLoadFolderAndTestNodesFromCollection()
+    public void Should_load_folder_and_test_items_from_collection()
     {
         var sut = new PostmanCollectionLoader();
 
@@ -19,6 +19,6 @@ public class PostmanCollectionLoaderTests : TestBase
         project.LocalTestContainerFiles.Should().HaveCountGreaterThan(0);
         var postmanProject = project as PostmanProject;
         postmanProject.Should().NotBeNull();
-        postmanProject!.Collections.Should().Contain(c => c.Tests.Any());
+        postmanProject!.FolderItems.Should().Contain(c => c.Tests.Any());
     }
 }
