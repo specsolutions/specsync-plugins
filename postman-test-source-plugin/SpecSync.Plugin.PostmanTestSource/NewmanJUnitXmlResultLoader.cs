@@ -1,5 +1,4 @@
 ﻿using SpecSync.PublishTestResults.Loaders;
-using SpecSync.PublishTestResults.Matchers;
 using SpecSync.PublishTestResults;
 using SpecSync.Tracing;
 using System.IO;
@@ -15,7 +14,7 @@ public class NewmanJUnitXmlResultLoader : JUnitXmlTestCaseAsStepResultLoader
 {
     public const string TestResultFileFormat = "NewmanJUnitXml";
 
-    protected override string TestFrameworkIdentifier => CucumberJsJUnitXmlResultMatcher.TestFrameworkIdentifier;
+    protected override string TestFrameworkIdentifier => NewmanJUnitXmlResultMatcher.TestFrameworkIdentifier;
     public override string ServiceDescription => $"{TestResultFileFormat}: Postman Newman JUnit XML result";
 
     public override bool CanProcess(TestResultLoaderProviderArgs args)
