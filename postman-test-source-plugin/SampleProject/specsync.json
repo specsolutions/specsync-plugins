@@ -1,6 +1,6 @@
 ﻿{
   "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-latest.json",
-  "compatibilityVersion": "1.0",
+  "compatibilityVersion": "3.4",
 
   "toolSettings": {
     "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
@@ -8,14 +8,7 @@
       {
         "packageId": "SpecSync.Plugin.PostmanTestSource",
         "packageVersion": "1.0.0-local",
-        "packageSource": "..\\SpecSync.Plugin.PostmanTestSource\\bin\\Debug",
-      },
-      {
-        "packageId": "SpecSync.Plugin.GenericTestResultMatcher",
-        "packageVersion": "1.0.0",
-        "parameters": {
-          "Name": "^(.*\\/\\s*)?{local-test-case-name}$"
-        }
+        "packageSource": "..\\SpecSync.Plugin.PostmanTestSource\\bin\\Debug"
       }
     ]
   },
