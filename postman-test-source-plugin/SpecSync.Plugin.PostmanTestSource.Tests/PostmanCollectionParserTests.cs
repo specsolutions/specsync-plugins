@@ -1,22 +1,13 @@
 ﻿using FluentAssertions;
-using Moq;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
 using SpecSync.Plugin.PostmanTestSource.Projects;
-using SpecSync.Projects;
 
 namespace SpecSync.Plugin.PostmanTestSource.Tests;
 
 [TestClass]
 public class PostmanCollectionParserTests : TestBase
 {
-    private readonly Mock<IBddProject> _projectStub = new();
-
-    private LocalTestCaseContainerParseArgs CreateArgs(PostmanFolderItem folderCollection)
-    {
-        return new LocalTestCaseContainerParseArgs(_projectStub.Object, folderCollection, SynchronizationContextStub.Object);
-    }
-
     [TestMethod]
     public void Should_parse_tests_with_name_and_description()
     {
@@ -44,7 +35,7 @@ public class PostmanCollectionParserTests : TestBase
                     Description = "Some text"
                 }
             });
-        var result = sut.Parse(CreateArgs(folderCollection));
+        var result = sut.Parse(CreateParserArgs(folderCollection));
         result!.Should().NotBeNull();
         result.LocalTestCases.Should().HaveCount(2);
 
@@ -82,7 +73,7 @@ This is the documentation
                     }
                 }),
             }, new Collection());
-        var result = sut.Parse(CreateArgs(folderCollection));
+        var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
 
@@ -128,7 +119,7 @@ This is the documentation
                     }
                 }),
             }, new Collection());
-        var result = sut.Parse(CreateArgs(folderCollection));
+        var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
 
@@ -167,7 +158,7 @@ This is the documentation
                     }
                 }),
             }, new Collection());
-        var result = sut.Parse(CreateArgs(folderCollection));
+        var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
 
@@ -202,7 +193,7 @@ This is the documentation
                     }
                 }),
             }, new Collection());
-        var result = sut.Parse(CreateArgs(folderCollection));
+        var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
 
@@ -234,7 +225,7 @@ This is the documentation
             }, new Collection());
         Configuration.Customizations.BranchTag.Enabled = true;
         Configuration.Customizations.BranchTag.Prefix = "branchTc";
-        var result = sut.Parse(CreateArgs(folderCollection));
+        var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
 
