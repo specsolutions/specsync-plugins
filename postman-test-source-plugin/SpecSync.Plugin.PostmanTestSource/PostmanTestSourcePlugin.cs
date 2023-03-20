@@ -24,11 +24,11 @@ public class PostmanTestSourcePlugin : ISpecSyncPlugin
         var fieldUpdaterColumnParameters = LoadParameters(args);
 
         args.ServiceRegistry.BddProjectLoaderProvider
-            .Register(new ExcelFolderProjectLoader());
-        args.ServiceRegistry.LocalTestCaseContainerParserProvider
-            .Register(new ExcelTestCaseSourceParser(fieldUpdaterColumnParameters));
-        args.ServiceRegistry.LocalTestCaseAnalyzerProvider
-            .Register(new ExcelTestCaseAnalyzer());
+            .Register(new PostmanCollectionLoader());
+        //args.ServiceRegistry.LocalTestCaseContainerParserProvider
+        //    .Register(new ExcelTestCaseSourceParser(fieldUpdaterColumnParameters));
+        //args.ServiceRegistry.LocalTestCaseAnalyzerProvider
+        //    .Register(new ExcelTestCaseAnalyzer());
 
         // configure automation condition based on the "Automation Status" column
         args.Configuration.Synchronization.Automation.Condition =

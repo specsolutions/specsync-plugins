@@ -6,9 +6,9 @@
     "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
     "plugins": [
       {
-        "packageId": "SpecSync.Plugin.ExcelTestSource",
+        "packageId": "SpecSync.Plugin.PostmanTestSource",
         "packageVersion": "1.0.0-local",
-        "packageSource": "..\\SpecSync.Plugin.ExcelTestSource\\bin\\Debug",
+        "packageSource": "..\\SpecSync.Plugin.PostmanTestSource\\bin\\Debug",
 
         "parameters": {
           "fieldUpdateColumns": [
@@ -34,13 +34,13 @@
   "remote": {
     "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
     "testSuite": {
-      "name": "ExcelTestSource"
+      "name": "PostmanTestSource"
     }
   },
   "synchronization": {
     "automation": {
       "enabled": true,
-      "automatedTestType": "Script"
+      "automatedTestType": "Postman"
     },
     "format": {
       "useExpectedResult": true
@@ -51,7 +51,7 @@
       }
     ],
     "fieldUpdates": {
-      "Description": "{local-test-case-description}"
+      //"Description": "{local-test-case-description}"
     }
   }
 }
