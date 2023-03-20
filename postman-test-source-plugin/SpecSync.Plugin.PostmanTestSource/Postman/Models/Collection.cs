@@ -2,7 +2,7 @@
 
 namespace SpecSync.Plugin.PostmanTestSource.Postman.Models;
 
-public class Collection
+public class Collection : IHasItems
 {
     public Info Info { get; set; }
 
