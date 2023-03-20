@@ -21,7 +21,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.97.0" />
     <PackageReference Include="SpecSync.PluginDependency" Version="3.4.0" />
   </ItemGroup>
 
@@ -36,13 +35,6 @@
       <PackagePath>.</PackagePath>
       <Visible>false</Visible>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <_PackageFiles Include="$(OutputPath)\ClosedXML.dll;$(OutputPath)\DocumentFormat.OpenXml.dll;$(OutputPath)\SixLabors.Fonts.dll;$(OutputPath)\System.IO.Packaging.dll;$(OutputPath)\*.deps.json;$(OutputPath)\*.pdb">
-      <BuildAction>None</BuildAction>
-      <PackagePath>lib\netstandard2.0\</PackagePath>
-    </_PackageFiles>
   </ItemGroup>
 
 </Project>
