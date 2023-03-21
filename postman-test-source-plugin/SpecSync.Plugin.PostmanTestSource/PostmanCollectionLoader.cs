@@ -1,9 +1,11 @@
 ﻿using SpecSync.Projects;
 using System.Collections.Generic;
 using System.Linq;
+using SpecSync.Integration.RestApiServices;
 using SpecSync.Plugin.PostmanTestSource.Postman;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
 using SpecSync.Plugin.PostmanTestSource.Projects;
+using SpecSync.Utils;
 
 namespace SpecSync.Plugin.PostmanTestSource;
 
@@ -56,7 +58,16 @@ public class PostmanCollectionLoader : IBddProjectLoader
         var api = new PostmanApi(PostmanApiConnectionFactory.Instance.Create(args.Tracer));
 
         var collectionId = "2c49b8c3-0f1a-43f5-8a18-5d7f6c50c0ac";
-        var collection = api.GetCollection(collectionId).Collection;
+
+        Collection collection;
+        try
+        {
+            collection = api.GetCollection(collectionId).Collection;
+        }
+        catch (RestApiResponseException ex)
+        {
+            throw new SpecSyncException("Unable to load collection from Postman.", ex);
+        }
 
         var folderItems = new List<PostmanFolderItem>();
 
