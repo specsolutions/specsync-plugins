@@ -7,12 +7,12 @@ namespace SpecSync.Plugin.PostmanTestSource.Projects;
 
 public class PostmanTestItem : IPostmanItem, ILocalTestCase
 {
-    private readonly Item _modelItem;
+    public Item ModelItem { get; }
     public PostmanItemMetadata Metadata { get; }
 
-    public PostmanTestItem(Item modelItem, PostmanItemMetadata metadata = null)
+    public PostmanTestItem(Item modelItem, PostmanItemMetadata metadata)
     {
-        _modelItem = modelItem;
+        ModelItem = modelItem;
         Metadata = metadata ?? new PostmanItemMetadata();
     }
 
@@ -32,15 +32,15 @@ public class PostmanTestItem : IPostmanItem, ILocalTestCase
                 }
         }
 
-        return GetRequestItemsInternal(_modelItem);
+        return GetRequestItemsInternal(ModelItem);
     }
 
     #region ILocalTestCase implementation
 
     public ILocalTestCaseTag[] Tags { get; set; }
     public TestCaseLink TestCaseLink { get; set; }
-    public string Name => _modelItem.Name;
-    public string Description => _modelItem.Description ?? _modelItem.Request?.Description;
+    public string Name => ModelItem.Name;
+    public string Description => ModelItem.Description ?? ModelItem.Request?.Description;
     public string TestedRule => null;
     public bool IsDataDrivenTest => false;
     public LocalTestCaseDataRow[] DataRows => null;
