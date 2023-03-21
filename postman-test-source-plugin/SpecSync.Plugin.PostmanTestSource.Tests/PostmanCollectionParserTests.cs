@@ -8,13 +8,21 @@ namespace SpecSync.Plugin.PostmanTestSource.Tests;
 [TestClass]
 public class PostmanCollectionParserTests : TestBase
 {
+    private readonly PostmanMetadataParser _postmanMetadataParser = new();
+
+    private PostmanTestItem CreateTestItem(Item item)
+    {
+        var metadata = _postmanMetadataParser.ParseMetadata(item);
+        return new PostmanTestItem(item, metadata);
+    }
+
     [TestMethod]
     public void Should_parse_tests_with_name_and_description()
     {
-        var sut = new PostmanCollectionParser();
+        var sut = new PostmanFolderItemParser();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
         {
-            new PostmanTestItem(new Item
+            CreateTestItem(new Item
             {
                 Name = "Test 1",
                 Request = new Request
@@ -22,7 +30,7 @@ public class PostmanCollectionParserTests : TestBase
                     Description = "Some test text"
                 }
             }),
-            new PostmanTestItem(new Item
+            CreateTestItem(new Item
             {
                 Name = "Test 2"
             }),
@@ -48,10 +56,10 @@ public class PostmanCollectionParserTests : TestBase
     [TestMethod]
     public void Should_parse_metadata_from_doc_metadata_section()
     {
-        var sut = new PostmanCollectionParser();
+        var sut = new PostmanFolderItemParser();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
-                new PostmanTestItem(new Item
+                CreateTestItem(new Item
                 {
                     Name = "Test 1",
                     Request = new Request
@@ -77,9 +85,9 @@ This is the documentation
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
 
-        testItem!.Metadata.Should().ContainKey("adoTestCase");
+        testItem!.Metadata.ContainsKey("adoTestCase").Should().BeTrue();
         testItem.Metadata["adoTestCase"].StringValue.Should().Be("1234");
-        testItem.Metadata.Should().ContainKey("tags");
+        testItem.Metadata.ContainsKey("tags").Should().BeTrue();
         var tags = testItem.Metadata["tags"] as MetadataListValue;
         tags.Should().NotBeNull();
         tags!.Items.Should().HaveCount(2);
@@ -97,10 +105,10 @@ This is the documentation
     [TestMethod]
     public void Should_parse_tags_from_doc_metadata_section()
     {
-        var sut = new PostmanCollectionParser();
+        var sut = new PostmanFolderItemParser();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
-                new PostmanTestItem(new Item
+                CreateTestItem(new Item
                 {
                     Name = "Test 1",
                     Request = new Request
@@ -134,10 +142,10 @@ This is the documentation
     [TestMethod]
     public void Should_parse_tags_from_links_metadata_section()
     {
-        var sut = new PostmanCollectionParser();
+        var sut = new PostmanFolderItemParser();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
-                new PostmanTestItem(new Item
+                CreateTestItem(new Item
                 {
                     Name = "Test 1",
                     Request = new Request
@@ -175,10 +183,10 @@ This is the documentation
     [TestMethod]
     public void Should_parse_TestCaseLink_from_links_metadata_section()
     {
-        var sut = new PostmanCollectionParser();
+        var sut = new PostmanFolderItemParser();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
-                new PostmanTestItem(new Item
+                CreateTestItem(new Item
                 {
                     Name = "Test 1",
                     Request = new Request
@@ -204,10 +212,10 @@ This is the documentation
     [TestMethod]
     public void Should_parse_TestCaseLink_from_links_metadata_section_with_BranchTag_customization()
     {
-        var sut = new PostmanCollectionParser();
+        var sut = new PostmanFolderItemParser();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
-                new PostmanTestItem(new Item
+                CreateTestItem(new Item
                 {
                     Name = "Test 1",
                     Request = new Request

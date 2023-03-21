@@ -13,7 +13,7 @@ public class PostmanTestItemAnalyzerTests : TestBase
 {
     private ILocalTestCase GetLocalTestCase(PostmanTestItem testItem)
     {
-        var parser = new PostmanCollectionParser();
+        var parser = new PostmanFolderItemParser();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
                 testItem

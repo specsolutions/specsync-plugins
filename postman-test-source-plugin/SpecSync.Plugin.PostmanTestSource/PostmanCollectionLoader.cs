@@ -1,5 +1,4 @@
 ﻿using SpecSync.Projects;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using SpecSync.Plugin.PostmanTestSource.Postman;
@@ -10,11 +9,17 @@ namespace SpecSync.Plugin.PostmanTestSource;
 
 public class PostmanCollectionLoader : IBddProjectLoader
 {
+    private readonly PostmanMetadataParser _postmanMetadataParser;
     public bool CanProcess(BddProjectLoaderArgs args) => true;
 
     public string ServiceDescription => "Postman Collection Loader";
 
-    private bool IsTestItem(Item item, List<IPostmanItem> subPostmanItems)
+    public PostmanCollectionLoader(PostmanMetadataParser postmanMetadataParser = null)
+    {
+        _postmanMetadataParser = postmanMetadataParser ?? new PostmanMetadataParser();
+    }
+
+    private bool IsTestItem(Item item, List<IPostmanItem> subPostmanItems, PostmanItemMetadata metadata)
     {
         return item.Request != null;
     }
@@ -29,9 +34,10 @@ public class PostmanCollectionLoader : IBddProjectLoader
                 subPostmanItems.Add(ProcessItem(subItem, folderItems, itemPath));
             }
 
-        var isTestItem = IsTestItem(item, subPostmanItems);
+        var metadata = _postmanMetadataParser.ParseMetadata(item);
+        var isTestItem = IsTestItem(item, subPostmanItems, metadata);
         if (isTestItem)
-            return new PostmanTestItem(item);
+            return new PostmanTestItem(item, metadata);
         var folderItem = new PostmanFolderItem(itemPath, subPostmanItems, item);
         folderItems.Add(folderItem);
         return folderItem;

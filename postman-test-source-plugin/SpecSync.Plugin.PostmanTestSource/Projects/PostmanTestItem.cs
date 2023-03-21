@@ -2,19 +2,18 @@
 using System.Linq;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
-using SpecSync.Utils.Code;
 
 namespace SpecSync.Plugin.PostmanTestSource.Projects;
 
 public class PostmanTestItem : IPostmanItem, ILocalTestCase
 {
     private readonly Item _modelItem;
-    public EditableCodeFile DocumentationContent { get; set; }
-    public Dictionary<string, IMetadataValue> Metadata { get; } = new();
+    public PostmanItemMetadata Metadata { get; }
 
-    public PostmanTestItem(Item modelItem)
+    public PostmanTestItem(Item modelItem, PostmanItemMetadata metadata = null)
     {
         _modelItem = modelItem;
+        Metadata = metadata ?? new PostmanItemMetadata();
     }
 
     public IEnumerable<Item> GetRequestItems()
