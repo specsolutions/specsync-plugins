@@ -4,13 +4,12 @@ namespace SpecSync.Plugin.PostmanTestSource.Postman;
 
 public class PostmanApi
 {
-    private readonly PostmanApiConnection _connection;
+    private readonly IPostmanApiConnection _connection;
 
-    public PostmanApi(PostmanApiConnection connection)
+    public PostmanApi(IPostmanApiConnection connection)
     {
         _connection = connection;
     }
-
 
     public GetCollectionResponse GetCollection(string collectionId)
     {

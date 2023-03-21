@@ -55,4 +55,8 @@ RequestError: Error: getaddrinfo ENOTFOUND postman-echox.com
 ]]></system-err>
   </testsuite>
   <testsuite name="Server Events / POST Server events" id="e560e1b1-37eb-4f02-b1e4-7a31323bc678" timestamp="2023-03-20T15:06:17.799Z" tests="0" failures="0" errors="0" time="3.231"/>
+  <testsuite name="Helpers / Date and Time / Current UTC time" id="edd157d1-f2d7-4ab1-bca9-aafd839529df" timestamp="2023-03-20T15:06:17.799Z" tests="2" failures="0" errors="0" time="0.115">
+	  <testcase name="response is ok" time="0.115" classname="PostmanEcho"/>
+	  <testcase name="response time matches server response 'date' header" time="0.115" classname="PostmanEcho"/>
+  </testsuite>
 </testsuites>
