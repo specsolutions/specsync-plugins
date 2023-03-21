@@ -17,7 +17,7 @@ public class PostmanTestSourcePlugin : ISpecSyncPlugin
         args.ServiceRegistry.BddProjectLoaderProvider
             .Register(new PostmanCollectionLoader());
         args.ServiceRegistry.LocalTestCaseContainerParserProvider
-            .Register(new PostmanCollectionParser());
+            .Register(new PostmanFolderItemParser());
         args.ServiceRegistry.LocalTestCaseAnalyzerProvider
             .Register(new PostmanTestItemAnalyzer());
         args.ServiceRegistry.TestResultLoaderProvider
