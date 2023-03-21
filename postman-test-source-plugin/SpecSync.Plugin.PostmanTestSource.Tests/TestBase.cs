@@ -2,6 +2,7 @@ using Moq;
 using SpecSync.Analyzing;
 using SpecSync.Configuration;
 using SpecSync.Parsing;
+using SpecSync.Plugin.PostmanTestSource.Postman.Models;
 using SpecSync.Plugin.PostmanTestSource.Projects;
 using SpecSync.Projects;
 using SpecSync.Synchronization;
@@ -18,6 +19,7 @@ public abstract class TestBase
     protected Mock<ITagServices> TagServicesStub = new();
     protected SpecSyncConfiguration Configuration = new();
     protected readonly Mock<IBddProject> ProjectStub = new();
+    protected readonly PostmanMetadataParser _postmanMetadataParser = new();
 
     protected TestBase()
     {
@@ -27,6 +29,13 @@ public abstract class TestBase
         SyncSettingsStub.SetupGet(s => s.Configuration).Returns(Configuration);
         TestCaseSyncContextStub.SetupGet(c => c.SynchronizationContext).Returns(SynchronizationContextStub.Object);
     }
+
+    protected PostmanTestItem CreateTestItem(Item item)
+    {
+        var metadata = _postmanMetadataParser.ParseMetadata(item);
+        return new PostmanTestItem(item, metadata);
+    }
+
 
     protected LocalTestCaseContainerParseArgs CreateParserArgs(PostmanFolderItem folderCollection)
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SpecSync.Configuration;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Projects;
 using SpecSync.Synchronization;
@@ -50,16 +51,24 @@ public class PostmanFolderItemParser : ILocalTestCaseContainerParser
 
     private TestCaseLink ParseTestCaseLinkFromMetadata(PostmanItemMetadata metadata, LocalTestCaseContainerParseArgs args)
     {
-        var configuration = args.Configuration;
+        return GetTestCaseLinkFromMetadata(metadata, args.Configuration);
+    }
+
+    public static TestCaseLink GetTestCaseLinkFromMetadata(PostmanItemMetadata metadata, SpecSyncConfiguration configuration)
+    {
         if (configuration.Customizations.BranchTag.Enabled &&
             metadata.TryGetValue(configuration.Customizations.BranchTag.Prefix, out var branchTagValue))
         {
-            return new TestCaseLink(TestCaseIdentifier.CreateExisting(branchTagValue.StringValue), configuration.Synchronization.TestCaseTagPrefix);
+            return new TestCaseLink(TestCaseIdentifier.CreateExisting(branchTagValue.StringValue),
+                configuration.Synchronization.TestCaseTagPrefix);
         }
+
         if (metadata.TryGetValue(configuration.Synchronization.TestCaseTagPrefix, out var value))
         {
-            return new TestCaseLink(TestCaseIdentifier.CreateExisting(value.StringValue), configuration.Synchronization.TestCaseTagPrefix);
+            return new TestCaseLink(TestCaseIdentifier.CreateExisting(value.StringValue),
+                configuration.Synchronization.TestCaseTagPrefix);
         }
+
         return null;
     }
 }

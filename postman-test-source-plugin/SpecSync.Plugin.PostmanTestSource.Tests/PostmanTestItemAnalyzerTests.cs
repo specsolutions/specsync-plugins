@@ -37,7 +37,7 @@ public class PostmanTestItemAnalyzerTests : TestBase
     {
         var sut = new PostmanTestItemAnalyzer();
 
-        var testItem = new PostmanTestItem(new Item
+        var testItem = CreateTestItem(new Item
         {
             Name = "Test 1",
             Request = new Request
@@ -74,7 +74,7 @@ This is the documentation
     {
         var sut = new PostmanTestItemAnalyzer();
 
-        var testItem = new PostmanTestItem(new Item
+        var testItem = CreateTestItem(new Item
         {
             Name = "Test 1",
             Request = new Request
@@ -125,5 +125,98 @@ This is the documentation
         result.TestSteps[1].Text.ToString().Should().Be("response is ok");
         result.TestSteps[2].Keyword.Should().Be("pm.test ");
         result.TestSteps[2].Text.ToString().Should().Be("response body has json with request queries");
+    }
+
+    [TestMethod]
+    public void Should_parse_steps_from_requests_and_test_scripts_for_folder_item_tests()
+    {
+        var sut = new PostmanTestItemAnalyzer();
+
+        var testItem = CreateTestItem(new Item
+        {
+            Name = "Folder Test",
+            Description = @"# Documentation
+This is the documentation
+
+## Metadata
+
+- tc: 1234
+",
+            Items = new []
+            {
+                new Item
+                {
+                    Name = "Request 1",
+                    Request = new Request
+                    {
+                        Method = "GET",
+                        Url = new Url
+                        {
+                            Raw = "https://postman-echo.com/get?foo1=bar1&foo2=bar2"
+                        }
+                    },
+                    Events = new []
+                    {
+                        new Event
+                        {
+                            Listen = "test",
+                            Script = new Script
+                            {
+                                Type = "text/javascript",
+                                Exec = new []
+                                {
+                                    "pm.test(\"response is ok\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                }
+                            }
+                        }
+                    }
+                },
+                new Item
+                {
+                    Name = "Request 2",
+                    Request = new Request
+                    {
+                        Method = "POST",
+                        Url = new Url
+                        {
+                            Raw = "https://postman-echo.com/get?foo3=bar1&foo4=bar2"
+                        }
+                    },
+                    Events = new []
+                    {
+                        new Event
+                        {
+                            Listen = "test",
+                            Script = new Script
+                            {
+                                Type = "text/javascript",
+                                Exec = new []
+                                {
+                                    "pm.test(\"response body has json with request queries\", function () {",
+                                    "    pm.response.to.have.jsonBody('args.foo1', 'bar1')",
+                                    "        .and.have.jsonBody('args.foo2', 'bar2');",
+                                    "});"
+                                }
+                            }
+                        }
+                    }
+                },
+            }
+        }
+        );
+
+        var result = sut.Analyze(new LocalTestCaseAnalyzerArgs(GetLocalTestCase(testItem), TestCaseSyncContextStub.Object));
+        result.Should().NotBeNull();
+        result.TestSteps.Should().HaveCount(4);
+        result.TestSteps[0].Keyword.Should().Be("GET ");
+        result.TestSteps[0].Text.ToString().Should().Be("https://postman-echo.com/get?foo1=bar1&foo2=bar2");
+        result.TestSteps[1].Keyword.Should().Be("pm.test ");
+        result.TestSteps[1].Text.ToString().Should().Be("response is ok");
+        result.TestSteps[2].Keyword.Should().Be("POST ");
+        result.TestSteps[2].Text.ToString().Should().Be("https://postman-echo.com/get?foo3=bar1&foo4=bar2");
+        result.TestSteps[3].Keyword.Should().Be("pm.test ");
+        result.TestSteps[3].Text.ToString().Should().Be("response body has json with request queries");
     }
 }

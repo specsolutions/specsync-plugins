@@ -8,14 +8,6 @@ namespace SpecSync.Plugin.PostmanTestSource.Tests;
 [TestClass]
 public class PostmanCollectionParserTests : TestBase
 {
-    private readonly PostmanMetadataParser _postmanMetadataParser = new();
-
-    private PostmanTestItem CreateTestItem(Item item)
-    {
-        var metadata = _postmanMetadataParser.ParseMetadata(item);
-        return new PostmanTestItem(item, metadata);
-    }
-
     [TestMethod]
     public void Should_parse_tests_with_name_and_description()
     {

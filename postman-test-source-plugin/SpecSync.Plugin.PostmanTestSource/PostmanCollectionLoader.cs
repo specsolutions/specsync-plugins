@@ -19,23 +19,23 @@ public class PostmanCollectionLoader : IBddProjectLoader
         _postmanMetadataParser = postmanMetadataParser ?? new PostmanMetadataParser();
     }
 
-    private bool IsTestItem(Item item, List<IPostmanItem> subPostmanItems, PostmanItemMetadata metadata)
+    private bool IsTestItem(Item item, List<IPostmanItem> subPostmanItems, PostmanItemMetadata metadata, BddProjectLoaderArgs args)
     {
-        return item.Request != null;
+        return item.Request != null || PostmanFolderItemParser.GetTestCaseLinkFromMetadata(metadata, args.Configuration) != null;
     }
 
-    private IPostmanItem ProcessItem(Item item, List<PostmanFolderItem> folderItems, string rootName)
+    private IPostmanItem ProcessItem(Item item, List<PostmanFolderItem> folderItems, string rootName, BddProjectLoaderArgs args)
     {
         var itemPath = $"{rootName} / {item.Name}";
         var subPostmanItems = new List<IPostmanItem>();
         if (item.Items != null)
             foreach (var subItem in item.Items)
             {
-                subPostmanItems.Add(ProcessItem(subItem, folderItems, itemPath));
+                subPostmanItems.Add(ProcessItem(subItem, folderItems, itemPath, args));
             }
 
         var metadata = _postmanMetadataParser.ParseMetadata(item);
-        var isTestItem = IsTestItem(item, subPostmanItems, metadata);
+        var isTestItem = IsTestItem(item, subPostmanItems, metadata, args);
         if (isTestItem)
             return new PostmanTestItem(item, metadata);
         var folderItem = new PostmanFolderItem(itemPath, subPostmanItems, item);
@@ -43,11 +43,11 @@ public class PostmanCollectionLoader : IBddProjectLoader
         return folderItem;
     }
 
-    private void CreateRootItem(Collection collection, List<PostmanFolderItem> folderItems)
+    private void CreateRootItem(Collection collection, List<PostmanFolderItem> folderItems, BddProjectLoaderArgs args)
     {
         var rootName = collection.Info?.Name ?? "Collection";
         var testTree = new PostmanFolderItem(rootName, 
-            collection.Items.Select(i => ProcessItem(i, folderItems, rootName)).ToList(), collection);
+            collection.Items.Select(i => ProcessItem(i, folderItems, rootName, args)).ToList(), collection);
         folderItems.Insert(0, testTree);
     }
 
@@ -60,7 +60,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
         var folderItems = new List<PostmanFolderItem>();
 
-        CreateRootItem(collection, folderItems);
+        CreateRootItem(collection, folderItems, args);
 
         return new PostmanProject(folderItems, args.BaseFolder);
     }

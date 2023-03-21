@@ -20,5 +20,9 @@ public class PostmanCollectionLoaderTests : TestBase
         var postmanProject = project as PostmanProject;
         postmanProject.Should().NotBeNull();
         postmanProject!.FolderItems.Should().Contain(c => c.Tests.Any());
+        // there is at least one test that is not a direct request, but a folder
+        var rootFolderItem = postmanProject.FolderItems.First();
+        rootFolderItem.Tests.Should().HaveCountGreaterThanOrEqualTo(1);
+        rootFolderItem.Tests.Should().Contain(t => t.ModelItem.Request == null);
     }
 }
