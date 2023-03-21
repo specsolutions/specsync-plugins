@@ -53,7 +53,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
     public IBddProject LoadProject(BddProjectLoaderArgs args)
     {
-        var api = new PostmanApi(PostmanApiConnection.Create(args.Tracer));
+        var api = new PostmanApi(PostmanApiConnectionFactory.Instance.Create(args.Tracer));
 
         var collectionId = "2c49b8c3-0f1a-43f5-8a18-5d7f6c50c0ac";
         var collection = api.GetCollection(collectionId).Collection;

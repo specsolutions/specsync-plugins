@@ -82,4 +82,35 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         failingSimpleRequest.StepResults[0].ErrorMessage.Should().Be("Error: getaddrinfo ENOTFOUND postman-echox.com");
         failingSimpleRequest.StepResults[0].ErrorMessage.Should().NotBeNullOrEmpty();
     }
+
+    [TestMethod]
+    public void Should_crate_fake_merged_results_for_folder_tests()
+    {
+        var sut = new NewmanJUnitXmlResultLoader();
+
+        var result = sut.LoadTestResult(CreateArgs());
+
+        result.Should().NotBeNull();
+        var serverEventsTestDefinition = result.TestDefinitions.Should().Contain(td => td.Name == "Server Events").Subject;
+        var serverEventsResults = serverEventsTestDefinition.Results.First();
+        serverEventsResults.Outcome.Should().Be(TestOutcome.Failed);
+        serverEventsResults.StepResults.Should().HaveCount(2);
+        serverEventsResults.StepResults[0].Outcome.Should().Be(TestOutcome.Failed);
+        serverEventsResults.StepResults[1].Outcome.Should().Be(TestOutcome.Passed);
+        serverEventsResults.ErrorMessage.Should().NotBeNullOrEmpty();
+        serverEventsResults.ErrorStackTrace.Should().NotBeNullOrEmpty();
+    }
+
+    [TestMethod]
+    public void Should_crate_fake_merged_results_for_folder_tests_up_to_the_root()
+    {
+        var sut = new NewmanJUnitXmlResultLoader();
+
+        var result = sut.LoadTestResult(CreateArgs());
+
+        result.Should().NotBeNull();
+        result.TestDefinitions.Should().Contain(td => td.Name == "Helpers / Date and Time / Current UTC time");
+        result.TestDefinitions.Should().Contain(td => td.Name == "Helpers / Date and Time");
+        result.TestDefinitions.Should().Contain(td => td.Name == "Helpers");
+    }
 }

@@ -12,7 +12,7 @@ using SpecSync.Tracing;
 // ReSharper disable once CheckNamespace
 namespace SpecSync.Integration.RestApiServices;
 
-public abstract class RestApiConnection : IDisposable
+public abstract class RestApiConnection : IRestApiConnection
 {
     private readonly HttpClient _httpClient;
     protected readonly ISpecSyncTracer _tracer;

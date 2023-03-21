@@ -3,6 +3,7 @@ using SpecSync.PublishTestResults;
 using SpecSync.Tracing;
 using System.IO;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SpecSync.Utils;
@@ -88,9 +89,79 @@ public class NewmanJUnitXmlResultLoader : JUnitXmlTestCaseAsStepResultLoader
         return (JUnitTestSuites)serializer.Deserialize(reader);
     }
 
+    public override LocalTestRun LoadTestResult(TestResultLoaderProviderArgs args)
+    {
+        var result = BaseLoadTestResult(args);
+
+        var folderGroups = result.TestDefinitions
+                .Select(td => new
+                {
+                    TestDefinition = td, FolderName = GetFolderName(td.Name)
+                })
+                .Where(td => td.FolderName != null)
+                .GroupBy(td => td.FolderName, td => td.TestDefinition)
+                .ToList();
+
+        var addedGroups = folderGroups.ToArray();
+        do
+        {
+            addedGroups = addedGroups
+                .SelectMany(tdg => tdg.Select(td => new
+                {
+                    TestDefinition = td,
+                    FolderName = GetFolderName(tdg.Key)
+                }))
+                .Where(td => td.FolderName != null)
+                .GroupBy(td => td.FolderName, td => td.TestDefinition)
+                .ToArray();
+            folderGroups.AddRange(addedGroups);
+        } while (addedGroups.Any());
+
+        args.Tracer.TraceInformation($"Creating {folderGroups.Count} merged test results for the folders...");
+
+        foreach (var folderGroup in folderGroups)
+        {
+            var testDefinition = new TestRunTestDefinition
+            {
+                Name = folderGroup.Key,
+                ClassName = folderGroup.First().ClassName,
+                Results =
+                {
+                    MergeResults(folderGroup.SelectMany(td => td.Results).ToArray(), folderGroup.Key)
+                }
+            };
+            result.TestDefinitions.Add(testDefinition);
+        }
+
+        return result;
+    }
+
+    private string GetFolderName(string name)
+    {
+        var slashIndex = name.LastIndexOf('/');
+        if (slashIndex < 0)
+            return null;
+
+        return name.Substring(0, slashIndex).Trim();
+    }
+
+    private TestRunTestResult MergeResults(TestRunTestResult[] testRunTestResults, string testName)
+    {
+        var testRunTestResult = new TestRunTestResult
+        {
+            Name = testName,
+            Duration = TimeSpan.FromMilliseconds(testRunTestResults.Where(r => r.Duration != null).Sum(r => r.Duration.Value.TotalMilliseconds)),
+            StepResults = testRunTestResults.SelectMany(r => r.StepResults).ToList(),
+            Outcome = testRunTestResults.Where(r => r.Outcome != TestOutcome.NotExecuted).Min(r => r.Outcome),
+            ErrorMessage = testRunTestResults.FirstOrDefault(r => r.ErrorMessage != null)?.ErrorMessage,
+            ErrorStackTrace = testRunTestResults.FirstOrDefault(r => r.ErrorStackTrace != null)?.ErrorStackTrace,
+        };
+        return testRunTestResult;
+    }
+
     #region Allow overriding deseralization
 
-    public override LocalTestRun LoadTestResult(TestResultLoaderProviderArgs args)
+    private LocalTestRun BaseLoadTestResult(TestResultLoaderProviderArgs args)
     {
         var xmlContent = File.ReadAllText(args.TestResultFilePath).Trim();
         JUnitTestSuites testSuites;
