@@ -25,6 +25,8 @@ public class PostmanFolderItemParser : ILocalTestCaseContainerParser
             testItem.TestCaseLink = ParseTestCaseLinkFromMetadata(testItem.Metadata, args);
         }
 
+        var postmanProject = ((PostmanProject)args.BddProject);
+        folderItem.Updater = new PostmanTestUpdater(postmanProject.PostmanApi, postmanProject.CollectionId);
         return folderItem;
     }
 
