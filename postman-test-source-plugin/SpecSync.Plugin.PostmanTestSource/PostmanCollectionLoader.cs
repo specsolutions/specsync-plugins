@@ -21,7 +21,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
         _postmanMetadataParser = postmanMetadataParser ?? new PostmanMetadataParser();
     }
 
-    private bool IsTestItem(Item item, List<IPostmanItem> subPostmanItems, PostmanItemMetadata metadata, BddProjectLoaderArgs args)
+    private bool IsTestItem(Item item, PostmanItemMetadata metadata, BddProjectLoaderArgs args)
     {
         return item.Request != null || PostmanFolderItemParser.GetTestCaseLinkFromMetadata(metadata, args.Configuration) != null;
     }
@@ -29,6 +29,12 @@ public class PostmanCollectionLoader : IBddProjectLoader
     private IPostmanItem ProcessItem(Item item, List<PostmanFolderItem> folderItems, string rootName, BddProjectLoaderArgs args)
     {
         var itemPath = $"{rootName} / {item.Name}";
+        var metadata = _postmanMetadataParser.ParseMetadata(item);
+
+        var isTestItem = IsTestItem(item, metadata, args);
+        if (isTestItem)
+            return new PostmanTestItem(item, metadata);
+
         var subPostmanItems = new List<IPostmanItem>();
         if (item.Items != null)
             foreach (var subItem in item.Items)
@@ -36,10 +42,6 @@ public class PostmanCollectionLoader : IBddProjectLoader
                 subPostmanItems.Add(ProcessItem(subItem, folderItems, itemPath, args));
             }
 
-        var metadata = _postmanMetadataParser.ParseMetadata(item);
-        var isTestItem = IsTestItem(item, subPostmanItems, metadata, args);
-        if (isTestItem)
-            return new PostmanTestItem(item, metadata);
         var folderItem = new PostmanFolderItem(itemPath, subPostmanItems, item);
         folderItems.Add(folderItem);
         return folderItem;
