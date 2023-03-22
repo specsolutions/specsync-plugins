@@ -30,7 +30,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
     private IPostmanItem ProcessItem(Item item, List<PostmanFolderItem> folderItems, string rootName, BddProjectLoaderArgs args)
     {
-        var itemPath = $"{rootName} / {item.Name}";
+        var itemPath = $"{rootName}/{item.Name}";
         var metadata = _postmanMetadataParser.ParseMetadata(item);
 
         var isTestItem = IsTestItem(item, metadata, args);

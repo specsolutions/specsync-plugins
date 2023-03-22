@@ -2301,6 +2301,1020 @@
         "name": "Utilities",
         "item": [
           {
+            "name": "Date and Time",
+            "item": [
+              {
+                "name": "Current UTC time",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response time matches server response 'date' header\", function () {",
+                        "    pm.expect(pm.response.text()).to.eql(pm.response.headers.get('date'))",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "edd157d1-f2d7-4ab1-bca9-aafd839529df",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/now",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "now"
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/now` to return the current timestamp as a UTC string.\n\n```\nFri, 04 Nov 2016 09:00:46 GMT\n```"
+                },
+                "response": [
+                  {
+                    "id": "32b3f2dd-4c7f-44c6-9667-08e29cbc1080",
+                    "name": "time as text",
+                    "originalRequest": {
+                      "method": "GET",
+                      "header": [],
+                      "body": {
+                        "mode": "formdata",
+                        "formdata": []
+                      },
+                      "url": {
+                        "raw": "https://postman-echo.com/time/now",
+                        "protocol": "https",
+                        "host": [
+                          "postman-echo",
+                          "com"
+                        ],
+                        "path": [
+                          "time",
+                          "now"
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "html",
+                    "header": [
+                      {
+                        "key": "Access-Control-Allow-Credentials",
+                        "value": "",
+                        "name": "Access-Control-Allow-Credentials",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Allow-Headers",
+                        "value": "",
+                        "name": "Access-Control-Allow-Headers",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Allow-Methods",
+                        "value": "",
+                        "name": "Access-Control-Allow-Methods",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Allow-Origin",
+                        "value": "",
+                        "name": "Access-Control-Allow-Origin",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Expose-Headers",
+                        "value": "",
+                        "name": "Access-Control-Expose-Headers",
+                        "description": ""
+                      },
+                      {
+                        "key": "Connection",
+                        "value": "keep-alive",
+                        "name": "Connection",
+                        "description": ""
+                      },
+                      {
+                        "key": "Content-Encoding",
+                        "value": "gzip",
+                        "name": "Content-Encoding",
+                        "description": ""
+                      },
+                      {
+                        "key": "Content-Length",
+                        "value": "49",
+                        "name": "Content-Length",
+                        "description": ""
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "text/html; charset=utf-8",
+                        "name": "Content-Type",
+                        "description": ""
+                      },
+                      {
+                        "key": "Date",
+                        "value": "Wed, 11 Jan 2017 10:27:12 GMT",
+                        "name": "Date",
+                        "description": ""
+                      },
+                      {
+                        "key": "ETag",
+                        "value": "W/\"1d-2jJhkzratfVX9VZ0+raHbw\"",
+                        "name": "ETag",
+                        "description": ""
+                      },
+                      {
+                        "key": "Server",
+                        "value": "nginx/1.10.1",
+                        "name": "Server",
+                        "description": ""
+                      },
+                      {
+                        "key": "Vary",
+                        "value": "Accept-Encoding",
+                        "name": "Vary",
+                        "description": ""
+                      },
+                      {
+                        "key": "set-cookie",
+                        "value": "sails.sid=s%3A2lT3TO7qS1tadeSAp4axl-NcXG9CV6Rf.HGqLY%2FlKEKY4fgCLePaAZs3tCHp%2Bglf7ZOJYlonGeig; Path=/; HttpOnly",
+                        "name": "set-cookie",
+                        "description": ""
+                      }
+                    ],
+                    "cookie": [
+                      {
+                        "expires": "Mon Jan 18 2038 21:44:07 GMT+0000 (Coordinated Universal Time)",
+                        "httpOnly": true,
+                        "domain": "postman-echo.com",
+                        "path": "/",
+                        "secure": false,
+                        "value": "s%3A2lT3TO7qS1tadeSAp4axl-NcXG9CV6Rf.HGqLY%2FlKEKY4fgCLePaAZs3tCHp%2Bglf7ZOJYlonGeig",
+                        "key": "sails.sid"
+                      }
+                    ],
+                    "responseTime": "749",
+                    "body": "Wed, 11 Jan 2017 10:27:12 GMT"
+                  }
+                ]
+              },
+              {
+                "name": "Timestamp validity",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should say whether request query time is valid\", function () {",
+                        "    pm.response.to.have.jsonBody('valid', true);",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "c38d7c5f-7442-4c54-9463-abd9e9ef31fd",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/valid?timestamp=2016-10-10",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "valid"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/valid` to determine the validity of the timestamp, (current by default).\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a valid key to indicate the result. The response code is `200`.\n\n```\n{\n  valid: true/false\n}\n```"
+                },
+                "response": [
+                  {
+                    "id": "29860f58-96d3-404d-873f-b81083fab142",
+                    "name": "Invalid Timestamp",
+                    "originalRequest": {
+                      "method": "GET",
+                      "header": [],
+                      "body": {
+                        "mode": "formdata",
+                        "formdata": []
+                      },
+                      "url": {
+                        "raw": "https://postman-echo.com/time/valid?timestamp=2016-10-10",
+                        "protocol": "https",
+                        "host": [
+                          "postman-echo",
+                          "com"
+                        ],
+                        "path": [
+                          "time",
+                          "valid"
+                        ],
+                        "query": [
+                          {
+                            "key": "timestamp",
+                            "value": "2016-10-10"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                      {
+                        "key": "Access-Control-Allow-Credentials",
+                        "value": "",
+                        "name": "Access-Control-Allow-Credentials",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Allow-Headers",
+                        "value": "",
+                        "name": "Access-Control-Allow-Headers",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Allow-Methods",
+                        "value": "",
+                        "name": "Access-Control-Allow-Methods",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Allow-Origin",
+                        "value": "",
+                        "name": "Access-Control-Allow-Origin",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Expose-Headers",
+                        "value": "",
+                        "name": "Access-Control-Expose-Headers",
+                        "description": ""
+                      },
+                      {
+                        "key": "Connection",
+                        "value": "keep-alive",
+                        "name": "Connection",
+                        "description": ""
+                      },
+                      {
+                        "key": "Content-Length",
+                        "value": "15",
+                        "name": "Content-Length",
+                        "description": ""
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json; charset=utf-8",
+                        "name": "Content-Type",
+                        "description": ""
+                      },
+                      {
+                        "key": "Date",
+                        "value": "Wed, 11 Jan 2017 10:27:53 GMT",
+                        "name": "Date",
+                        "description": ""
+                      },
+                      {
+                        "key": "ETag",
+                        "value": "W/\"f-/i9mO/upK91ZtL0BkKFGtw\"",
+                        "name": "ETag",
+                        "description": ""
+                      },
+                      {
+                        "key": "Server",
+                        "value": "nginx/1.10.1",
+                        "name": "Server",
+                        "description": ""
+                      },
+                      {
+                        "key": "Vary",
+                        "value": "Accept-Encoding",
+                        "name": "Vary",
+                        "description": ""
+                      },
+                      {
+                        "key": "set-cookie",
+                        "value": "sails.sid=s%3ATNJaNxi2QCv4RPBb64sIZxQGN1h6IP3g.9sQVAijlsLsh0r7LgffxXa9k2we6UumPEVv%2Bsk4woLI; Path=/; HttpOnly",
+                        "name": "set-cookie",
+                        "description": ""
+                      }
+                    ],
+                    "cookie": [
+                      {
+                        "expires": "Mon Jan 18 2038 21:44:07 GMT+0000 (Coordinated Universal Time)",
+                        "httpOnly": true,
+                        "domain": "postman-echo.com",
+                        "path": "/",
+                        "secure": false,
+                        "value": "s%3ATNJaNxi2QCv4RPBb64sIZxQGN1h6IP3g.9sQVAijlsLsh0r7LgffxXa9k2we6UumPEVv%2Bsk4woLI",
+                        "key": "sails.sid"
+                      }
+                    ],
+                    "responseTime": "264",
+                    "body": "{\"valid\":false}"
+                  },
+                  {
+                    "id": "51614759-ab48-4a77-9b9f-ca10da62156c",
+                    "name": "Valid Timestamp",
+                    "originalRequest": {
+                      "method": "GET",
+                      "header": [],
+                      "body": {
+                        "mode": "formdata",
+                        "formdata": []
+                      },
+                      "url": {
+                        "raw": "https://postman-echo.com/time/valid?timestamp=2016-10-10",
+                        "protocol": "https",
+                        "host": [
+                          "postman-echo",
+                          "com"
+                        ],
+                        "path": [
+                          "time",
+                          "valid"
+                        ],
+                        "query": [
+                          {
+                            "key": "timestamp",
+                            "value": "2016-10-10"
+                          }
+                        ]
+                      }
+                    },
+                    "status": "OK",
+                    "code": 200,
+                    "_postman_previewlanguage": "json",
+                    "header": [
+                      {
+                        "key": "Access-Control-Allow-Credentials",
+                        "value": "",
+                        "name": "Access-Control-Allow-Credentials",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Allow-Headers",
+                        "value": "",
+                        "name": "Access-Control-Allow-Headers",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Allow-Methods",
+                        "value": "",
+                        "name": "Access-Control-Allow-Methods",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Allow-Origin",
+                        "value": "",
+                        "name": "Access-Control-Allow-Origin",
+                        "description": ""
+                      },
+                      {
+                        "key": "Access-Control-Expose-Headers",
+                        "value": "",
+                        "name": "Access-Control-Expose-Headers",
+                        "description": ""
+                      },
+                      {
+                        "key": "Connection",
+                        "value": "keep-alive",
+                        "name": "Connection",
+                        "description": ""
+                      },
+                      {
+                        "key": "Content-Length",
+                        "value": "14",
+                        "name": "Content-Length",
+                        "description": ""
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json; charset=utf-8",
+                        "name": "Content-Type",
+                        "description": ""
+                      },
+                      {
+                        "key": "Date",
+                        "value": "Wed, 11 Jan 2017 10:27:33 GMT",
+                        "name": "Date",
+                        "description": ""
+                      },
+                      {
+                        "key": "ETag",
+                        "value": "W/\"e-OYN7L87J1Ba9oy5mJE2kcA\"",
+                        "name": "ETag",
+                        "description": ""
+                      },
+                      {
+                        "key": "Server",
+                        "value": "nginx/1.10.1",
+                        "name": "Server",
+                        "description": ""
+                      },
+                      {
+                        "key": "Vary",
+                        "value": "Accept-Encoding",
+                        "name": "Vary",
+                        "description": ""
+                      },
+                      {
+                        "key": "set-cookie",
+                        "value": "sails.sid=s%3AdDGZPe1CZw4mAxGVCHr6RfCADCAwquXa.F5MEm5LJad30JHrSwGGoyWLn2OAAGdvUM7kDtzNfdFI; Path=/; HttpOnly",
+                        "name": "set-cookie",
+                        "description": ""
+                      }
+                    ],
+                    "cookie": [
+                      {
+                        "expires": "Mon Jan 18 2038 21:44:07 GMT+0000 (Coordinated Universal Time)",
+                        "httpOnly": true,
+                        "domain": "postman-echo.com",
+                        "path": "/",
+                        "secure": false,
+                        "value": "s%3AdDGZPe1CZw4mAxGVCHr6RfCADCAwquXa.F5MEm5LJad30JHrSwGGoyWLn2OAAGdvUM7kDtzNfdFI",
+                        "key": "sails.sid"
+                      }
+                    ],
+                    "responseTime": "493",
+                    "body": "{\"valid\":true}"
+                  }
+                ]
+              },
+              {
+                "name": "Format timestamp",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should say whether request query time is valid\", function () {",
+                        "    pm.response.to.have.jsonBody('format', '20');",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "db61cd62-1dc1-4389-abe3-9509051bfc13",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/format?timestamp=2016-10-10&format=mm",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "format"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      },
+                      {
+                        "key": "format",
+                        "value": "mm"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/format` to convert the timestamp to any desired valid format.\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `format` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  format: \"formatted-timestamp\"\n}\n```"
+                },
+                "response": []
+              },
+              {
+                "name": "Extract timestamp unit",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should say whether request query unit is valid\", function () {",
+                        "    pm.response.to.have.jsonBody('unit', 1);",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "2fb9ace9-c8eb-4983-b7e5-1013dd866791",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/unit?timestamp=2016-10-10&unit=day",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "unit"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      },
+                      {
+                        "key": "unit",
+                        "value": "day"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/unit` to extract the specified timestamp unit (as provided in the `unit` query parameter). The default unit returned is the `year`.\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `unit` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  unit: \"extracted-timestamp-unit\"\n}\n```"
+                },
+                "response": []
+              },
+              {
+                "name": "Time addition",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should return the added years\", function () {",
+                        "    pm.response.to.have.jsonBody('sum', 'Sat Oct 10 2116 00:00:00 GMT+0000');",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "3b9d29f4-c548-4506-8efb-9175df42e5a0",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/add?timestamp=2016-10-10&years=100",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "add"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      },
+                      {
+                        "key": "years",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/add` to add units of time to the specified / current timestamp (as provided in the `years`, `months`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds` query parameters).\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `sum` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  sum: \"sum of (provided / current) and provided timestamps\"\n}\n```"
+                },
+                "response": []
+              },
+              {
+                "name": "Time subtraction",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should return the subtracted years\", function () {",
+                        "    pm.response.to.have.jsonBody('difference', 'Mon Oct 10 1966 00:00:00 GMT+0000');",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "bab42d27-62b0-4469-b7ba-ac4efa337671",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/subtract?timestamp=2016-10-10&years=50",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "subtract"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      },
+                      {
+                        "key": "years",
+                        "value": "50"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/subtract` to subtract units of time from the specified / current timestamp (as provided in the `years`, `months`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds` query parameters).\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `difference` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  difference: \"difference between (provided / current) and provided timestamps\"\n}\n```"
+                },
+                "response": []
+              },
+              {
+                "name": "Start of time",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should return the beginning of month\", function () {",
+                        "    pm.response.to.have.jsonBody('start', 'Sat Oct 01 2016 00:00:00 GMT+0000');",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "bd5e5f25-325d-40fd-9c1e-3a778f899cc4",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/start?timestamp=2016-10-10&unit=month",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "start"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      },
+                      {
+                        "key": "unit",
+                        "value": "month"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/start` to return a relative timstamp in the past from the specified / current timestamp (as provided in the `unit` query parameter).\n\nFor instance, if the `unit` has been specified as `month`, the returned timestamp would indicate the beginning of the current month. Similar results are returned for other units of time, like: `years`, `months`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds`\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `start` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  start: \"A timestamp from the past, depending on the `unit` specified\"\n}\n```"
+                },
+                "response": []
+              },
+              {
+                "name": "Object representation",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should return the date components\", function () {",
+                        "    pm.expect(pm.response.json()).to.eql({",
+                        "        \"years\": 2016,",
+                        "        \"months\": 9,",
+                        "        \"date\": 10,",
+                        "        ",
+                        "        \"hours\": 0,",
+                        "        \"minutes\": 0,",
+                        "        \"seconds\": 0,",
+                        "        \"milliseconds\": 0",
+                        "    });",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "279ffaa0-6543-4123-873e-250d0ae34905",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/object?timestamp=2016-10-10",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "object"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/object` to return the current / provided timestamp as a JSON object.\n\nFor instance, if the `unit` has been specified as `month`, the returned timestamp would indicate the beginning of the current month. Similar results are returned for other units of time, like: `years`, `months`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds`\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  years: 2016,\n  months: 10,\n  days: 10,\n  hours: 23,\n  minutes: 34,\n  seconds: 20,\n  milliseconds: 980\n}\n```"
+                },
+                "response": []
+              },
+              {
+                "name": "Before comparisons",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should say timestamp is before target\", function () {",
+                        "    pm.response.to.have.jsonBody('before', true);",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "cbf7767a-a489-4c1a-9362-d459264be262",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/before?timestamp=2016-10-10&target=2017-10-10",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "before"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      },
+                      {
+                        "key": "target",
+                        "value": "2017-10-10"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/before` to check if the provided timestamps is before a comparison `target` (query parameter).\n\nThis endpoint accepts `timestamp`, `locale`, `format`, `strict`, and `target` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `before` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  before: true/false\n}\n```"
+                },
+                "response": []
+              },
+              {
+                "name": "After comparisons",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should say timestamp is not after target\", function () {",
+                        "    pm.response.to.have.jsonBody('after', false);",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "f6c8f915-0111-43e9-bbe4-e2870cd1fdfc",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/after?timestamp=2016-10-10&target=2017-10-10",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "after"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      },
+                      {
+                        "key": "target",
+                        "value": "2017-10-10"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/after` to check if the provided timestamps is after a comparison `target` (query parameter).\n\nThis endpoint accepts `timestamp`, `locale`, `format`, `strict`, and `target` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `after` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  after: true/false\n}\n```"
+                },
+                "response": []
+              },
+              {
+                "name": "Between timestamps",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should say timestamp is not between start and end\", function () {",
+                        "    pm.response.to.have.jsonBody('between', false);",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "8d10d6fe-456d-445b-a1f3-adab47a19bdc",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/between?timestamp=2016-10-10&start=2017-10-10&end=2019-10-10",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "between"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      },
+                      {
+                        "key": "start",
+                        "value": "2017-10-10"
+                      },
+                      {
+                        "key": "end",
+                        "value": "2019-10-10"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/between` to check if the provided timestamp is between a range specified by the `start` and `end` query parameters. A resolution limit can also be specified by the `unit` query parameter.\n\nFor instance, for a resolution `unit` of `month`,\n`2016-10-05` does lie between `2016-11-02` and `2016-09-01`.\n\nThis endpoint also accepts `timestamp`, `locale`, `format`, `strict`, and `target` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `between` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  between: true/false\n}\n```"
+                },
+                "response": []
+              },
+              {
+                "name": "Leap year check",
+                "event": [
+                  {
+                    "listen": "test",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "pm.test(\"response is ok\", function () {",
+                        "    pm.response.to.have.status(200);",
+                        "});",
+                        "",
+                        "pm.test(\"response json should say timestamp is within leap year\", function () {",
+                        "    pm.response.to.have.jsonBody('leap', true);",
+                        "});"
+                      ]
+                    }
+                  }
+                ],
+                "id": "03598329-4d5b-41e7-b2c3-560cf90bfbb7",
+                "request": {
+                  "method": "GET",
+                  "header": [],
+                  "body": {
+                    "mode": "formdata",
+                    "formdata": []
+                  },
+                  "url": {
+                    "raw": "https://postman-echo.com/time/leap?timestamp=2016-10-10",
+                    "protocol": "https",
+                    "host": [
+                      "postman-echo",
+                      "com"
+                    ],
+                    "path": [
+                      "time",
+                      "leap"
+                    ],
+                    "query": [
+                      {
+                        "key": "timestamp",
+                        "value": "2016-10-10"
+                      }
+                    ]
+                  },
+                  "description": "A simple `GET` request to `/time/leap` to check if the provided/current timestamp belongs to a leap year.\n\nThis endpoint also accepts `timestamp`, `locale`, `format`, `strict`, and `target` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `leap` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  leap: true/false\n}\n```"
+                },
+                "response": []
+              }
+            ],
+            "id": "13ec67a6-43dd-436b-9148-d88313fc38a6",
+            "description": "A set of `/time/*` mounted requests to perform date-time manipulations, among other operations.\n"
+          },
+          {
             "name": "Response Status Code",
             "event": [
               {
@@ -2912,1020 +3926,6 @@
           }
         ],
         "id": "e358ba8b-4ac2-432b-a54f-60402a08845d"
-      },
-      {
-        "name": "Utilities / Date and Time",
-        "item": [
-          {
-            "name": "Current UTC time",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response time matches server response 'date' header\", function () {",
-                    "    pm.expect(pm.response.text()).to.eql(pm.response.headers.get('date'))",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "edd157d1-f2d7-4ab1-bca9-aafd839529df",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/now",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "now"
-                ]
-              },
-              "description": "A simple `GET` request to `/time/now` to return the current timestamp as a UTC string.\n\n```\nFri, 04 Nov 2016 09:00:46 GMT\n```"
-            },
-            "response": [
-              {
-                "id": "32b3f2dd-4c7f-44c6-9667-08e29cbc1080",
-                "name": "time as text",
-                "originalRequest": {
-                  "method": "GET",
-                  "header": [],
-                  "body": {
-                    "mode": "formdata",
-                    "formdata": []
-                  },
-                  "url": {
-                    "raw": "https://postman-echo.com/time/now",
-                    "protocol": "https",
-                    "host": [
-                      "postman-echo",
-                      "com"
-                    ],
-                    "path": [
-                      "time",
-                      "now"
-                    ]
-                  }
-                },
-                "status": "OK",
-                "code": 200,
-                "_postman_previewlanguage": "html",
-                "header": [
-                  {
-                    "key": "Access-Control-Allow-Credentials",
-                    "value": "",
-                    "name": "Access-Control-Allow-Credentials",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Allow-Headers",
-                    "value": "",
-                    "name": "Access-Control-Allow-Headers",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Allow-Methods",
-                    "value": "",
-                    "name": "Access-Control-Allow-Methods",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Allow-Origin",
-                    "value": "",
-                    "name": "Access-Control-Allow-Origin",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Expose-Headers",
-                    "value": "",
-                    "name": "Access-Control-Expose-Headers",
-                    "description": ""
-                  },
-                  {
-                    "key": "Connection",
-                    "value": "keep-alive",
-                    "name": "Connection",
-                    "description": ""
-                  },
-                  {
-                    "key": "Content-Encoding",
-                    "value": "gzip",
-                    "name": "Content-Encoding",
-                    "description": ""
-                  },
-                  {
-                    "key": "Content-Length",
-                    "value": "49",
-                    "name": "Content-Length",
-                    "description": ""
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "text/html; charset=utf-8",
-                    "name": "Content-Type",
-                    "description": ""
-                  },
-                  {
-                    "key": "Date",
-                    "value": "Wed, 11 Jan 2017 10:27:12 GMT",
-                    "name": "Date",
-                    "description": ""
-                  },
-                  {
-                    "key": "ETag",
-                    "value": "W/\"1d-2jJhkzratfVX9VZ0+raHbw\"",
-                    "name": "ETag",
-                    "description": ""
-                  },
-                  {
-                    "key": "Server",
-                    "value": "nginx/1.10.1",
-                    "name": "Server",
-                    "description": ""
-                  },
-                  {
-                    "key": "Vary",
-                    "value": "Accept-Encoding",
-                    "name": "Vary",
-                    "description": ""
-                  },
-                  {
-                    "key": "set-cookie",
-                    "value": "sails.sid=s%3A2lT3TO7qS1tadeSAp4axl-NcXG9CV6Rf.HGqLY%2FlKEKY4fgCLePaAZs3tCHp%2Bglf7ZOJYlonGeig; Path=/; HttpOnly",
-                    "name": "set-cookie",
-                    "description": ""
-                  }
-                ],
-                "cookie": [
-                  {
-                    "expires": "Mon Jan 18 2038 21:44:07 GMT+0000 (Coordinated Universal Time)",
-                    "httpOnly": true,
-                    "domain": "postman-echo.com",
-                    "path": "/",
-                    "secure": false,
-                    "value": "s%3A2lT3TO7qS1tadeSAp4axl-NcXG9CV6Rf.HGqLY%2FlKEKY4fgCLePaAZs3tCHp%2Bglf7ZOJYlonGeig",
-                    "key": "sails.sid"
-                  }
-                ],
-                "responseTime": "749",
-                "body": "Wed, 11 Jan 2017 10:27:12 GMT"
-              }
-            ]
-          },
-          {
-            "name": "Timestamp validity",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should say whether request query time is valid\", function () {",
-                    "    pm.response.to.have.jsonBody('valid', true);",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "c38d7c5f-7442-4c54-9463-abd9e9ef31fd",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/valid?timestamp=2016-10-10",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "valid"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/valid` to determine the validity of the timestamp, (current by default).\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a valid key to indicate the result. The response code is `200`.\n\n```\n{\n  valid: true/false\n}\n```"
-            },
-            "response": [
-              {
-                "id": "29860f58-96d3-404d-873f-b81083fab142",
-                "name": "Invalid Timestamp",
-                "originalRequest": {
-                  "method": "GET",
-                  "header": [],
-                  "body": {
-                    "mode": "formdata",
-                    "formdata": []
-                  },
-                  "url": {
-                    "raw": "https://postman-echo.com/time/valid?timestamp=2016-10-10",
-                    "protocol": "https",
-                    "host": [
-                      "postman-echo",
-                      "com"
-                    ],
-                    "path": [
-                      "time",
-                      "valid"
-                    ],
-                    "query": [
-                      {
-                        "key": "timestamp",
-                        "value": "2016-10-10"
-                      }
-                    ]
-                  }
-                },
-                "status": "OK",
-                "code": 200,
-                "_postman_previewlanguage": "json",
-                "header": [
-                  {
-                    "key": "Access-Control-Allow-Credentials",
-                    "value": "",
-                    "name": "Access-Control-Allow-Credentials",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Allow-Headers",
-                    "value": "",
-                    "name": "Access-Control-Allow-Headers",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Allow-Methods",
-                    "value": "",
-                    "name": "Access-Control-Allow-Methods",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Allow-Origin",
-                    "value": "",
-                    "name": "Access-Control-Allow-Origin",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Expose-Headers",
-                    "value": "",
-                    "name": "Access-Control-Expose-Headers",
-                    "description": ""
-                  },
-                  {
-                    "key": "Connection",
-                    "value": "keep-alive",
-                    "name": "Connection",
-                    "description": ""
-                  },
-                  {
-                    "key": "Content-Length",
-                    "value": "15",
-                    "name": "Content-Length",
-                    "description": ""
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json; charset=utf-8",
-                    "name": "Content-Type",
-                    "description": ""
-                  },
-                  {
-                    "key": "Date",
-                    "value": "Wed, 11 Jan 2017 10:27:53 GMT",
-                    "name": "Date",
-                    "description": ""
-                  },
-                  {
-                    "key": "ETag",
-                    "value": "W/\"f-/i9mO/upK91ZtL0BkKFGtw\"",
-                    "name": "ETag",
-                    "description": ""
-                  },
-                  {
-                    "key": "Server",
-                    "value": "nginx/1.10.1",
-                    "name": "Server",
-                    "description": ""
-                  },
-                  {
-                    "key": "Vary",
-                    "value": "Accept-Encoding",
-                    "name": "Vary",
-                    "description": ""
-                  },
-                  {
-                    "key": "set-cookie",
-                    "value": "sails.sid=s%3ATNJaNxi2QCv4RPBb64sIZxQGN1h6IP3g.9sQVAijlsLsh0r7LgffxXa9k2we6UumPEVv%2Bsk4woLI; Path=/; HttpOnly",
-                    "name": "set-cookie",
-                    "description": ""
-                  }
-                ],
-                "cookie": [
-                  {
-                    "expires": "Mon Jan 18 2038 21:44:07 GMT+0000 (Coordinated Universal Time)",
-                    "httpOnly": true,
-                    "domain": "postman-echo.com",
-                    "path": "/",
-                    "secure": false,
-                    "value": "s%3ATNJaNxi2QCv4RPBb64sIZxQGN1h6IP3g.9sQVAijlsLsh0r7LgffxXa9k2we6UumPEVv%2Bsk4woLI",
-                    "key": "sails.sid"
-                  }
-                ],
-                "responseTime": "264",
-                "body": "{\"valid\":false}"
-              },
-              {
-                "id": "51614759-ab48-4a77-9b9f-ca10da62156c",
-                "name": "Valid Timestamp",
-                "originalRequest": {
-                  "method": "GET",
-                  "header": [],
-                  "body": {
-                    "mode": "formdata",
-                    "formdata": []
-                  },
-                  "url": {
-                    "raw": "https://postman-echo.com/time/valid?timestamp=2016-10-10",
-                    "protocol": "https",
-                    "host": [
-                      "postman-echo",
-                      "com"
-                    ],
-                    "path": [
-                      "time",
-                      "valid"
-                    ],
-                    "query": [
-                      {
-                        "key": "timestamp",
-                        "value": "2016-10-10"
-                      }
-                    ]
-                  }
-                },
-                "status": "OK",
-                "code": 200,
-                "_postman_previewlanguage": "json",
-                "header": [
-                  {
-                    "key": "Access-Control-Allow-Credentials",
-                    "value": "",
-                    "name": "Access-Control-Allow-Credentials",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Allow-Headers",
-                    "value": "",
-                    "name": "Access-Control-Allow-Headers",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Allow-Methods",
-                    "value": "",
-                    "name": "Access-Control-Allow-Methods",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Allow-Origin",
-                    "value": "",
-                    "name": "Access-Control-Allow-Origin",
-                    "description": ""
-                  },
-                  {
-                    "key": "Access-Control-Expose-Headers",
-                    "value": "",
-                    "name": "Access-Control-Expose-Headers",
-                    "description": ""
-                  },
-                  {
-                    "key": "Connection",
-                    "value": "keep-alive",
-                    "name": "Connection",
-                    "description": ""
-                  },
-                  {
-                    "key": "Content-Length",
-                    "value": "14",
-                    "name": "Content-Length",
-                    "description": ""
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json; charset=utf-8",
-                    "name": "Content-Type",
-                    "description": ""
-                  },
-                  {
-                    "key": "Date",
-                    "value": "Wed, 11 Jan 2017 10:27:33 GMT",
-                    "name": "Date",
-                    "description": ""
-                  },
-                  {
-                    "key": "ETag",
-                    "value": "W/\"e-OYN7L87J1Ba9oy5mJE2kcA\"",
-                    "name": "ETag",
-                    "description": ""
-                  },
-                  {
-                    "key": "Server",
-                    "value": "nginx/1.10.1",
-                    "name": "Server",
-                    "description": ""
-                  },
-                  {
-                    "key": "Vary",
-                    "value": "Accept-Encoding",
-                    "name": "Vary",
-                    "description": ""
-                  },
-                  {
-                    "key": "set-cookie",
-                    "value": "sails.sid=s%3AdDGZPe1CZw4mAxGVCHr6RfCADCAwquXa.F5MEm5LJad30JHrSwGGoyWLn2OAAGdvUM7kDtzNfdFI; Path=/; HttpOnly",
-                    "name": "set-cookie",
-                    "description": ""
-                  }
-                ],
-                "cookie": [
-                  {
-                    "expires": "Mon Jan 18 2038 21:44:07 GMT+0000 (Coordinated Universal Time)",
-                    "httpOnly": true,
-                    "domain": "postman-echo.com",
-                    "path": "/",
-                    "secure": false,
-                    "value": "s%3AdDGZPe1CZw4mAxGVCHr6RfCADCAwquXa.F5MEm5LJad30JHrSwGGoyWLn2OAAGdvUM7kDtzNfdFI",
-                    "key": "sails.sid"
-                  }
-                ],
-                "responseTime": "493",
-                "body": "{\"valid\":true}"
-              }
-            ]
-          },
-          {
-            "name": "Format timestamp",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should say whether request query time is valid\", function () {",
-                    "    pm.response.to.have.jsonBody('format', '20');",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "db61cd62-1dc1-4389-abe3-9509051bfc13",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/format?timestamp=2016-10-10&format=mm",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "format"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  },
-                  {
-                    "key": "format",
-                    "value": "mm"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/format` to convert the timestamp to any desired valid format.\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `format` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  format: \"formatted-timestamp\"\n}\n```"
-            },
-            "response": []
-          },
-          {
-            "name": "Extract timestamp unit",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should say whether request query unit is valid\", function () {",
-                    "    pm.response.to.have.jsonBody('unit', 1);",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "2fb9ace9-c8eb-4983-b7e5-1013dd866791",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/unit?timestamp=2016-10-10&unit=day",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "unit"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  },
-                  {
-                    "key": "unit",
-                    "value": "day"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/unit` to extract the specified timestamp unit (as provided in the `unit` query parameter). The default unit returned is the `year`.\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `unit` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  unit: \"extracted-timestamp-unit\"\n}\n```"
-            },
-            "response": []
-          },
-          {
-            "name": "Time addition",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should return the added years\", function () {",
-                    "    pm.response.to.have.jsonBody('sum', 'Sat Oct 10 2116 00:00:00 GMT+0000');",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "3b9d29f4-c548-4506-8efb-9175df42e5a0",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/add?timestamp=2016-10-10&years=100",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "add"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  },
-                  {
-                    "key": "years",
-                    "value": "100"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/add` to add units of time to the specified / current timestamp (as provided in the `years`, `months`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds` query parameters).\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `sum` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  sum: \"sum of (provided / current) and provided timestamps\"\n}\n```"
-            },
-            "response": []
-          },
-          {
-            "name": "Time subtraction",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should return the subtracted years\", function () {",
-                    "    pm.response.to.have.jsonBody('difference', 'Mon Oct 10 1966 00:00:00 GMT+0000');",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "bab42d27-62b0-4469-b7ba-ac4efa337671",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/subtract?timestamp=2016-10-10&years=50",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "subtract"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  },
-                  {
-                    "key": "years",
-                    "value": "50"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/subtract` to subtract units of time from the specified / current timestamp (as provided in the `years`, `months`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds` query parameters).\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `difference` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  difference: \"difference between (provided / current) and provided timestamps\"\n}\n```"
-            },
-            "response": []
-          },
-          {
-            "name": "Start of time",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should return the beginning of month\", function () {",
-                    "    pm.response.to.have.jsonBody('start', 'Sat Oct 01 2016 00:00:00 GMT+0000');",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "bd5e5f25-325d-40fd-9c1e-3a778f899cc4",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/start?timestamp=2016-10-10&unit=month",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "start"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  },
-                  {
-                    "key": "unit",
-                    "value": "month"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/start` to return a relative timstamp in the past from the specified / current timestamp (as provided in the `unit` query parameter).\n\nFor instance, if the `unit` has been specified as `month`, the returned timestamp would indicate the beginning of the current month. Similar results are returned for other units of time, like: `years`, `months`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds`\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `start` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  start: \"A timestamp from the past, depending on the `unit` specified\"\n}\n```"
-            },
-            "response": []
-          },
-          {
-            "name": "Object representation",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should return the date components\", function () {",
-                    "    pm.expect(pm.response.json()).to.eql({",
-                    "        \"years\": 2016,",
-                    "        \"months\": 9,",
-                    "        \"date\": 10,",
-                    "        ",
-                    "        \"hours\": 0,",
-                    "        \"minutes\": 0,",
-                    "        \"seconds\": 0,",
-                    "        \"milliseconds\": 0",
-                    "    });",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "279ffaa0-6543-4123-873e-250d0ae34905",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/object?timestamp=2016-10-10",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "object"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/object` to return the current / provided timestamp as a JSON object.\n\nFor instance, if the `unit` has been specified as `month`, the returned timestamp would indicate the beginning of the current month. Similar results are returned for other units of time, like: `years`, `months`, `days`, `hours`, `minutes`, `seconds`, and `milliseconds`\n\nThis endpoint accepts `timestamp`, `locale`, `format`, and `strict` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  years: 2016,\n  months: 10,\n  days: 10,\n  hours: 23,\n  minutes: 34,\n  seconds: 20,\n  milliseconds: 980\n}\n```"
-            },
-            "response": []
-          },
-          {
-            "name": "Before comparisons",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should say timestamp is before target\", function () {",
-                    "    pm.response.to.have.jsonBody('before', true);",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "cbf7767a-a489-4c1a-9362-d459264be262",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/before?timestamp=2016-10-10&target=2017-10-10",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "before"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  },
-                  {
-                    "key": "target",
-                    "value": "2017-10-10"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/before` to check if the provided timestamps is before a comparison `target` (query parameter).\n\nThis endpoint accepts `timestamp`, `locale`, `format`, `strict`, and `target` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `before` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  before: true/false\n}\n```"
-            },
-            "response": []
-          },
-          {
-            "name": "After comparisons",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should say timestamp is not after target\", function () {",
-                    "    pm.response.to.have.jsonBody('after', false);",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "f6c8f915-0111-43e9-bbe4-e2870cd1fdfc",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/after?timestamp=2016-10-10&target=2017-10-10",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "after"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  },
-                  {
-                    "key": "target",
-                    "value": "2017-10-10"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/after` to check if the provided timestamps is after a comparison `target` (query parameter).\n\nThis endpoint accepts `timestamp`, `locale`, `format`, `strict`, and `target` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `after` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  after: true/false\n}\n```"
-            },
-            "response": []
-          },
-          {
-            "name": "Between timestamps",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should say timestamp is not between start and end\", function () {",
-                    "    pm.response.to.have.jsonBody('between', false);",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "8d10d6fe-456d-445b-a1f3-adab47a19bdc",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/between?timestamp=2016-10-10&start=2017-10-10&end=2019-10-10",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "between"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  },
-                  {
-                    "key": "start",
-                    "value": "2017-10-10"
-                  },
-                  {
-                    "key": "end",
-                    "value": "2019-10-10"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/between` to check if the provided timestamp is between a range specified by the `start` and `end` query parameters. A resolution limit can also be specified by the `unit` query parameter.\n\nFor instance, for a resolution `unit` of `month`,\n`2016-10-05` does lie between `2016-11-02` and `2016-09-01`.\n\nThis endpoint also accepts `timestamp`, `locale`, `format`, `strict`, and `target` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `between` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  between: true/false\n}\n```"
-            },
-            "response": []
-          },
-          {
-            "name": "Leap year check",
-            "event": [
-              {
-                "listen": "test",
-                "script": {
-                  "type": "text/javascript",
-                  "exec": [
-                    "pm.test(\"response is ok\", function () {",
-                    "    pm.response.to.have.status(200);",
-                    "});",
-                    "",
-                    "pm.test(\"response json should say timestamp is within leap year\", function () {",
-                    "    pm.response.to.have.jsonBody('leap', true);",
-                    "});"
-                  ]
-                }
-              }
-            ],
-            "id": "03598329-4d5b-41e7-b2c3-560cf90bfbb7",
-            "request": {
-              "method": "GET",
-              "header": [],
-              "body": {
-                "mode": "formdata",
-                "formdata": []
-              },
-              "url": {
-                "raw": "https://postman-echo.com/time/leap?timestamp=2016-10-10",
-                "protocol": "https",
-                "host": [
-                  "postman-echo",
-                  "com"
-                ],
-                "path": [
-                  "time",
-                  "leap"
-                ],
-                "query": [
-                  {
-                    "key": "timestamp",
-                    "value": "2016-10-10"
-                  }
-                ]
-              },
-              "description": "A simple `GET` request to `/time/leap` to check if the provided/current timestamp belongs to a leap year.\n\nThis endpoint also accepts `timestamp`, `locale`, `format`, `strict`, and `target` query parameters to construct the date time instance to check against.\n\nResponses are provided in JSON format, with a `leap` key to indicate the result. The response code is `200` for valid query parameters, and `400` otherwise.\n\n```\n{\n  leap: true/false\n}\n```"
-            },
-            "response": []
-          }
-        ],
-        "id": "13ec67a6-43dd-436b-9148-d88313fc38a6",
-        "description": "A set of `/time/*` mounted requests to perform date-time manipulations, among other operations.\n"
       },
       {
         "name": "Auth: Digest",
