@@ -9,7 +9,7 @@ namespace SpecSync.Plugin.PostmanTestSource.Projects;
 public class PostmanFolderItem : ISourceFile, IPostmanItem, ILocalTestCaseContainer
 {
     private readonly IHasItems _modelItem;
-    public string Type => "Postman Collection";
+    public string Type => "Postman Folder";
     public string ProjectRelativePath { get; }
 
     public PostmanTestItem[] Tests { get; }

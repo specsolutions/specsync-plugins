@@ -22,8 +22,5 @@ public class PostmanProject : IBddProject
             collection.BddProject = this;
     }
 
-    public string GetFullPath(string projectRelativePath)
-    {
-        throw new NotImplementedException();
-    }
+    public string GetFullPath(string projectRelativePath) => projectRelativePath;
 }

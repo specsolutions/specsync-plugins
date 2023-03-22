@@ -11,13 +11,15 @@ namespace SpecSync.Plugin.PostmanTestSource;
 
 public class PostmanCollectionLoader : IBddProjectLoader
 {
+    private readonly PostmanTestSourcePlugin.Parameters _parameters;
     private readonly PostmanMetadataParser _postmanMetadataParser;
     public bool CanProcess(BddProjectLoaderArgs args) => true;
 
     public string ServiceDescription => "Postman Collection Loader";
 
-    public PostmanCollectionLoader(PostmanMetadataParser postmanMetadataParser = null)
+    public PostmanCollectionLoader(PostmanTestSourcePlugin.Parameters parameters, PostmanMetadataParser postmanMetadataParser = null)
     {
+        _parameters = parameters;
         _postmanMetadataParser = postmanMetadataParser ?? new PostmanMetadataParser();
     }
 
@@ -59,12 +61,10 @@ public class PostmanCollectionLoader : IBddProjectLoader
     {
         var api = new PostmanApi(PostmanApiConnectionFactory.Instance.Create(args.Tracer));
 
-        var collectionId = "2c49b8c3-0f1a-43f5-8a18-5d7f6c50c0ac";
-
         Collection collection;
         try
         {
-            collection = api.GetCollection(collectionId).Collection;
+            collection = api.GetCollection(_parameters.CollectionId).Collection;
         }
         catch (RestApiResponseException ex)
         {
@@ -79,5 +79,5 @@ public class PostmanCollectionLoader : IBddProjectLoader
     }
 
     public string GetSourceDescription(BddProjectLoaderArgs args) 
-        => "Postman Collection";
+        => $"Postman Collection '{_parameters.CollectionId}'";
 }
