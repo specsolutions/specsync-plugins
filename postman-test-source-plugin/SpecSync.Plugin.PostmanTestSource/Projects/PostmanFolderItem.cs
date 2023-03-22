@@ -45,7 +45,7 @@ public class PostmanFolderItem : ISourceFile, IPostmanItem, ILocalTestCaseContai
     public string Description { get; }
     // ReSharper disable once CoVariantArrayConversion
     public ILocalTestCase[] LocalTestCases => Tests;
-    public ILocalTestCaseContainerUpdater Updater => null;
+    public ILocalTestCaseContainerUpdater Updater { get; set; }
     public IKeywordParser KeywordParser => PostmanKeywordParser.Instance;
 
     public string GetLocalTestCaseContainerSource() => null;

@@ -22,7 +22,8 @@ public class PostmanMetadataParser
         var documentation = item.Request?.Description ?? item.Description ?? "";
         var documentationContent = new EditableCodeFile(new InMemoryWritableTextFile(documentation));
         metadata.DocumentationContent = documentationContent;
-        var docProperties = ParseMetadataFromDocumentation(documentationContent);
+        var docProperties = ParseMetadataFromDocumentation(documentationContent, out var metaHeadingSpan);
+        metadata.MetaHeadingSpan = metaHeadingSpan;
         foreach (var property in docProperties)
         {
             metadata.AddProperty(property);
@@ -31,13 +32,14 @@ public class PostmanMetadataParser
         return metadata;
     }
 
-    private List<MetadataProperty> ParseMetadataFromDocumentation(EditableCodeFile documentationContent)
+    private List<MetadataProperty> ParseMetadataFromDocumentation(EditableCodeFile documentationContent, out CodeSpan metaHeadingSpan)
     {
         CodeSpan GetSpan(Group match, int lineIndex)
         {
             return new CodeSpan(documentationContent, new CodePosition(lineIndex, match.Index), match.Length);
         }
 
+        metaHeadingSpan = null;
         var rootList = new List<IMetadataValue>();
         var listsOfLevels = new Dictionary<int, List<IMetadataValue>>
         {
@@ -51,6 +53,10 @@ public class PostmanMetadataParser
             if (heading.Success)
             {
                 inMetaSection = IsMetaHeading(heading.Groups["name"].Value);
+                if (inMetaSection)
+                {
+                    metaHeadingSpan = new CodeSpan(documentationContent, new CodePosition(lineIndex, 0), documentationContent.GetLineEndPosition(lineIndex, true));
+                }
                 continue;
             }
 

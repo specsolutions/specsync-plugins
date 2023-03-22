@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using SpecSync.Plugin.PostmanTestSource.Postman;
 using SpecSync.Projects;
 
 namespace SpecSync.Plugin.PostmanTestSource.Projects;
@@ -14,9 +15,14 @@ public class PostmanProject : IBddProject
     public PostmanFolderItem[] FolderItems { get; }
     public string ProjectFolder { get; }
 
-    public PostmanProject(IEnumerable<PostmanFolderItem> folderCollections, string projectFolder)
+    public string CollectionId { get; }
+    public PostmanApi PostmanApi { get; }
+
+    public PostmanProject(IEnumerable<PostmanFolderItem> folderCollections, string projectFolder, PostmanApi postmanApi, string collectionId)
     {
         ProjectFolder = projectFolder;
+        PostmanApi = postmanApi;
+        CollectionId = collectionId;
         FolderItems = folderCollections.ToArray();
         foreach (var collection in FolderItems)
             collection.BddProject = this;

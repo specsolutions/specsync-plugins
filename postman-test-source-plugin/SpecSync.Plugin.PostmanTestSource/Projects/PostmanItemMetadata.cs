@@ -8,6 +8,8 @@ public class PostmanItemMetadata
     private readonly Dictionary<string, MetadataProperty> _metadataProperties = new();
 
     public EditableCodeFile DocumentationContent { get; set; }
+    public CodeSpan MetaHeadingSpan { get; set; }
+
     public IMetadataValue this[string key] => _metadataProperties[key].Value;
 
     public void AddProperty(MetadataProperty property)

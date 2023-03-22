@@ -15,7 +15,7 @@ namespace SpecSync.Integration.RestApiServices;
 public abstract class RestApiConnection : IRestApiConnection
 {
     private readonly HttpClient _httpClient;
-    protected readonly ISpecSyncTracer _tracer;
+    public ISpecSyncTracer Tracer { get; }
 
     public HttpClient HttpClient => _httpClient;
 
@@ -26,7 +26,7 @@ public abstract class RestApiConnection : IRestApiConnection
     protected RestApiConnection(HttpClient httpClient, ISpecSyncTracer tracer)
     {
         _httpClient = httpClient;
-        _tracer = tracer;
+        Tracer = tracer;
     }
 
     public void Dispose()
@@ -176,7 +176,7 @@ public abstract class RestApiConnection : IRestApiConnection
 
         if (cleanedResponseMessage != responseMessage)
         {
-            _tracer.LogVerbose($"Full response message: {Environment.NewLine}{responseMessage}");
+            Tracer.LogVerbose($"Full response message: {Environment.NewLine}{responseMessage}");
         }
 
         cleanedResponseMessage = 
@@ -257,6 +257,6 @@ public abstract class RestApiConnection : IRestApiConnection
             return log.ToString();
         }
 
-        _tracer.LogDiag(DiagCategory, GetDiagMessage);
+        Tracer.LogDiag(DiagCategory, GetDiagMessage);
     }
 }

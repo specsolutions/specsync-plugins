@@ -75,7 +75,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
         CreateRootItem(collection, folderItems, args);
 
-        return new PostmanProject(folderItems, args.BaseFolder);
+        return new PostmanProject(folderItems, args.BaseFolder, api, _parameters.CollectionId);
     }
 
     public string GetSourceDescription(BddProjectLoaderArgs args) 
