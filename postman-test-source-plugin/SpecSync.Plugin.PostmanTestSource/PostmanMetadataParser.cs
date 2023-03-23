@@ -15,6 +15,13 @@ public class PostmanMetadataParser
     private static readonly Regex MarkdownListLine = new(@"^(?<indent>\s*)-\s+((?<key>[^:]+?)\s*:\s*)?(?<value>\S.*?)?\s*$");
     private static readonly Regex MarkdownLinkRe = new(@"^\[(?<linkText>.+)\]\((?<url>.+)\)$");
 
+    private readonly PostmanTestSourcePlugin.Parameters _parameters;
+
+    public PostmanMetadataParser(PostmanTestSourcePlugin.Parameters parameters)
+    {
+        _parameters = parameters;
+    }
+
     public PostmanItemMetadata ParseMetadata(Item item)
     {
         var metadata = new PostmanItemMetadata();
@@ -22,6 +29,7 @@ public class PostmanMetadataParser
         var documentation = item.Request?.Description ?? item.Description ?? "";
         var documentationContent = new EditableCodeFile(new InMemoryWritableTextFile(documentation));
         metadata.DocumentationContent = documentationContent;
+        metadata.MetadataHeadingName = _parameters.MetadataHeading;
         var docProperties = ParseMetadataFromDocumentation(documentationContent, out var metaHeadingSpan);
         metadata.MetaHeadingSpan = metaHeadingSpan;
         foreach (var property in docProperties)
@@ -109,7 +117,7 @@ public class PostmanMetadataParser
 
     private bool IsMetaHeading(string value)
     {
-        return value.Equals("Metadata", StringComparison.InvariantCultureIgnoreCase);
+        return value.Equals(_parameters.MetadataHeading, StringComparison.InvariantCultureIgnoreCase);
     }
 
 }

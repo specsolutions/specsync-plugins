@@ -9,13 +9,11 @@ public class PostmanApiConnectionFactory
 {
     public static PostmanApiConnectionFactory Instance { get; set; } = new();
 
-    public virtual IPostmanApiConnection Create(ISpecSyncTracer tracer)
+    public virtual IPostmanApiConnection Create(ISpecSyncTracer tracer, string postmanApiKey)
     {
-        var apiKey = Environment.GetEnvironmentVariable("POSTMAN_API_KEY");
-
         var httpClient = new HttpClient();
         httpClient.BaseAddress = new Uri("https://api.getpostman.com/");
-        httpClient.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
+        httpClient.DefaultRequestHeaders.Add("X-Api-Key", postmanApiKey);
         httpClient.DefaultRequestHeaders.Accept
             .Add(new MediaTypeWithQualityHeaderValue("application/json"));
 

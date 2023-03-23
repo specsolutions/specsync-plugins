@@ -26,7 +26,7 @@ public class PostmanFolderItemParser : ILocalTestCaseContainerParser
         }
 
         var postmanProject = ((PostmanProject)args.BddProject);
-        folderItem.Updater = new PostmanTestUpdater(postmanProject.PostmanApi, postmanProject.CollectionId);
+        folderItem.Updater = new PostmanTestUpdater(postmanProject.PostmanApi, postmanProject.Parameters);
         return folderItem;
     }
 

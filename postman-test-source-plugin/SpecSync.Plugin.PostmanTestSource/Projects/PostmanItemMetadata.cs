@@ -9,6 +9,7 @@ public class PostmanItemMetadata
 
     public EditableCodeFile DocumentationContent { get; set; }
     public CodeSpan MetaHeadingSpan { get; set; }
+    public string MetadataHeadingName { get; set; }
 
     public IMetadataValue this[string key] => _metadataProperties[key].Value;
 
