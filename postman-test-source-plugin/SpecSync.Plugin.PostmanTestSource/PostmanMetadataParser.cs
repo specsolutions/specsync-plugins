@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System;
 using System.Linq;
+using System.Text;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
 using SpecSync.Utils;
 
@@ -30,8 +31,9 @@ public class PostmanMetadataParser
         var documentationContent = new EditableCodeFile(new InMemoryWritableTextFile(documentation));
         metadata.DocumentationContent = documentationContent;
         metadata.MetadataHeadingName = _parameters.MetadataHeading;
-        var docProperties = ParseMetadataFromDocumentation(documentationContent, out var metaHeadingSpan);
+        var docProperties = ParseMetadataFromDocumentation(documentationContent, out var metaHeadingSpan, out var cleanedDocumentation);
         metadata.MetaHeadingSpan = metaHeadingSpan;
+        metadata.CleanedDocumentation = cleanedDocumentation;
         foreach (var property in docProperties)
         {
             metadata.AddProperty(property);
@@ -40,7 +42,7 @@ public class PostmanMetadataParser
         return metadata;
     }
 
-    private List<MetadataProperty> ParseMetadataFromDocumentation(EditableCodeFile documentationContent, out CodeSpan metaHeadingSpan)
+    private List<MetadataProperty> ParseMetadataFromDocumentation(EditableCodeFile documentationContent, out CodeSpan metaHeadingSpan, out string cleanedDocumentation)
     {
         CodeSpan GetSpan(Group match, int lineIndex)
         {
@@ -53,6 +55,7 @@ public class PostmanMetadataParser
         {
             { 0, rootList }
         };
+        var cleanedDocumentationBuilder = new StringBuilder();
         bool inMetaSection = false;
         for (int lineIndex = 0; lineIndex < documentationContent.LineCount; lineIndex++)
         {
@@ -64,8 +67,8 @@ public class PostmanMetadataParser
                 if (inMetaSection)
                 {
                     metaHeadingSpan = new CodeSpan(documentationContent, new CodePosition(lineIndex, 0), documentationContent.GetLineEndPosition(lineIndex, true));
+                    continue;
                 }
-                continue;
             }
 
             if (inMetaSection)
@@ -110,8 +113,13 @@ public class PostmanMetadataParser
                     }
                 }
             }
+            else
+            {
+                cleanedDocumentationBuilder.AppendLine(line);
+            }
         }
 
+        cleanedDocumentation = cleanedDocumentationBuilder.ToString().TrimEnd();
         return rootList.OfType<MetadataProperty>().ToList();
     }
 

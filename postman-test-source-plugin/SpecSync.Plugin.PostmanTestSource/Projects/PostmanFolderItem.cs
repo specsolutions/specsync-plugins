@@ -14,22 +14,23 @@ public class PostmanFolderItem : ISourceFile, IPostmanItem, ILocalTestCaseContai
     private readonly Item _modelItem;
     public string Type => "Postman Folder";
     public string ProjectRelativePath { get; }
+    public PostmanItemMetadata Metadata { get; }
 
     public PostmanTestItem[] Tests { get; }
     public PostmanFolderItem[] SubCollections { get; }
 
-    public PostmanFolderItem(string projectRelativePath, IList<IPostmanItem> subItems, Item modelItem)
+    public PostmanFolderItem(string projectRelativePath, IList<IPostmanItem> subItems, Item modelItem, PostmanItemMetadata metadata)
     {
         _modelItem = modelItem;
         ProjectRelativePath = projectRelativePath;
+        Metadata = metadata;
         Tests = subItems.OfType<PostmanTestItem>().ToArray();
         SubCollections = subItems.OfType<PostmanFolderItem>().ToArray();
         Name = modelItem.Name;
-        Description = modelItem.Description;
     }
 
-    public PostmanFolderItem(string projectRelativePath, IList<IPostmanItem> subItems, Collection collection)
-        : this(projectRelativePath, subItems, collection.ToItem())
+    public PostmanFolderItem(string projectRelativePath, IList<IPostmanItem> subItems, Collection collection, PostmanItemMetadata metadata = null)
+        : this(projectRelativePath, subItems, collection.ToItem(), metadata ?? new PostmanItemMetadata())
     {
     }
 
@@ -38,7 +39,7 @@ public class PostmanFolderItem : ISourceFile, IPostmanItem, ILocalTestCaseContai
     public IBddProject BddProject { get; set; }
     public ISourceFile SourceFile => this;
     public string Name { get; }
-    public string Description { get; }
+    public string Description => Metadata.CleanedDocumentation ?? _modelItem.Description;
     // ReSharper disable once CoVariantArrayConversion
     public ILocalTestCase[] LocalTestCases => Tests;
     public ILocalTestCaseContainerUpdater Updater { get; set; }

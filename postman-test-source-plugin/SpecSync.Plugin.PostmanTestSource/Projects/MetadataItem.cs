@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SpecSync.Utils.Code;
 
@@ -10,6 +11,7 @@ public interface IMetadataValue
     CodeSpan Span { get; }
 }
 
+[DebuggerDisplay("{Value}")]
 public class MetadataStringValue : IMetadataValue
 {
     public MetadataStringValue(string value, CodeSpan span)
@@ -23,6 +25,7 @@ public class MetadataStringValue : IMetadataValue
     string IMetadataValue.StringValue => Value;
 }
 
+[DebuggerDisplay("[{LinkText}]({Url})")]
 public class MetadataLinkValue : IMetadataValue
 {
     public MetadataLinkValue(string linkText, string url, CodeSpan span)
@@ -38,6 +41,7 @@ public class MetadataLinkValue : IMetadataValue
     public string StringValue => LinkText;
 }
 
+[DebuggerDisplay("{StringValue}")]
 public class MetadataProperty : IMetadataValue
 {
     public MetadataProperty(string key, CodeSpan keySpan, IMetadataValue value, CodeSpan span = null)
@@ -55,6 +59,7 @@ public class MetadataProperty : IMetadataValue
     public CodeSpan Span { get; }
 }
 
+[DebuggerDisplay("[{StringValue}]")]
 public class MetadataListValue : IMetadataValue
 {
     public List<IMetadataValue> Items { get; } = new();

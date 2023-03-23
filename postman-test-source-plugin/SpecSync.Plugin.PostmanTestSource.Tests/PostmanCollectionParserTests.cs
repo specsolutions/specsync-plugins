@@ -95,6 +95,9 @@ This is the documentation
         links.Items[0].Should().BeOfType<MetadataProperty>().Which.Value.StringValue.Should().Be("4321");
         links.Items[1].Should().BeOfType<MetadataProperty>().Which.Key.Should().Be("bug");
         links.Items[1].Should().BeOfType<MetadataProperty>().Which.Value.StringValue.Should().Be("4455");
+
+        testItem.Description.Should().Be(@"# Documentation
+This is the documentation");
     }
 
     [TestMethod]
