@@ -32,7 +32,8 @@ public abstract class TestBase
     {
         CollectionId = CollectionId, 
         MetadataHeading = "Metadata",
-        TestCaseLinkTemplate = "https://myserver/myproject/{id}"
+        TestCaseLinkTemplate = "https://myserver/myproject/{id}",
+        PostmanApiKey = "abc"
     };
 
     class TestPostmanApiConnectionFactory : PostmanApiConnectionFactory

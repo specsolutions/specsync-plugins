@@ -816,7 +816,7 @@
         "description": "The following set of endpoints allow one to see the headers being sent as part of a request and to get a custom set of headers as part of response.\n\nHTTP header fields provide required information about the request or response, or about the object sent in the message body. Both request headers and response headers can be controlled using these endpoints.\n\n## Metadata\n\n- tc: 204\n"
       },
       {
-        "name": "Authentication Methods",
+        "name": "Test: Authentication Methods",
         "item": [
           {
             "name": "Basic Auth",
@@ -3928,7 +3928,7 @@
         "id": "e358ba8b-4ac2-432b-a54f-60402a08845d"
       },
       {
-        "name": "Auth: Digest",
+        "name": "Test209: Auth: Digest",
         "item": [
           {
             "name": "DigestAuth Request",
