@@ -12,7 +12,7 @@ public class PostmanCollectionLoaderTests : TestBase
     [TestMethod]
     public void Should_load_folder_and_test_items_from_collection()
     {
-        var sut = new PostmanCollectionLoader(new PostmanTestSourcePlugin.Parameters{ CollectionId = "123456" });
+        var sut = new PostmanCollectionLoader(Parameters);
 
         var project = sut.LoadProject(new BddProjectLoaderArgs(SynchronizationContextStub.Object, new LocalConfiguration(), Path.GetTempPath()));
         project.Should().NotBeNull();

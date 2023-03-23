@@ -15,14 +15,14 @@ public class PostmanProject : IBddProject
     public PostmanFolderItem[] FolderItems { get; }
     public string ProjectFolder { get; }
 
-    public string CollectionId { get; }
+    public PostmanTestSourcePlugin.Parameters Parameters { get; }
     public PostmanApi PostmanApi { get; }
 
-    public PostmanProject(IEnumerable<PostmanFolderItem> folderCollections, string projectFolder, PostmanApi postmanApi, string collectionId)
+    public PostmanProject(IEnumerable<PostmanFolderItem> folderCollections, string projectFolder, PostmanApi postmanApi, PostmanTestSourcePlugin.Parameters parameters)
     {
         ProjectFolder = projectFolder;
         PostmanApi = postmanApi;
-        CollectionId = collectionId;
+        Parameters = parameters;
         FolderItems = folderCollections.ToArray();
         foreach (var collection in FolderItems)
             collection.BddProject = this;

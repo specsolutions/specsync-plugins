@@ -20,7 +20,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
     public PostmanCollectionLoader(PostmanTestSourcePlugin.Parameters parameters, PostmanMetadataParser postmanMetadataParser = null)
     {
         _parameters = parameters;
-        _postmanMetadataParser = postmanMetadataParser ?? new PostmanMetadataParser();
+        _postmanMetadataParser = postmanMetadataParser ?? new PostmanMetadataParser(_parameters);
     }
 
     private bool IsTestItem(Item item, PostmanItemMetadata metadata, BddProjectLoaderArgs args)
@@ -59,7 +59,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
     public IBddProject LoadProject(BddProjectLoaderArgs args)
     {
-        var api = new PostmanApi(PostmanApiConnectionFactory.Instance.Create(args.Tracer));
+        var api = new PostmanApi(PostmanApiConnectionFactory.Instance.Create(args.Tracer, _parameters.PostmanApiKey));
 
         Collection collection;
         try
@@ -75,7 +75,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
         CreateRootItem(collection, folderItems, args);
 
-        return new PostmanProject(folderItems, args.BaseFolder, api, _parameters.CollectionId);
+        return new PostmanProject(folderItems, args.BaseFolder, api, _parameters);
     }
 
     public string GetSourceDescription(BddProjectLoaderArgs args) 

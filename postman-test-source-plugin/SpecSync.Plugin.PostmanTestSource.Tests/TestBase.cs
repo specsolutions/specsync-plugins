@@ -8,7 +8,6 @@ using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Postman;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
 using SpecSync.Plugin.PostmanTestSource.Projects;
-using SpecSync.Projects;
 using SpecSync.Synchronization;
 using SpecSync.Tracing;
 
@@ -25,9 +24,11 @@ public abstract class TestBase
     protected Mock<ITagServices> TagServicesStub = new();
     protected SpecSyncConfiguration Configuration = new();
     protected readonly PostmanProject Project;
-    protected readonly PostmanMetadataParser _postmanMetadataParser = new();
+    protected readonly PostmanMetadataParser _postmanMetadataParser;
+    protected readonly PostmanApi PostmanApi;
     protected Mock<IPostmanApiConnection> PostmanApiConnectionStub = new();
     protected object? LastPayload;
+    protected PostmanTestSourcePlugin.Parameters Parameters = new() { CollectionId = CollectionId, MetadataHeading = "Metadata" };
 
     class TestPostmanApiConnectionFactory : PostmanApiConnectionFactory
     {
@@ -37,7 +38,7 @@ public abstract class TestBase
             _postmanApiConnectionStub = postmanApiConnectionStub;
         }
 
-        public override IPostmanApiConnection Create(ISpecSyncTracer tracer)
+        public override IPostmanApiConnection Create(ISpecSyncTracer tracer, string postmanApiKey)
         {
             return _postmanApiConnectionStub.Object;
         }
@@ -66,7 +67,9 @@ public abstract class TestBase
             }));
             //.Returns(new RestApiResponse<UpdateCollectionResponse> { ResponseData = new UpdateCollectionResponse { Collection = new UpdateCollectionResponseCollection() { Id = CollectionId } } });
         PostmanApiConnectionFactory.Instance = new TestPostmanApiConnectionFactory(PostmanApiConnectionStub);
-        Project = new PostmanProject(new List<PostmanFolderItem>(), Path.GetTempPath(), new PostmanApi(PostmanApiConnectionStub.Object), CollectionId);
+        PostmanApi = new PostmanApi(PostmanApiConnectionStub.Object);
+        _postmanMetadataParser = new PostmanMetadataParser(Parameters);
+        Project = new PostmanProject(new List<PostmanFolderItem>(), Path.GetTempPath(), PostmanApi, Parameters);
     }
 
     private TData GetFromFile<TData>(string fileName)

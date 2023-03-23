@@ -10,24 +10,24 @@ namespace SpecSync.Plugin.PostmanTestSource;
 
 public class PostmanTestUpdater : LocalTestCaseContainerUpdaterBase
 {
-    private readonly string _collectionId;
     private readonly PostmanApi _api;
+    private readonly PostmanTestSourcePlugin.Parameters _parameters;
     private readonly Dictionary<string, Func<JObject, bool>> _itemChanges = new();
     private bool _isDirty;
 
     public override bool IsDirty => _isDirty;
 
-    public PostmanTestUpdater(PostmanApi api, string collectionId)
+    public PostmanTestUpdater(PostmanApi api, PostmanTestSourcePlugin.Parameters parameters)
     {
         _api = api;
-        _collectionId = collectionId;
+        _parameters = parameters;
     }
 
     public override bool Flush()
     {
         if (_itemChanges.Any())
         {
-            var result = _api.SafeUpdateCollection(_collectionId, _itemChanges);
+            var result = _api.SafeUpdateCollection(_parameters.CollectionId, _itemChanges);
             _itemChanges.Clear();
             _isDirty = false;
             return result != null;
@@ -42,7 +42,7 @@ public class PostmanTestUpdater : LocalTestCaseContainerUpdaterBase
         var documentation = testItem.Metadata.DocumentationContent;
 
         var insertPosition = testItem.Metadata.MetaHeadingSpan?.End ?? documentation.GetLineEndPosition(documentation.LineCount - 1);
-        var metadataPrefix = testItem.Metadata.MetaHeadingSpan == null ? "\n## Metadata\n\n" : "";
+        var metadataPrefix = testItem.Metadata.MetaHeadingSpan == null ? $"\n## {_parameters.MetadataHeading}\n\n" : "";
         documentation.Updater.InsertLineAfter(insertPosition, $"{metadataPrefix}- {testCaseLink.LinkPrefix}: {testCaseLink.TestCaseId}");
         documentation.Save();
 

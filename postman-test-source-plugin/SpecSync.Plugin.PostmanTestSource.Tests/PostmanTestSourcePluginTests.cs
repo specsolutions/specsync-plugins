@@ -14,8 +14,10 @@ public class PostmanTestSourcePluginTests
             {"collectionId", "123456"}
         };
         var args = new PluginInitializeArgs(null, parametersDictionary, null, null, null);
-        var parameters = args.GetParametersAs<PostmanTestSourcePlugin.Parameters>();
+        var parameters = args.GetParametersAs<PostmanTestSourcePlugin.Parameters>(PostmanTestSourcePlugin.Parameters.Defaults);
         parameters.Should().NotBeNull();
         parameters.CollectionId.Should().Be("123456");
+
+        parameters.CheckParameters("plugin");
     }
 }
