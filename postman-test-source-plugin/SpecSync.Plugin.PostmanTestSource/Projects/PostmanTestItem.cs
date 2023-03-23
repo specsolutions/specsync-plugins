@@ -1,18 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
 
 namespace SpecSync.Plugin.PostmanTestSource.Projects;
 
+[DebuggerDisplay("{Name}")]
 public class PostmanTestItem : IPostmanItem, ILocalTestCase
 {
     public Item ModelItem { get; }
+    public PostmanItemMetadata[] ParentMetadata { get; }
     public PostmanItemMetadata Metadata { get; }
 
-    public PostmanTestItem(Item modelItem, PostmanItemMetadata metadata)
+    public PostmanTestItem(Item modelItem, PostmanItemMetadata metadata, PostmanItemMetadata[] parentMetadata = null)
     {
         ModelItem = modelItem;
+        ParentMetadata = parentMetadata ?? Array.Empty<PostmanItemMetadata>();
         Metadata = metadata ?? new PostmanItemMetadata();
     }
 

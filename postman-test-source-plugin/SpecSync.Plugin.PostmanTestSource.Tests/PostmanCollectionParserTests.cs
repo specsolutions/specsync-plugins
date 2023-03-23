@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using SpecSync.Parsing;
+using SpecSync.Plugin.PostmanTestSource.Postman;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
 using SpecSync.Plugin.PostmanTestSource.Projects;
 
@@ -232,4 +233,57 @@ This is the documentation
         testItem!.TestCaseLink.Should().NotBeNull();
         testItem.TestCaseLink.TestCaseId.ToString().Should().Be("2345");
     }
+    [TestMethod]
+    public void Should_parse_tags_and_links_from_parent_doc_metadata_section()
+    {
+        var sut = new PostmanFolderItemParser();
+        var collection = new Collection()
+        {
+            Info = new Info()
+            {
+                Name = "My Collection",
+                Description = @"# Parent Documentation
+This is the parent documentation
+
+## Metadata
+
+- tags:
+    - tag2
+    - tag3
+- links:
+    - story: 4321
+"
+            }
+        };
+        var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
+        {
+            CreateTestItem(new Item
+            {
+                Name = "Test 1",
+                Request = new Request
+                {
+                    Description = @"# Documentation
+This is the documentation
+
+## Metadata
+
+- tc: 1234
+- tags:
+    - tag1
+    - tag3
+- links:
+    - bug:[4455](https://dev.azure.com/specsync-demo/specsync-plugins-demo/_workitems/edit/4455)
+"
+                }
+            }, _postmanMetadataParser.ParseMetadata(collection.ToItem())),
+        }, collection);
+        var result = sut.Parse(CreateParserArgs(folderCollection));
+        var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
+        testItem.Should().NotBeNull();
+
+        testItem!.Tags.Should().NotBeNull();
+        testItem.Tags.Should().HaveCount(5);
+        testItem.Tags.Select(t => t.Name).Should().BeEquivalentTo("tag1", "tag2", "tag3", "bug:4455", "story:4321");
+    }
+
 }

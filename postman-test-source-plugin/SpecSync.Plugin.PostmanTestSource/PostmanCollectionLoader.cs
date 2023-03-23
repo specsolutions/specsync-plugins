@@ -1,6 +1,7 @@
 ﻿using SpecSync.Projects;
 using System.Collections.Generic;
 using System.Linq;
+using SpecSync.Expressions;
 using SpecSync.Integration.RestApiServices;
 using SpecSync.Plugin.PostmanTestSource.Postman;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
@@ -23,38 +24,34 @@ public class PostmanCollectionLoader : IBddProjectLoader
         _postmanMetadataParser = postmanMetadataParser ?? new PostmanMetadataParser(_parameters);
     }
 
-    private bool IsTestItem(Item item, PostmanItemMetadata metadata, BddProjectLoaderArgs args)
+    private bool IsTestItem(Item item, PostmanItemMetadata metadata, BddProjectLoaderArgs args, Stack<PostmanItemMetadata> parentMetadata)
     {
-        return item.Request != null || PostmanFolderItemParser.GetTestCaseLinkFromMetadata(metadata, args.Configuration) != null;
+        return item.Request != null || PostmanFolderItemParser.GetTestCaseLinkFromMetadata(metadata, parentMetadata, args.Configuration) != null;
     }
 
-    private IPostmanItem ProcessItem(Item item, List<PostmanFolderItem> folderItems, string rootName, BddProjectLoaderArgs args)
+    private IPostmanItem ProcessItem(Item item, List<PostmanFolderItem> folderItems, string rootName, BddProjectLoaderArgs args, Stack<PostmanItemMetadata> parentMetadata)
     {
-        var itemPath = $"{rootName}/{item.Name}";
+        var itemPath = rootName == null ? item.Name : $"{rootName}/{item.Name}";
         var metadata = _postmanMetadataParser.ParseMetadata(item);
 
-        var isTestItem = IsTestItem(item, metadata, args);
+        var isTestItem = IsTestItem(item, metadata, args, parentMetadata);
         if (isTestItem)
-            return new PostmanTestItem(item, metadata);
+            return new PostmanTestItem(item, metadata, parentMetadata.ToArray());
+
+        var folderInsertIndex = folderItems.Count;
+        parentMetadata.Push(metadata);
 
         var subPostmanItems = new List<IPostmanItem>();
         if (item.Items != null)
             foreach (var subItem in item.Items)
             {
-                subPostmanItems.Add(ProcessItem(subItem, folderItems, itemPath, args));
+                subPostmanItems.Add(ProcessItem(subItem, folderItems, itemPath, args, parentMetadata));
             }
 
+        parentMetadata.Pop();
         var folderItem = new PostmanFolderItem(itemPath, subPostmanItems, item);
-        folderItems.Add(folderItem);
+        folderItems.Insert(folderInsertIndex, folderItem);
         return folderItem;
-    }
-
-    private void CreateRootItem(Collection collection, List<PostmanFolderItem> folderItems, BddProjectLoaderArgs args)
-    {
-        var rootName = collection.Info?.Name ?? "Collection";
-        var testTree = new PostmanFolderItem(rootName, 
-            collection.Items.Select(i => ProcessItem(i, folderItems, rootName, args)).ToList(), collection);
-        folderItems.Insert(0, testTree);
     }
 
     public IBddProject LoadProject(BddProjectLoaderArgs args)
@@ -73,7 +70,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
         var folderItems = new List<PostmanFolderItem>();
 
-        CreateRootItem(collection, folderItems, args);
+        ProcessItem(collection.ToItem(), folderItems, null, args, new Stack<PostmanItemMetadata>());
 
         return new PostmanProject(folderItems, args.BaseFolder, api, _parameters);
     }
