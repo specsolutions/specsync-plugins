@@ -28,12 +28,12 @@ public class PostmanTestUpdaterTests : TestBase
 
     private void AssertTestCaseId(PostmanTestItem testItem)
     {
-        testItem.Metadata.DocumentationContent.UpdatedSourceCode.Should().Contain("## Metadata\n\n- tc: 1234");
+        testItem.Metadata.DocumentationContent.UpdatedSourceCode.Should().Contain("## Metadata\n\n- tc: [1234]");
         var updatedCollection = LastPayload.Should().BeOfType<JObject>().Subject;
-        updatedCollection.ToString().Should().Contain("## Metadata\\n\\n- tc: 1234");
+        updatedCollection.ToString().Should().Contain("## Metadata\\n\\n- tc: [1234]");
     }
 
-    private PostmanTestUpdater CreateSut() => new(PostmanApi, Parameters);
+    private PostmanTestUpdater CreateSut() => new(PostmanApi, Parameters, SyncSettingsStub.Object);
 
     [TestMethod]
     public void Should_update_test_case_id_for_request_without_metadata()

@@ -9,10 +9,12 @@ namespace SpecSync.Plugin.PostmanTestSource.Tests;
 [TestClass]
 public class PostmanCollectionParserTests : TestBase
 {
+    private PostmanFolderItemParser CreateSut() => new PostmanFolderItemParser(SyncSettingsStub.Object);
+
     [TestMethod]
     public void Should_parse_tests_with_name_and_description()
     {
-        var sut = new PostmanFolderItemParser();
+        var sut = CreateSut();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
         {
             CreateTestItem(new Item
@@ -49,7 +51,7 @@ public class PostmanCollectionParserTests : TestBase
     [TestMethod]
     public void Should_parse_metadata_from_doc_metadata_section()
     {
-        var sut = new PostmanFolderItemParser();
+        var sut = CreateSut();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
                 CreateTestItem(new Item
@@ -98,7 +100,7 @@ This is the documentation
     [TestMethod]
     public void Should_parse_tags_from_doc_metadata_section()
     {
-        var sut = new PostmanFolderItemParser();
+        var sut = CreateSut();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
                 CreateTestItem(new Item
@@ -135,7 +137,7 @@ This is the documentation
     [TestMethod]
     public void Should_parse_tags_from_links_metadata_section()
     {
-        var sut = new PostmanFolderItemParser();
+        var sut = CreateSut();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
                 CreateTestItem(new Item
@@ -176,7 +178,7 @@ This is the documentation
     [TestMethod]
     public void Should_parse_TestCaseLink_from_links_metadata_section()
     {
-        var sut = new PostmanFolderItemParser();
+        var sut = CreateSut();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
                 CreateTestItem(new Item
@@ -205,7 +207,7 @@ This is the documentation
     [TestMethod]
     public void Should_parse_TestCaseLink_from_links_metadata_section_with_BranchTag_customization()
     {
-        var sut = new PostmanFolderItemParser();
+        var sut = CreateSut();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
                 CreateTestItem(new Item
@@ -236,7 +238,7 @@ This is the documentation
     [TestMethod]
     public void Should_parse_tags_and_links_from_parent_doc_metadata_section()
     {
-        var sut = new PostmanFolderItemParser();
+        var sut = CreateSut();
         var collection = new Collection()
         {
             Info = new Info()

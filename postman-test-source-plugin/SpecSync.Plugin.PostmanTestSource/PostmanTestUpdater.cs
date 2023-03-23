@@ -12,15 +12,17 @@ public class PostmanTestUpdater : LocalTestCaseContainerUpdaterBase
 {
     private readonly PostmanApi _api;
     private readonly PostmanTestSourcePlugin.Parameters _parameters;
+    private readonly ISyncSettings _syncSettings;
     private readonly Dictionary<string, Func<JObject, bool>> _itemChanges = new();
     private bool _isDirty;
 
     public override bool IsDirty => _isDirty;
 
-    public PostmanTestUpdater(PostmanApi api, PostmanTestSourcePlugin.Parameters parameters)
+    public PostmanTestUpdater(PostmanApi api, PostmanTestSourcePlugin.Parameters parameters, ISyncSettings syncSettings)
     {
         _api = api;
         _parameters = parameters;
+        _syncSettings = syncSettings;
     }
 
     public override bool Flush()
@@ -43,7 +45,10 @@ public class PostmanTestUpdater : LocalTestCaseContainerUpdaterBase
 
         var insertPosition = testItem.Metadata.MetaHeadingSpan?.End ?? documentation.GetLineEndPosition(documentation.LineCount - 1);
         var metadataPrefix = testItem.Metadata.MetaHeadingSpan == null ? $"\n## {_parameters.MetadataHeading}\n\n" : "";
-        documentation.Updater.InsertLineAfter(insertPosition, $"{metadataPrefix}- {testCaseLink.LinkPrefix}: {testCaseLink.TestCaseId}");
+        var template = (string)_syncSettings.ResolvePlaceholders(_parameters.TestCaseLinkTemplate);
+        var link = template.Replace("{id}", testCaseLink.TestCaseId.ToString());
+        var idText = string.IsNullOrWhiteSpace(link) ? testCaseLink.TestCaseId.ToString() : $"[{testCaseLink.TestCaseId}]({link})";
+        documentation.Updater.InsertLineAfter(insertPosition, $"{metadataPrefix}- {testCaseLink.LinkPrefix}: {idText}");
         documentation.Save();
 
         if (testItem.ModelItem.Request != null)
