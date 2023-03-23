@@ -24,8 +24,10 @@ public class PostmanTestSourcePlugin : ISpecSyncPlugin
         public string MetadataHeading { get; set; }
         public string TestCaseLinkTemplate { get; set; }
         public string TestNameRegex { get; set; }
+        public string TestDocumentationRegex { get; set; }
 
         public Regex TestNameRegexParsed { get; private set; }
+        public Regex TestDocumentationRegexParsed { get; private set; }
 
         public void CheckParameters(string pluginName)
         {
@@ -35,17 +37,26 @@ public class PostmanTestSourcePlugin : ISpecSyncPlugin
                 throw new SpecSyncConfigurationException($"The 'postmanApiKey' parameter must be provided or the 'POSTMAN_API_KEY' environment variable must be set for the {pluginName} plugin.");
             if (string.IsNullOrWhiteSpace(MetadataHeading))
                 throw new SpecSyncConfigurationException($"The 'metadataHeading' parameter cannot be empty for the {pluginName} plugin.");
-            if (!string.IsNullOrWhiteSpace(TestNameRegex))
+
+            Regex ParseRegexParameter(string regex, string parameterName)
             {
-                try
+                if (!string.IsNullOrWhiteSpace(regex))
                 {
-                    TestNameRegexParsed = new Regex(TestNameRegex);
+                    try
+                    {
+                        return new Regex(regex);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new SpecSyncConfigurationException($"The '{parameterName}' parameter is not a valid Regular Expression for the {pluginName} plugin.", ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    throw new SpecSyncConfigurationException($"The 'testNameRegex' parameter is not a valid Regular Expression for the {pluginName} plugin.", ex);
-                }
+
+                return null;
             }
+
+            TestNameRegexParsed = ParseRegexParameter(TestNameRegex, "testNameRegex");
+            TestDocumentationRegexParsed = ParseRegexParameter(TestDocumentationRegex, "testDocumentationRegex");
         }
     }
 
