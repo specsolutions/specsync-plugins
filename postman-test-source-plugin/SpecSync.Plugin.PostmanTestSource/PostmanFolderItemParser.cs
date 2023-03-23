@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SpecSync.Configuration;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Projects;
@@ -21,56 +22,72 @@ public class PostmanFolderItemParser : ILocalTestCaseContainerParser
 
         foreach (var testItem in folderItem.Tests)
         {
-            testItem.Tags = ParseTagsFromMetadata(testItem.Metadata);
-            testItem.TestCaseLink = ParseTestCaseLinkFromMetadata(testItem.Metadata, args);
+            testItem.Tags = ParseTagsFromMetadata(testItem.Metadata, testItem.ParentMetadata);
+            testItem.TestCaseLink = ParseTestCaseLinkFromMetadata(testItem, args);
         }
 
-        var postmanProject = ((PostmanProject)args.BddProject);
+        var postmanProject = (PostmanProject)args.BddProject;
         folderItem.Updater = new PostmanTestUpdater(postmanProject.PostmanApi, postmanProject.Parameters);
         return folderItem;
     }
 
-    private ILocalTestCaseTag[] ParseTagsFromMetadata(PostmanItemMetadata metadata)
+    private ILocalTestCaseTag[] ParseTagsFromMetadata(PostmanItemMetadata itemMetadata, PostmanItemMetadata[] parentMetadata)
     {
+        var metadataList = GetMetadataList(itemMetadata, parentMetadata);
+
         var result = new List<ILocalTestCaseTag>();
-        if (metadata.TryGetValue("tags", out MetadataListValue tagsValue))
+
+        foreach (var metadata in metadataList)
         {
-            foreach (var item in tagsValue.Items)
+            if (metadata.TryGetValue("tags", out MetadataListValue tagsValue))
             {
-                result.Add(new CodeFileLocalTestCaseTag(item.StringValue, item.Span));
+                foreach (var item in tagsValue.Items)
+                {
+                    result.Add(new CodeFileLocalTestCaseTag(item.StringValue, item.Span));
+                }
+            }
+            if (metadata.TryGetValue("links", out MetadataListValue linksValue))
+            {
+                foreach (var item in linksValue.Items)
+                {
+                    result.Add(new CodeFileLocalTestCaseTag(item.StringValue, item.Span));
+                }
             }
         }
-        if (metadata.TryGetValue("links", out MetadataListValue linksValue))
+
+        return result.GroupBy(t => t.Name).Select(g => g.First()).ToArray();
+    }
+
+    private TestCaseLink ParseTestCaseLinkFromMetadata(PostmanTestItem testItem, LocalTestCaseContainerParseArgs args)
+    {
+        return GetTestCaseLinkFromMetadata(testItem.Metadata, testItem.ParentMetadata, args.Configuration);
+    }
+
+    public static TestCaseLink GetTestCaseLinkFromMetadata(PostmanItemMetadata itemMetadata, IEnumerable<PostmanItemMetadata> parentMetadata, SpecSyncConfiguration configuration)
+    {
+        var metadataList = GetMetadataList(itemMetadata, parentMetadata);
+
+        foreach (var metadata in metadataList)
         {
-            foreach (var item in linksValue.Items)
+            if (configuration.Customizations.BranchTag.Enabled &&
+                metadata.TryGetValue(configuration.Customizations.BranchTag.Prefix, out var branchTagValue))
             {
-                result.Add(new CodeFileLocalTestCaseTag(item.StringValue, item.Span));
+                return new TestCaseLink(TestCaseIdentifier.CreateExisting(branchTagValue.StringValue),
+                    configuration.Synchronization.TestCaseTagPrefix);
             }
-        }
 
-        return result.ToArray();
-    }
-
-    private TestCaseLink ParseTestCaseLinkFromMetadata(PostmanItemMetadata metadata, LocalTestCaseContainerParseArgs args)
-    {
-        return GetTestCaseLinkFromMetadata(metadata, args.Configuration);
-    }
-
-    public static TestCaseLink GetTestCaseLinkFromMetadata(PostmanItemMetadata metadata, SpecSyncConfiguration configuration)
-    {
-        if (configuration.Customizations.BranchTag.Enabled &&
-            metadata.TryGetValue(configuration.Customizations.BranchTag.Prefix, out var branchTagValue))
-        {
-            return new TestCaseLink(TestCaseIdentifier.CreateExisting(branchTagValue.StringValue),
-                configuration.Synchronization.TestCaseTagPrefix);
-        }
-
-        if (metadata.TryGetValue(configuration.Synchronization.TestCaseTagPrefix, out var value))
-        {
-            return new TestCaseLink(TestCaseIdentifier.CreateExisting(value.StringValue),
-                configuration.Synchronization.TestCaseTagPrefix);
+            if (metadata.TryGetValue(configuration.Synchronization.TestCaseTagPrefix, out var value))
+            {
+                return new TestCaseLink(TestCaseIdentifier.CreateExisting(value.StringValue),
+                    configuration.Synchronization.TestCaseTagPrefix);
+            }
         }
 
         return null;
+    }
+
+    private static IEnumerable<PostmanItemMetadata> GetMetadataList(PostmanItemMetadata itemMetadata, IEnumerable<PostmanItemMetadata> parentMetadata)
+    {
+        return parentMetadata.Append(itemMetadata).Reverse();
     }
 }

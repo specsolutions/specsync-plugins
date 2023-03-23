@@ -78,10 +78,11 @@ public abstract class TestBase
         return JsonConvert.DeserializeObject<TData>(fileContent)!;
     }
 
-    protected PostmanTestItem CreateTestItem(Item item)
+    protected PostmanTestItem CreateTestItem(Item item, PostmanItemMetadata? parentMetadata = null)
     {
         var metadata = _postmanMetadataParser.ParseMetadata(item);
-        return new PostmanTestItem(item, metadata);
+
+        return new PostmanTestItem(item, metadata, parentMetadata != null ? new[]{ parentMetadata} : Array.Empty<PostmanItemMetadata>());
     }
 
 
