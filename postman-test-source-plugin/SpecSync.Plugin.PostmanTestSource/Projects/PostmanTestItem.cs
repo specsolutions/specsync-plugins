@@ -45,7 +45,7 @@ public class PostmanTestItem : IPostmanItem, ILocalTestCase
     public ILocalTestCaseTag[] Tags { get; set; }
     public TestCaseLink TestCaseLink { get; set; }
     public string Name => ModelItem.Name;
-    public string Description => ModelItem.Description ?? ModelItem.Request?.Description;
+    public string Description => Metadata.CleanedDocumentation ?? ModelItem.Description ?? ModelItem.Request?.Description;
     public string TestedRule => null;
     public bool IsDataDrivenTest => false;
     public LocalTestCaseDataRow[] DataRows => null;

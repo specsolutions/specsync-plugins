@@ -83,7 +83,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
             }
 
         parentMetadata.Pop();
-        var folderItem = new PostmanFolderItem(itemPath, subPostmanItems, item);
+        var folderItem = new PostmanFolderItem(itemPath, subPostmanItems, item, metadata);
         folderItems.Insert(folderInsertIndex, folderItem);
         return folderItem;
     }

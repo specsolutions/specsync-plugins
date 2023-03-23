@@ -446,7 +446,7 @@
           }
         ],
         "id": "a082f14a-eadf-4d41-8ef4-64a176c1399e",
-        "description": "HTTP has multiple request \"verbs\", such as `GET`, `PUT`, `POST`, `DELETE`,\n`PATCH`, `HEAD`, etc. \n\nAn HTTP Method (verb) defines how a request should be interpreted by a server. \nThe endpoints in this section demonstrate various HTTP Verbs. Postman supports \nall the HTTP Verbs, including some rarely used ones, such as `PROPFIND`, `UNLINK`, \netc.\n\nFor details about HTTP Verbs, refer to [RFC 2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9)\n"
+        "description": "This is the documentation for request methods\n\n## Metadata\n\n- tags:\n  - tag_on_folder\n"
       },
       {
         "name": "Headers",

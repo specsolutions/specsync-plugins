@@ -23,6 +23,8 @@ public class PostmanCollectionLoaderTests : TestBase
         var rootFolderItem = postmanProject.FolderItems.First();
         rootFolderItem.Tests.Should().HaveCountGreaterThanOrEqualTo(1);
         rootFolderItem.Tests.Should().Contain(t => t.ModelItem.Request == null);
+        var requestMethodsFolder = postmanProject.FolderItems.Should().Contain(f => f.Name == "Request Methods").Subject;
+        requestMethodsFolder.Description.Should().Be("This is the documentation for request methods");
     }
 
     [TestMethod]
