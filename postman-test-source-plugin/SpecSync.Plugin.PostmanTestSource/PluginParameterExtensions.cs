@@ -32,9 +32,43 @@ public static class PluginParameterExtensions
         var envRegex = new Regex(@"\{env\:(?<env>[^\}\s]+)\}");
         if (value is string stringValue)
         {
-            value = envRegex.Replace(stringValue, m => Environment.GetEnvironmentVariable(m.Groups["env"].Value));
+            stringValue = envRegex.Replace(stringValue, m => Environment.GetEnvironmentVariable(m.Groups["env"].Value));
+            value = stringValue;
         }
 
         return value;
+    }
+
+    public static object ResolvePlaceholders(this ISyncSettings syncSettings, object value)
+    {
+        value = ResolvePlaceholders((PluginInitializeArgs)null, value);
+        var placeholderRegex = new Regex(@"\{(?<name>[^\}\s]+)\}");
+        if (value is string stringValue)
+        {
+            stringValue = placeholderRegex.Replace(stringValue, m =>
+            {
+                switch (m.Groups["name"].Value)
+                {
+                    case "project-url":
+                        return syncSettings.TfsProjectUrl;
+                    case "project-name":
+                        return syncSettings.TeamProjectName;
+                    case "server-url":
+                        return GetServerUrl(syncSettings.TfsProjectUrl);
+                }
+                return m.Value;
+            });
+            value = stringValue;
+        }
+
+        return value;
+    }
+
+    private static string GetServerUrl(string projectUrl)
+    {
+        int slashIndex = projectUrl.LastIndexOf('/');
+        if (slashIndex >= 0)
+            return projectUrl.Substring(0, slashIndex);
+        return projectUrl;
     }
 }

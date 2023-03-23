@@ -28,7 +28,12 @@ public abstract class TestBase
     protected readonly PostmanApi PostmanApi;
     protected Mock<IPostmanApiConnection> PostmanApiConnectionStub = new();
     protected object? LastPayload;
-    protected PostmanTestSourcePlugin.Parameters Parameters = new() { CollectionId = CollectionId, MetadataHeading = "Metadata" };
+    protected PostmanTestSourcePlugin.Parameters Parameters = new()
+    {
+        CollectionId = CollectionId, 
+        MetadataHeading = "Metadata",
+        TestCaseLinkTemplate = "https://myserver/myproject/{id}"
+    };
 
     class TestPostmanApiConnectionFactory : PostmanApiConnectionFactory
     {

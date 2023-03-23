@@ -16,10 +16,12 @@ public class PostmanTestSourcePlugin : ISpecSyncPlugin
         {
             { nameof(PostmanApiKey), "{env:POSTMAN_API_KEY}" },
             { nameof(MetadataHeading), "SpecSync" },
+            { nameof(TestCaseLinkTemplate), "{project-url}/_workitems/edit/{id}" },
         };
         public string PostmanApiKey { get; set; }
         public string CollectionId { get; set; }
         public string MetadataHeading { get; set; }
+        public string TestCaseLinkTemplate { get; set; }
 
         public void CheckParameters(string pluginName)
         {
@@ -44,7 +46,7 @@ public class PostmanTestSourcePlugin : ISpecSyncPlugin
         args.ServiceRegistry.BddProjectLoaderProvider
             .Register(new PostmanCollectionLoader(parameters));
         args.ServiceRegistry.LocalTestCaseContainerParserProvider
-            .Register(new PostmanFolderItemParser());
+            .Register(new PostmanFolderItemParser(args.ServiceRegistry.GetBuiltInService<ISyncSettings>()));
         args.ServiceRegistry.LocalTestCaseAnalyzerProvider
             .Register(new PostmanTestItemAnalyzer());
         args.ServiceRegistry.TestResultLoaderProvider

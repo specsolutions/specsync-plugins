@@ -11,10 +11,16 @@ namespace SpecSync.Plugin.PostmanTestSource;
 
 public class PostmanFolderItemParser : ILocalTestCaseContainerParser
 {
+    private readonly ISyncSettings _syncSettings;
     public string ServiceDescription => "Postman Collection Parser";
 
     public bool CanProcess(LocalTestCaseContainerParseArgs args)
         => args.SourceFile is PostmanFolderItem;
+
+    public PostmanFolderItemParser(ISyncSettings syncSettings)
+    {
+        _syncSettings = syncSettings;
+    }
 
     public ILocalTestCaseContainer Parse(LocalTestCaseContainerParseArgs args)
     {
@@ -27,7 +33,7 @@ public class PostmanFolderItemParser : ILocalTestCaseContainerParser
         }
 
         var postmanProject = (PostmanProject)args.BddProject;
-        folderItem.Updater = new PostmanTestUpdater(postmanProject.PostmanApi, postmanProject.Parameters);
+        folderItem.Updater = new PostmanTestUpdater(postmanProject.PostmanApi, postmanProject.Parameters, _syncSettings);
         return folderItem;
     }
 
