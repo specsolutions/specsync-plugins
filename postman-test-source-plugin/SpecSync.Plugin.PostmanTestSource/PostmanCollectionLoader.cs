@@ -1,6 +1,7 @@
 ﻿using SpecSync.Projects;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SpecSync.Expressions;
 using SpecSync.Integration.RestApiServices;
 using SpecSync.Plugin.PostmanTestSource.Postman;
@@ -26,24 +27,38 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
     private bool IsTestItem(Item item, PostmanItemMetadata metadata, BddProjectLoaderArgs args, Stack<PostmanItemMetadata> parentMetadata)
     {
-        // if it is an end-request or already linked to a Test Case
-        if (item.Request != null || PostmanFolderItemParser.GetTestCaseLinkFromMetadata(metadata, parentMetadata, args.Configuration) != null)
+        // if it is already linked to a Test Case
+        if (PostmanFolderItemParser.GetTestCaseLinkFromMetadata(metadata, parentMetadata, args.Configuration) != null)
             return true;
 
-        if (_parameters.TestNameRegexParsed != null)
+        bool MatchTestByRegex(string value, Regex regex)
         {
-            var match = _parameters.TestNameRegexParsed.Match(item.Name);
-            if (match.Success)
+            if (regex != null && value != null)
             {
-                if (match.Groups["id"].Success)
+                var match = regex.Match(value);
+                if (match.Success)
                 {
-                    var id = match.Groups["id"].Value;
-                    metadata.AddProperty(new MetadataProperty(args.Configuration.Synchronization.TestCaseTagPrefix, null, new MetadataStringValue(id, null)));
-                }
+                    if (match.Groups["id"].Success)
+                    {
+                        var id = match.Groups["id"].Value;
+                        metadata.AddProperty(new MetadataProperty(args.Configuration.Synchronization.TestCaseTagPrefix, null, new MetadataStringValue(id, null)));
+                    }
 
-                return true;
+                    return true;
+                }
             }
+
+            return false;
         }
+
+        if (MatchTestByRegex(item.Request?.Description ?? item.Description, _parameters.TestDocumentationRegexParsed))
+            return true;
+        if (MatchTestByRegex(item.Name, _parameters.TestNameRegexParsed))
+            return true;
+
+        // if it is an end-request
+        if (item.Request != null)
+            return true;
 
         return false;
     }

@@ -55,4 +55,21 @@ public class PostmanCollectionLoaderTests : TestBase
         testCaseLink.Should().NotBeNull();
         testCaseLink.TestCaseId.ToString().Should().Be("209");
     }
+
+    [TestMethod]
+    public void Should_recognize_linked_test_by_item_documentation()
+    {
+        Parameters.TestDocumentationRegex = @"\badoid=(?<id>\d+)\b";
+        Parameters.CheckParameters("plugin");
+        var sut = new PostmanCollectionLoader(Parameters);
+
+        var postmanProject = sut.LoadProject(new BddProjectLoaderArgs(SynchronizationContextStub.Object, new LocalConfiguration(), Path.GetTempPath())) as PostmanProject;
+        postmanProject.Should().NotBeNull();
+        
+        var tests = postmanProject!.FolderItems.SelectMany(f => f.Tests);
+        var test = tests.Should().Contain(t => t.Name == "POST Server events").Subject;
+        var testCaseLink = PostmanFolderItemParser.GetTestCaseLinkFromMetadata(test.Metadata, test.ParentMetadata, Configuration);
+        testCaseLink.Should().NotBeNull();
+        testCaseLink.TestCaseId.ToString().Should().Be("212");
+    }
 }

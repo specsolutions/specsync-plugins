@@ -12,7 +12,8 @@
         "parameters": {
           "collectionId": "26495037-5c8d6f15-b2a3-4b47-ae1d-72dd3bc1b49b",
           "metadataHeading": "Metadata",
-          "testNameRegex": "^Test(?<id>\\d+)?:"
+          "testNameRegex": "^Test(?<id>\\d+)?:",
+          "testDocumentationRegex": "\\badoid=(?<id>\\d+)\\b"
         }
       }
     ]
