@@ -46,7 +46,7 @@ public class PostmanTestItemAnalyzer : ILocalTestCaseAnalyzer
                 {
                     foreach (var execLine in testEvent.Script.Exec)
                     {
-                        var match = Regex.Match(execLine, @"pm.test\(""(?<expected>.+?)""");
+                        var match = Regex.Match(execLine, @"pm.test\([""'](?<expected>.+?)[""']");
                         if (match.Success)
                             yield return new TestStepSourceData
                             {

@@ -109,8 +109,8 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         var result = sut.LoadTestResult(CreateArgs());
 
         result.Should().NotBeNull();
-        result.TestDefinitions.Should().Contain(td => td.Name == "Helpers / Date and Time / Current UTC time");
-        result.TestDefinitions.Should().Contain(td => td.Name == "Helpers / Date and Time");
-        result.TestDefinitions.Should().Contain(td => td.Name == "Helpers");
+        result.TestDefinitions.Should().ContainSingle(td => td.Name == "Helpers / Date and Time / Current UTC time");
+        result.TestDefinitions.Should().ContainSingle(td => td.Name == "Helpers / Date and Time");
+        result.TestDefinitions.Should().ContainSingle(td => td.Name == "Helpers");
     }
 }

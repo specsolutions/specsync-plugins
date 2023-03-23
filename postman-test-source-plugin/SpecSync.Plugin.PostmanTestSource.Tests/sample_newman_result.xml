@@ -59,4 +59,10 @@ RequestError: Error: getaddrinfo ENOTFOUND postman-echox.com
 	  <testcase name="response is ok" time="0.115" classname="PostmanEcho"/>
 	  <testcase name="response time matches server response 'date' header" time="0.115" classname="PostmanEcho"/>
   </testsuite>
+  <testsuite name="Helpers / Delay Response" id="b7545dff-5f81-4ad0-af63-aefc0d6579f3" timestamp="2023-03-23T15:44:49.824Z" tests="4" failures="0" errors="0" time="2.122">
+	  <testcase name="response is ok" time="2.122" classname="PostmanEcho"/>
+	  <testcase name="response has valid json body" time="2.122" classname="PostmanEcho"/>
+	  <testcase name="request must have a valid delay" time="2.122" classname="PostmanEcho"/>
+	  <testcase name="response should take more time than the delay specified" time="2.122" classname="PostmanEcho"/>
+  </testsuite>
 </testsuites>

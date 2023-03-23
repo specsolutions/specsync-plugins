@@ -93,29 +93,17 @@ public class NewmanJUnitXmlResultLoader : JUnitXmlTestCaseAsStepResultLoader
     {
         var result = BaseLoadTestResult(args);
 
-        var folderGroups = result.TestDefinitions
-                .Select(td => new
-                {
-                    TestDefinition = td, FolderName = GetFolderName(td.Name)
-                })
-                .Where(td => td.FolderName != null)
-                .GroupBy(td => td.FolderName, td => td.TestDefinition)
-                .ToList();
+        var folderNames = result.TestDefinitions
+            .Select(td => GetFolderName(td.Name))
+            .Distinct()
+            .ToArray();
 
-        var addedGroups = folderGroups.ToArray();
-        do
+        var folderGroups = new List<(string GroupName, TestRunTestDefinition[] TestDefinitions)>();
+
+        foreach (var folderName in folderNames)
         {
-            addedGroups = addedGroups
-                .SelectMany(tdg => tdg.Select(td => new
-                {
-                    TestDefinition = td,
-                    FolderName = GetFolderName(tdg.Key)
-                }))
-                .Where(td => td.FolderName != null)
-                .GroupBy(td => td.FolderName, td => td.TestDefinition)
-                .ToArray();
-            folderGroups.AddRange(addedGroups);
-        } while (addedGroups.Any());
+            folderGroups.Add((folderName, result.TestDefinitions.Where(td => td.Name.StartsWith(folderName)).ToArray()));
+        }
 
         args.Tracer.TraceInformation($"Creating {folderGroups.Count} merged test results for the folders...");
 
@@ -123,11 +111,11 @@ public class NewmanJUnitXmlResultLoader : JUnitXmlTestCaseAsStepResultLoader
         {
             var testDefinition = new TestRunTestDefinition
             {
-                Name = folderGroup.Key,
-                ClassName = folderGroup.First().ClassName,
+                Name = folderGroup.GroupName,
+                ClassName = folderGroup.TestDefinitions.First().ClassName,
                 Results =
                 {
-                    MergeResults(folderGroup.SelectMany(td => td.Results).ToArray(), folderGroup.Key)
+                    MergeResults(folderGroup.TestDefinitions.SelectMany(td => td.Results).ToArray(), folderGroup.GroupName)
                 }
             };
             result.TestDefinitions.Add(testDefinition);
