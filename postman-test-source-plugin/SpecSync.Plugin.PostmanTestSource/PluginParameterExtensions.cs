@@ -49,11 +49,11 @@ public static class PluginParameterExtensions
             {
                 switch (m.Groups["name"].Value)
                 {
-                    case "project-url":
+                    case "remote-project-url":
                         return syncSettings.TfsProjectUrl;
-                    case "project-name":
+                    case "remote-project-name":
                         return syncSettings.TeamProjectName;
-                    case "server-url":
+                    case "remote-server-url":
                         return GetServerUrl(syncSettings.TfsProjectUrl);
                 }
                 return m.Value;

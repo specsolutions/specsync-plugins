@@ -17,7 +17,7 @@ public class PostmanTestSourcePlugin : ISpecSyncPlugin
         {
             { nameof(PostmanApiKey), "{env:POSTMAN_API_KEY}" },
             { nameof(MetadataHeading), "SpecSync" },
-            { nameof(TestCaseLinkTemplate), "{project-url}/_workitems/edit/{id}" },
+            { nameof(TestCaseLinkTemplate), "{remote-project-url}/_workitems/edit/{id}" },
         };
         public string PostmanApiKey { get; set; }
         public string CollectionId { get; set; }
