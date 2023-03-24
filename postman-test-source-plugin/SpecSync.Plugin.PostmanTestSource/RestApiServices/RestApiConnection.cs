@@ -29,12 +29,12 @@ public abstract class RestApiConnection : IRestApiConnection
         Tracer = tracer;
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         _httpClient.Dispose();
     }
 
-    public TData ExecuteGet<TData>(string endpoint)
+    public virtual TData ExecuteGet<TData>(string endpoint)
     {
         // execute request
         // (we need to use the same HttpClient otherwise the auth token cookie gets lost)
@@ -58,32 +58,12 @@ public abstract class RestApiConnection : IRestApiConnection
         return JsonConvert.DeserializeObject<TData>(content);
     }
 
-    public RestApiResponse<TData> ExecutePost<TData>(string endpoint, object data, bool acceptResponseAbove200 = false)
+    public virtual JsonSerializerSettings GetJsonSerializerSettings(bool indented = false)
     {
-        return ExecuteSend<TData>(endpoint, data, HttpMethod.Post, acceptResponseAbove200);
+        return GetDefaultJsonSerializerSettings(indented);
     }
 
-    public RestApiResponse ExecutePost(string endpoint, object data, bool acceptResponseAbove200 = false)
-    {
-        return ExecuteSend<string>(endpoint, data, HttpMethod.Post, acceptResponseAbove200);
-    }
-
-    public RestApiResponse ExecutePut(string endpoint, object data, bool acceptResponseAbove200 = false)
-    {
-        return ExecuteSend<string>(endpoint, data, HttpMethod.Put, acceptResponseAbove200);
-    }
-
-    public RestApiResponse<TData> ExecutePut<TData>(string endpoint, object data, bool acceptResponseAbove200 = false)
-    {
-        return ExecuteSend<TData>(endpoint, data, HttpMethod.Put, acceptResponseAbove200);
-    }
-
-    public RestApiResponse ExecuteDelete(string endpoint, object data = null, bool acceptResponseAbove200 = false)
-    {
-        return ExecuteSend<string>(endpoint, data, HttpMethod.Delete, acceptResponseAbove200);
-    }
-
-    public static JsonSerializerSettings GetJsonSerializerSettings(bool indented = false)
+    public static JsonSerializerSettings GetDefaultJsonSerializerSettings(bool indented = false)
     {
         var serializerSettings = new JsonSerializerSettings();
         var contractResolver = new CamelCasePropertyNamesContractResolver();
@@ -98,7 +78,7 @@ public abstract class RestApiConnection : IRestApiConnection
         return serializerSettings;
     }
 
-    private RestApiResponse<TData> ExecuteSend<TData>(string endpoint, object data, HttpMethod httpMethod, bool acceptResponseAbove200)
+    public virtual RestApiResponse<TData> ExecuteSend<TData>(string endpoint, object data, HttpMethod httpMethod, bool acceptResponseAbove200)
     {
         // execute request
         HttpContent requestContent = null;
@@ -154,7 +134,7 @@ public abstract class RestApiConnection : IRestApiConnection
     }
 
     // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-    private void SanityCheck(RestApiResponse response, int upperRange = 300)
+    protected virtual void SanityCheck(RestApiResponse response, int upperRange = 300)
     {
         if ((int) response.StatusCode < 200 || (int) response.StatusCode >= upperRange)
         {
@@ -222,7 +202,7 @@ public abstract class RestApiConnection : IRestApiConnection
         return $"{(int)response.StatusCode} ({response.StatusCode}): {reasonPhrase}";
     }
 
-    private void LogResponse(HttpResponseMessage response, string content = null)
+    protected virtual void LogResponse(HttpResponseMessage response, string content = null)
     {
         string GetDiagMessage()
         {

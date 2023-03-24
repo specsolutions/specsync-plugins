@@ -61,8 +61,8 @@ public abstract class TestBase
             .Returns(GetFromFile<GetCollectionResponse>("sample_postman_collection.json"));
         PostmanApiConnectionStub.Setup(c => c.ExecuteGet<JObject>($"collections/{CollectionId}"))
             .Returns(GetFromFile<JObject>("sample_postman_collection.json"));
-        PostmanApiConnectionStub.Setup(c => c.ExecutePut<UpdateCollectionResponse>($"collections/{CollectionId}", It.IsAny<object>(), false))
-            .Returns(new Func<string,object,bool,RestApiResponse<UpdateCollectionResponse>>((_, data, _) =>
+        PostmanApiConnectionStub.Setup(c => c.ExecuteSend<UpdateCollectionResponse>($"collections/{CollectionId}", It.IsAny<object>(), HttpMethod.Put, false))
+            .Returns(new Func<string,object,HttpMethod, bool,RestApiResponse<UpdateCollectionResponse>>((_, data, _, _) =>
             {
                 LastPayload = data;
                 return new RestApiResponse<UpdateCollectionResponse>
