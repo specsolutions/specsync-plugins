@@ -18,6 +18,9 @@
       }
     ]
   },
+  "local": {
+    "tags": "not @legacy"
+  },
   "remote": {
     "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
     "testSuite": {
