@@ -70,7 +70,10 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
         var isTestItem = IsTestItem(item, metadata, args, parentMetadata);
         if (isTestItem)
-            return new PostmanTestItem(item, metadata, parentMetadata.ToArray());
+        {
+            var testItem = new PostmanTestItem(item, metadata, parentMetadata.ToArray());
+            return testItem;
+        }
 
         var folderInsertIndex = folderItems.Count;
         parentMetadata.Push(metadata);
@@ -84,7 +87,8 @@ public class PostmanCollectionLoader : IBddProjectLoader
 
         parentMetadata.Pop();
         var folderItem = new PostmanFolderItem(itemPath, subPostmanItems, item, metadata);
-        folderItems.Insert(folderInsertIndex, folderItem);
+        if (folderItem.Tests.Any() || !folderItem.SubFolders.Any()) // contains tests or empty
+            folderItems.Insert(folderInsertIndex, folderItem);
         return folderItem;
     }
 
