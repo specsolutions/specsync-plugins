@@ -1,6 +1,6 @@
 # Postman Test Source SpecSync Plugin: SpecSync.Plugin.PostmanTestSource
 
-This plugin can be used to synchronize test from a Postman collection. 
+This plugin can be used to synchronize test from a Postman collection and publish results executed with Newman. 
 
 *You can find more information about the SpecSync sample plugins in the [repository page](https://github.com/specsolutions/specsync-sample-plugins#readme).*
 
