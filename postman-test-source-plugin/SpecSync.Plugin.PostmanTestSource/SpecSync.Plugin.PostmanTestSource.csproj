@@ -37,4 +37,11 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\*.deps.json;$(OutputPath)\*.pdb">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\netstandard2.0\</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
+
 </Project>
