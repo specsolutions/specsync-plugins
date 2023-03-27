@@ -15,8 +15,8 @@ The plugin require a SpecSync Enterprise license to run. Please [contact us](htt
 The plugin connects to the Postman cloud server and loads the configured Postman collection. From the collection it detects tests as:
 
 * Folders or requests that have been already linked to Test Cases by SpecSync (via documentation section)
-* Optional: Folders or requests that have a name matches to the configured regex (e.g. name starts with `TEST`).
-* Optional: Folders or requests that have a documentation matches to the configured regex (e.g. documentation contains `ADO Test Case = 1234`).
+* Optional: Folders or requests that have a name matches to the configured regex (e.g. name starts with `TEST`). Use the `testNameRegex` parameter for this. 
+* Optional: Folders or requests that have a documentation matches to the configured regex (e.g. documentation contains `ADO Test Case = 1234`). User the `testDocumentationRegex` parameter for this.
 * Requests where their folder is not a test
 
 The Postman tests can be enhanced with specific additional details that are required or useful for Test Case syncrhonization.
@@ -44,6 +44,15 @@ URI requested.
 - links:
     - story: [131](https://dev.azure.com/specsync-demo/specsync-plugins-demo/_workitems/edit/131)
 ```
+
+## Plugin Parameters
+
+* `collectionId`: Specify the ID of the Postman Collection.
+* `postmanApiKey`: Specify your Postman API key or set the POSTMAN_API_KEY environment variable.
+* `metadataHeading`: Set the heading name of the section in the Postman item documentation that contains the SpecSync settings. Optional, `SpecSync` is used by default.
+* `testNameRegex`: A regular expression that matches to folders names that should be treated as tests. Optional. E.g. `^TEST-`, if all test-folders name starts with `TEST-`.
+* `testDocumentationRegex`: A regular expression that matches to folders documentation that should be treated as tests. Optional.
+* `testCaseLinkTemplate`: Specify the URL template of the Test Case. Optional, it has to be specified for Jira only.
 
 ## Publishing Test Results
 
