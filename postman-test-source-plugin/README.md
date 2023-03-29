@@ -51,7 +51,7 @@ URI requested.
 * `postmanApiKey`: Specify your Postman API key or set the POSTMAN_API_KEY environment variable.
 * `metadataHeading`: Set the heading name of the section in the Postman item documentation that contains the SpecSync settings. Optional, `SpecSync` is used by default.
 * `testNameRegex`: A regular expression that matches to folders names that should be treated as tests. Optional. E.g. `^TEST-`, if all test-folders name starts with `TEST-`.
-* `testDocumentationRegex`: A regular expression that matches to folders documentation that should be treated as tests. Optional.
+* `testDocumentationRegex`: A regular expression that matches to folders documentation that should be treated as tests. Optional. E.g. to use `## Azure DevOps` as heading, you have to set the parameter to `Azure DevOps`.
 * `testCaseLinkTemplate`: Specify the URL template of the Test Case. Optional, it has to be specified for Jira only.
 
 ## Publishing Test Results
