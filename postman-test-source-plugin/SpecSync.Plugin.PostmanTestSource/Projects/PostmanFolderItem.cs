@@ -39,7 +39,7 @@ public class PostmanFolderItem : ISourceFile, IPostmanItem, ILocalTestCaseContai
     public IBddProject BddProject { get; set; }
     public ISourceFile SourceFile => this;
     public string Name { get; }
-    public string Description => Metadata.CleanedDocumentation ?? _modelItem.Request.Description ?? _modelItem.Description;
+    public string Description => Metadata.CleanedDocumentation ?? _modelItem.Request?.Description ?? _modelItem.Description;
     // ReSharper disable once CoVariantArrayConversion
     public ILocalTestCase[] LocalTestCases => Tests;
     public ILocalTestCaseContainerUpdater Updater { get; set; }
