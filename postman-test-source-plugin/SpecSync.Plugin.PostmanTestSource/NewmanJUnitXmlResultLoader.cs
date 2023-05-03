@@ -32,6 +32,22 @@ public class NewmanJUnitXmlResultLoader : JUnitXmlTestCaseAsStepResultLoader
         return base.GetOutcome(testCaseStatus, testCase, tracer);
     }
 
+    private TestOutcome GetOutcomeFromStepsFix(List<TestRunTestStepResult> testResultStepResults, ISpecSyncTracer tracer)
+    {
+        var outcomesExcluded = new[] { TestOutcome.Unknown, TestOutcome.PassedButRunAborted, TestOutcome.NotRunnable, TestOutcome.NotExecuted, TestOutcome.Disconnected, TestOutcome.Warning };
+        var stepResultsConsidered = testResultStepResults.Where(r => !outcomesExcluded.Contains(r.Outcome)).ToArray();
+        if (stepResultsConsidered.Length > 0)
+            return stepResultsConsidered.Min(r => r.Outcome);
+
+        var stepResult = testResultStepResults?.LastOrDefault(r => r.Outcome != TestOutcome.NotExecuted)?.Outcome;
+        if (stepResult != null)
+            return stepResult.Value;
+
+        tracer?.TraceWarning("Not specified test result, will be treated as 'NotExecuted'");
+        return TestOutcome.Unknown; // will be converted to 'NotExecuted'
+    }
+
+
     protected override void ProcessTestSuite(JUnitTestSuite testSuite, LocalTestRun result, TestResultLoaderProviderArgs args)
     {
         base.ProcessTestSuite(testSuite, result, args);
@@ -55,6 +71,8 @@ public class NewmanJUnitXmlResultLoader : JUnitXmlTestCaseAsStepResultLoader
             }
 
             testResult.StepResults.Insert(0, requestResult);
+
+            testDefinition.Results[0].Outcome = GetOutcomeFromStepsFix(testDefinition.Results[0].StepResults, args.Tracer);
         }
     }
 

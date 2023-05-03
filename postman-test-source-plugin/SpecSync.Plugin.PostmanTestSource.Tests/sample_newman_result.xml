@@ -65,4 +65,21 @@ RequestError: Error: getaddrinfo ENOTFOUND postman-echox.com
 	  <testcase name="request must have a valid delay" time="2.122" classname="PostmanEcho"/>
 	  <testcase name="response should take more time than the delay specified" time="2.122" classname="PostmanEcho"/>
   </testsuite>
+
+  <testsuite name="Utilities / Get UTF8 Encoded Response (Fail First)" id="a481ff70-fbaf-467e-9abd-cf49f47ed896" timestamp="2023-03-20T15:06:17.799Z" tests="3" failures="1" errors="0" time="0.223">
+	  <testcase name="response has chunked transfer encoding header" time="0.223" classname="PostmanEcho">
+		  <failure type="AssertionFailure" message="expected response to have header with key 'transfer-encoding'">
+			  <![CDATA[Failed 1 times.]]>
+			  <![CDATA[Collection JSON ID: 2c49b8c3-0f1a-43f5-8a18-5d7f6c50c0ac.]]>
+			  <![CDATA[Collection name: Postman Echo.]]>
+			  <![CDATA[Request name: Utilities / Get UTF8 Encoded Response.]]>
+			  <![CDATA[Test description: response has chunked transfer encoding header.]]>
+			  <![CDATA[Error message: expected response to have header with key 'transfer-encoding'.]]>
+			  <![CDATA[Stacktrace: AssertionError: expected response to have header with key 'transfer-encoding'
+   at Object.eval sandbox-script.js:3:19).]]>
+		  </failure>
+	  </testcase>
+	  <testcase name="response is ok" time="0.223" classname="PostmanEcho"/>
+	  <testcase name="response has charset in content-type header" time="0.223" classname="PostmanEcho"/>
+  </testsuite>
 </testsuites>

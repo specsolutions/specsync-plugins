@@ -113,4 +113,16 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         result.TestDefinitions.Should().ContainSingle(td => td.Name == "Helpers / Date and Time");
         result.TestDefinitions.Should().ContainSingle(td => td.Name == "Helpers");
     }
+
+    [TestMethod]
+    public void Should_treat_test_case_result_failed_if_the_failing_step_is_not_the_last()
+    {
+        var sut = new NewmanJUnitXmlResultLoader();
+
+        var result = sut.LoadTestResult(CreateArgs());
+
+        result.Should().NotBeNull();
+        var testResult = result.TestDefinitions.Should().ContainSingle(td => td.Name == "Utilities / Get UTF8 Encoded Response (Fail First)").Subject;
+        testResult.Results.Should().ContainSingle().Subject.Outcome.Should().Be(TestOutcome.Failed);
+    }
 }
