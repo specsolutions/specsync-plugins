@@ -219,4 +219,74 @@ This is the documentation
         result.TestSteps[3].Keyword.Should().Be("pm.test ");
         result.TestSteps[3].Text.ToString().Should().Be("response body has json with request queries");
     }
+
+
+    [TestMethod]
+    [DataRow("pm.test(\"response is ok\", function () {", "response is ok")]
+    [DataRow("pm.test(\"response is ok\"  , function () {", "response is ok")]
+    [DataRow("pm.test(\"response is ok\"  ,", "response is ok")]
+    [DataRow("pm.test('response is ok', function () {", "response is ok")]
+    [DataRow("pm.test(`response is ok`, function () {", "response is ok")]
+    [DataRow("pm.test(\"response is ok\" + \"(\"+pm.info.requestName+\")\", function () {", "\"response is ok\" + \"(\"+pm.info.requestName+\")\"")]
+    [DataRow("pm.test(pm.info.requestName + \": response is ok\", function () {", "pm.info.requestName + \": response is ok\"")]
+    [DataRow("pm.test(`${pm.info.requestName}: response is ok`, function () {", "${pm.info.requestName}: response is ok")]
+    public void Should_parse_different_pm_test_usage(string pmTestLine, string expectedText)
+    {
+        var sut = new PostmanTestItemAnalyzer();
+
+        var testItem = CreateTestItem(new Item
+        {
+            Name = "Test 1",
+            Request = new Request(),
+            Events = new[]
+            {
+                new Event
+                {
+                    Listen = "test",
+                    Script = new Script
+                    {
+                        Type = "text/javascript",
+                        Exec = new []{ pmTestLine, "});" }
+                    }
+                }
+            }
+        });
+
+        var result = sut.Analyze(new LocalTestCaseAnalyzerArgs(GetLocalTestCase(testItem), TestCaseSyncContextStub.Object));
+        result.Should().NotBeNull();
+        result.TestSteps.Should().HaveCount(2);
+        result.TestSteps[1].Keyword.Should().Be("pm.test ");
+        result.TestSteps[1].Text.ToString().Should().Be(expectedText);
+    }
+
+    [TestMethod]
+    [DataRow("//pm.test(\"response is ok\", function () {")]
+    [DataRow("  // foo pm.test(\"response is ok\", function () {")]
+    [DataRow("xpm.test(\"response is ok\", function () {")]
+    public void Should_not_parse_commented_pm_test_usage(string pmTestLine)
+    {
+        var sut = new PostmanTestItemAnalyzer();
+
+        var testItem = CreateTestItem(new Item
+        {
+            Name = "Test 1",
+            Request = new Request(),
+            Events = new[]
+            {
+                new Event
+                {
+                    Listen = "test",
+                    Script = new Script
+                    {
+                        Type = "text/javascript",
+                        Exec = new []{ pmTestLine, "});" }
+                    }
+                }
+            }
+        });
+
+        var result = sut.Analyze(new LocalTestCaseAnalyzerArgs(GetLocalTestCase(testItem), TestCaseSyncContextStub.Object));
+        result.Should().NotBeNull();
+        result.TestSteps.Should().HaveCount(1);
+    }
 }

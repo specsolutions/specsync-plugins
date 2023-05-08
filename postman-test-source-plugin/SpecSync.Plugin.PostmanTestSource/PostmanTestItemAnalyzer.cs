@@ -46,17 +46,33 @@ public class PostmanTestItemAnalyzer : ILocalTestCaseAnalyzer
                 {
                     foreach (var execLine in testEvent.Script.Exec)
                     {
-                        var match = Regex.Match(execLine, @"pm.test\([""'](?<expected>.+?)[""']");
-                        if (match.Success)
+                        var match = Regex.Match(execLine, @"^(?<before>.*)\bpm\.test\((?<expected>.+),");
+                        if (match.Success && !match.Groups["before"].Value.Contains("//"))
                             yield return new TestStepSourceData
                             {
                                 IsThenStep = true,
                                 Keyword = "pm.test ",
-                                Text = new ParameterizedText(match.Groups["expected"].Value)
+                                Text = new ParameterizedText(SimplifyJsString(match.Groups["expected"].Value))
                             };
                     }
                 }
             }
         }
+    }
+
+    private string SimplifyJsString(string value)
+    {
+        value = value.Trim();
+        var separators = new[] { "\"", "'", "`" };
+        foreach (var separator in separators)
+        {
+            if (value.Length >= separator.Length * 2 && 
+                value.StartsWith(separator) && value.EndsWith(separator) && 
+                !value.Substring(separator.Length, value.Length - separator.Length * 2).Contains(separator))
+            {
+                return value.Substring(separator.Length, value.Length - separator.Length * 2);
+            }
+        }
+        return value;
     }
 }
