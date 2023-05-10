@@ -22,11 +22,15 @@ public class NewmanJUnitXmlResultLoader : JUnitXmlTestCaseAsStepResultLoader
         => args.TestResultConfiguration.IsFileFormat(TestResultFileFormat) &&
            ".xml".Equals(Path.GetExtension(args.TestResultFilePath), StringComparison.InvariantCultureIgnoreCase);
 
+    //TODO: this override can be removed when target SpecSync 3.5 as it was implemented in 3.4.4.
     protected override TestOutcome GetOutcome(string testCaseStatus, JUnitTestCase testCase, ISpecSyncTracer tracer)
     {
         if (string.IsNullOrEmpty(testCaseStatus))
         {
-            return testCase.Error != null ? TestOutcome.Failed : TestOutcome.Passed;
+            if (testCase.Failure != null || testCase.Error != null)
+                return TestOutcome.Failed;
+
+            return TestOutcome.Passed;
         }
 
         return base.GetOutcome(testCaseStatus, testCase, tracer);
