@@ -7,7 +7,7 @@
     "plugins": [
       {
         "packageId": "SpecSync.Plugin.PostmanTestSource",
-        "packageVersion": "1.0.2-local",
+        "packageVersion": "1.0.3-local",
         "packageSource": "..\\SpecSync.Plugin.PostmanTestSource\\bin\\Debug",
         "parameters": {
           "collectionId": "26495037-5c8d6f15-b2a3-4b47-ae1d-72dd3bc1b49b",

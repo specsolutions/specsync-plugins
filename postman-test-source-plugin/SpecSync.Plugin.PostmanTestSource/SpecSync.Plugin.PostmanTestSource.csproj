@@ -5,7 +5,7 @@
     <LangVersion>10</LangVersion>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 
-    <VersionPrefix>1.0.2</VersionPrefix>
+    <VersionPrefix>1.0.3</VersionPrefix>
     <VersionSuffix>local</VersionSuffix>
 
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
