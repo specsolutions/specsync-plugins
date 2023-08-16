@@ -37,3 +37,4 @@ be useful when manual test executions have to be recorded.
 * [SpecSync.Plugin.ScenarioOutlineAsNormalTestCase](scenario-outline-as-normal-test-case-format-plugin): A SpecSync plugin that synchronizes scenario outlines as normal (non-data-driven) Test Cases.
 * [SpecSync.Plugin.GenericTestResultMatcher](generic-test-result-matcher-plugin): A SpecSync plugin that can be used to override test result matching rules.
 * [SpecSync.Plugin.PostmanTestSource](postman-test-source-plugin): This plugin can be used to synchronize a tests from a Postman collection and publish results executed with Newman.
+* [SpecSync.Plugin.TestNGTestSource](testng-test-source-plugin): Allows synchronizing "Java TestNG Tests" and publish test result files.
