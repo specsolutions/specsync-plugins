@@ -1,0 +1,38 @@
+﻿{
+  "$schema": "http://schemas.specsolutions.eu/specsync4azuredevops-config-latest.json",
+  "compatibilityVersion": "3.4",
+
+  "toolSettings": {
+    "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
+    "plugins": [
+      {
+        "packageId": "SpecSync.Plugin.TestNGTestSource",
+        "packageVersion": "1.0.0-local",
+        "packageSource": "..\\SpecSync.Plugin.TestNGTestSource\\bin\\Debug"
+      }
+    ]
+  },
+  "remote": {
+    "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
+    "testSuite": {
+      "name": "TestNG Tests"
+    }
+  },
+  "local": {
+    "folder": "src/test/java"
+  },
+  "synchronization": {
+    "links": [
+      {
+        "tagPrefix": "story"
+      }
+    ],
+    "automation": {
+      "enabled": true,
+      "automatedTestType": "TestNG Unit Test"
+    },
+    "fieldUpdates": {
+      "Description": "{local-test-case-description}{br}<pre>{local-test-case-container-source-file-path:HtmlEncode}:{br}{local-test-case-source:HtmlEncode}</pre>"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "specsync.azuredevops": {
+      "version": "3.4.6",
+      "commands": [
+        "specsync"
+      ]
+    }
+  }
+}

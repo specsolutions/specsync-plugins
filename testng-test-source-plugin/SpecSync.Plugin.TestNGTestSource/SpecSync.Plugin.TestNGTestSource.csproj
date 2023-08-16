@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <NoWarn>CS3021</NoWarn>
+    <langversion>11</langversion>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>local</VersionSuffix>
+
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>A SpecSync plugin that synchronizes Java TestNG test methods as Test Cases.</Description>
+    <RepositoryUrl>https://github.com/specsolutions/specsync-sample-plugins</RepositoryUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>SpecSync-Icon.png</PackageIcon>
+    <PackageProjectUrl>https://speclink.me/specsync</PackageProjectUrl>
+    <Copyright>Copyright © 2016-$([System.DateTime]::UtcNow.ToString("yyyy")) Spec Solutions</Copyright>
+    <PackageTags>specsync plugin testng java</PackageTags>
+    <PackageReleaseNotes>Please check https://github.com/specsolutions/specsync-sample-plugins/releases for release note details.</PackageReleaseNotes>
+    <Authors>Spec Solutions</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SpecSync.PluginDependency" Version="3.4.6" />
+    <PackageReference Include="SpecSync.PluginDependency.CSharpSource" Version="3.4.6" />
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.9.2" />
+    <PackageReference Include="Antlr4BuildTasks" Version="8.14">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Antlr4 Include="JavaCode\JavaGrammar\JavaLexer.g4">
+      <Package>JavaParserPlay.JavaCode.JavaGrammar</Package>
+    </Antlr4>
+    <Antlr4 Include="JavaCode\JavaGrammar\JavaParser.g4">
+      <Package>JavaParserPlay.JavaCode.JavaGrammar</Package>
+    </Antlr4>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)\..\..\Resources\SpecSync-Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+      <Visible>false</Visible>
+    </None>
+    <Content Include="$(MSBuildThisFileDirectory)\..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\Antlr*.dll;$(OutputPath)\SpecSync.PluginDependency.CSharpSource*.dll;$(OutputPath)\*.deps.json;$(OutputPath)\*.pdb">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\netstandard2.0\</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
+
+</Project>

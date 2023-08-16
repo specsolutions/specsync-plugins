@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "SpecSync.Plugin.TestNGTestSource": {
+      "commandName": "Project"
+    },
+    "Push SampleProject": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Program Files\\dotnet\\dotnet.exe",
+      "commandLineArgs": "specsync push --dryRun --debug",
+      "workingDirectory": "W:\\SpecSync\\Samples\\specsync-sample-plugins\\testng-test-source-plugin\\SampleProject",
+      "nativeDebugging": false
+    }
+  }
+}

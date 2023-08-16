@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="sampleTest" parallel="false">
+
+    <test name="sample-tests" preserve-order="true" verbose="2">
+        <packages>
+            <package name="eu.specsolutions.sampleprj.*"/>
+            <package name=""/>
+        </packages>
+    </test>
+
+</suite>
