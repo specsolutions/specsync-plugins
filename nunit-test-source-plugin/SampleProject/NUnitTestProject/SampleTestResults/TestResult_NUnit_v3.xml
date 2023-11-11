@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-run id="0" runstate="Runnable" testcasecount="6" result="Failed" total="6" passed="5" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.16.3.0" clr-version="4.0.30319.42000" start-time="2023-11-11 11:29:10Z" end-time="2023-11-11 11:29:11Z" duration="0.850330">
+  <command-line><![CDATA["C:\Users\gaspar\.nuget\packages\nunit.consolerunner\3.16.3\tools\nunit3-console.exe" .\bin\Debug\netcoreapp3.1\NUnitTestProject.dll]]></command-line>
+  <test-suite type="Assembly" id="1-1009" name="NUnitTestProject.dll" fullname="W:/SpecSync/Samples/specsync-sample-plugins/nunit-test-source-plugin/SampleProject/NUnitTestProject/bin/Debug/netcoreapp3.1/NUnitTestProject.dll" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2023-11-11T11:29:11.4688464Z" end-time="2023-11-11T11:29:11.5709400Z" duration="0.101938" total="6" passed="5" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="0">
+    <environment framework-version="3.13.1.0" clr-version="3.1.32" os-version="Microsoft Windows 10.0.19045" platform="Win32NT" cwd="W:\SpecSync\Samples\specsync-sample-plugins\nunit-test-source-plugin\SampleProject\NUnitTestProject" machine-name="SPECSOL-D01" user="gaspar" user-domain="SPECSOL-D01" culture="en-US" uiculture="en-US" os-architecture="x64" />
+    <settings>
+      <setting name="DisposeRunners" value="True" />
+      <setting name="WorkDirectory" value="W:\SpecSync\Samples\specsync-sample-plugins\nunit-test-source-plugin\SampleProject\NUnitTestProject" />
+      <setting name="ImageRuntimeVersion" value="4.0.30319" />
+      <setting name="ImageTargetFrameworkName" value=".NETCoreApp,Version=v3.1" />
+      <setting name="ImageRequiresX86" value="False" />
+      <setting name="ImageRequiresDefaultAppDomainAssemblyResolver" value="False" />
+      <setting name="TargetRuntimeFramework" value="netcore-3.1" />
+      <setting name="NumberOfTestWorkers" value="8" />
+    </settings>
+    <properties>
+      <property name="_PID" value="14476" />
+      <property name="_APPDOMAIN" value="nunit-agent" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="TestSuite" id="1-1010" name="NUnitTestProject" fullname="NUnitTestProject" runstate="Runnable" testcasecount="6" result="Failed" site="Child" start-time="2023-11-11T11:29:11.4747425Z" end-time="2023-11-11T11:29:11.5709312Z" duration="0.096180" total="6" passed="5" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="0">
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestFixture" id="1-1000" name="UnitTest1" fullname="NUnitTestProject.UnitTest1" classname="NUnitTestProject.UnitTest1" runstate="Runnable" testcasecount="5" result="Failed" site="Child" start-time="2023-11-11T11:29:11.4761597Z" end-time="2023-11-11T11:29:11.5667103Z" duration="0.090549" total="5" passed="4" failed="1" warnings="0" inconclusive="0" skipped="0" asserts="0">
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-case id="1-1002" name="OneFailingTest" fullname="NUnitTestProject.UnitTest1.OneFailingTest" methodname="OneFailingTest" classname="NUnitTestProject.UnitTest1" runstate="Runnable" seed="478297644" result="Failed" start-time="2023-11-11T11:29:11.4782319Z" end-time="2023-11-11T11:29:11.5613530Z" duration="0.083209" asserts="0">
+          <properties>
+            <property name="Category" value="tc:194" />
+          </properties>
+          <failure>
+            <message><![CDATA[This is a simulated error]]></message>
+            <stack-trace><![CDATA[   at NUnitTestProject.UnitTest1.OneFailingTest() in W:\SpecSync\Samples\specsync-sample-plugins\nunit-test-source-plugin\SampleProject\NUnitTestProject\UnitTest1.cs:line 23
+]]></stack-trace>
+          </failure>
+          <output><![CDATA[This is a passing test
+]]></output>
+          <assertions>
+            <assertion result="Failed">
+              <message><![CDATA[This is a simulated error]]></message>
+              <stack-trace><![CDATA[   at NUnitTestProject.UnitTest1.OneFailingTest() in W:\SpecSync\Samples\specsync-sample-plugins\nunit-test-source-plugin\SampleProject\NUnitTestProject\UnitTest1.cs:line 23
+]]></stack-trace>
+            </assertion>
+          </assertions>
+        </test-case>
+        <test-case id="1-1001" name="OnePassingTest" fullname="NUnitTestProject.UnitTest1.OnePassingTest" methodname="OnePassingTest" classname="NUnitTestProject.UnitTest1" runstate="Runnable" seed="992258739" result="Passed" start-time="2023-11-11T11:29:11.5635163Z" end-time="2023-11-11T11:29:11.5637687Z" duration="0.000254" asserts="0">
+          <properties>
+            <property name="Category" value="MyCategory" />
+            <property name="Category" value="story:131" />
+            <property name="Category" value="tc:193" />
+          </properties>
+        </test-case>
+        <test-suite type="ParameterizedMethod" id="1-1006" name="SampleDataDriven" fullname="NUnitTestProject.UnitTest1.SampleDataDriven" classname="NUnitTestProject.UnitTest1" runstate="Runnable" testcasecount="3" result="Passed" start-time="2023-11-11T11:29:11.5638267Z" end-time="2023-11-11T11:29:11.5658247Z" duration="0.001998" total="3" passed="3" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="0">
+          <properties>
+            <property name="Category" value="tc:195" />
+          </properties>
+          <test-case id="1-1003" name="SampleDataDriven(&quot;foo&quot;,1)" fullname="NUnitTestProject.UnitTest1.SampleDataDriven(&quot;foo&quot;,1)" methodname="SampleDataDriven" classname="NUnitTestProject.UnitTest1" runstate="Runnable" seed="640744443" result="Passed" start-time="2023-11-11T11:29:11.5641327Z" end-time="2023-11-11T11:29:11.5643405Z" duration="0.000208" asserts="0">
+            <properties>
+              <property name="Description" value="First" />
+            </properties>
+            <output><![CDATA[Testing: foo, 1
+]]></output>
+          </test-case>
+          <test-case id="1-1004" name="SampleDataDriven(&quot;bar&quot;,2)" fullname="NUnitTestProject.UnitTest1.SampleDataDriven(&quot;bar&quot;,2)" methodname="SampleDataDriven" classname="NUnitTestProject.UnitTest1" runstate="Runnable" seed="467871559" result="Passed" start-time="2023-11-11T11:29:11.5643563Z" end-time="2023-11-11T11:29:11.5644395Z" duration="0.000084" asserts="0">
+            <properties>
+              <property name="Description" value="Second" />
+            </properties>
+            <output><![CDATA[Testing: bar, 2
+]]></output>
+          </test-case>
+          <test-case id="1-1005" name="SampleDataDriven(&quot;baz&quot;,3)" fullname="NUnitTestProject.UnitTest1.SampleDataDriven(&quot;baz&quot;,3)" methodname="SampleDataDriven" classname="NUnitTestProject.UnitTest1" runstate="Runnable" seed="1865923162" result="Passed" start-time="2023-11-11T11:29:11.5644523Z" end-time="2023-11-11T11:29:11.5645297Z" duration="0.000078" asserts="0">
+            <properties>
+              <property name="Description" value="Third" />
+            </properties>
+            <output><![CDATA[Testing: baz, 3
+]]></output>
+          </test-case>
+        </test-suite>
+      </test-suite>
+      <test-suite type="TestFixture" id="1-1007" name="UnitTest2" fullname="NUnitTestProject.UnitTest2" classname="NUnitTestProject.UnitTest2" runstate="Runnable" testcasecount="1" result="Passed" start-time="2023-11-11T11:29:11.5677477Z" end-time="2023-11-11T11:29:11.5709175Z" duration="0.003169" total="1" passed="1" failed="0" warnings="0" inconclusive="0" skipped="0" asserts="0">
+        <test-case id="1-1008" name="SomeOtherTest" fullname="NUnitTestProject.UnitTest2.SomeOtherTest" methodname="SomeOtherTest" classname="NUnitTestProject.UnitTest2" runstate="Runnable" seed="18943551" result="Passed" start-time="2023-11-11T11:29:11.5679098Z" end-time="2023-11-11T11:29:11.5708717Z" duration="0.002963" asserts="0">
+          <properties>
+            <property name="Category" value="tc:196" />
+          </properties>
+          <output><![CDATA[Testing some other test
+]]></output>
+        </test-case>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

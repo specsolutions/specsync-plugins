@@ -20,8 +20,14 @@ namespace SpecSync.Plugin.NUnitTestSource
             args.ServiceRegistry.LocalTestCaseContainerParserProvider
                 .Register(new NUnitTestClassParser());
             args.ServiceRegistry.LocalTestCaseAnalyzerProvider
-            .Register(new NUnitTestAnalyzer());
+                .Register(new NUnitTestAnalyzer());
 
+            args.ServiceRegistry.TestResultLoaderProvider
+                .Register(new NUnit2XmlResultLoader());
+            args.ServiceRegistry.TestResultLoaderProvider
+                .Register(new NUnit3XmlResultLoader());
+            args.ServiceRegistry.TestResultLoaderProvider
+                .Register(new NUnitXmlResultLoader());
             args.ServiceRegistry.TestResultMatcherProvider
                 .Register(new NUnitTestResultMatcher(), ServicePriority.High);
         }
