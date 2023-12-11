@@ -1,4 +1,4 @@
-# Sample SpecSync plugins
+# SpecSync plugins
 
 _Note: The `main` branch contains sample plugins for SpecSync v3.4. In order to find samples for SpecSync v3.3, please use the branch `specsync-v3.3`._
 
