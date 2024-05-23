@@ -28,7 +28,8 @@ public class GenericMatcher : ITestRunnerResultMatcher
         return CombineSelectors(
             CreateNameMatch(localTestCase, localTestCaseContainer, args),
             CreateClassNameMatch(localTestCase, localTestCaseContainer, args),
-            CreateMethodNameMatch(localTestCase, localTestCaseContainer, args)
+            CreateMethodNameMatch(localTestCase, localTestCaseContainer, args),
+            CreateStdOutMatch(localTestCase, localTestCaseContainer, args)
         );
     }
 
@@ -45,6 +46,11 @@ public class GenericMatcher : ITestRunnerResultMatcher
     private MatchResultSelector CreateMethodNameMatch(ILocalTestCase localTestCase, ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
     {
         return CreateMatch("methodName", _pluginParameters.MethodName, td => td.MethodName, localTestCase, localTestCaseContainer, args);
+    }
+
+    private MatchResultSelector CreateStdOutMatch(ILocalTestCase localTestCase, ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
+    {
+        return CreateMatch("stdOut", _pluginParameters.StdOut, td => td.Results.FirstOrDefault()?.StdOut, localTestCase, localTestCaseContainer, args);
     }
 
     private MatchResultSelector CreateMatch(string paramName, string paramRe, Func<TestRunTestDefinition, string> paramSelector, ILocalTestCase localTestCase, ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
@@ -85,7 +91,7 @@ public class GenericMatcher : ITestRunnerResultMatcher
     {
         var validSelectors = selectors.Where(s => s != null).ToArray();
         if (validSelectors.Length == 0)
-            throw new SpecSyncConfigurationException("At least one of the plugin parameters 'name', 'className' or 'methodName' has to be specified.");
+            throw new SpecSyncConfigurationException("At least one of the plugin parameters 'name', 'className', 'methodName' or 'stdOut' has to be specified.");
         return new MatchResultSelector(
             string.Join(" and ", validSelectors.Select(s => s.DiagMessage)),
             td => validSelectors.All(s => s.Func(td))

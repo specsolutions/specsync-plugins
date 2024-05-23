@@ -10,11 +10,12 @@ public class PluginParameters
     public string Name { get; set; }
     public string ClassName { get; set; }
     public string MethodName { get; set; }
+    public string StdOut { get; set; }
 
     public void Verify()
     {
-        if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(ClassName) && string.IsNullOrEmpty(MethodName))
-            throw new SpecSyncConfigurationException("At least one of the plugin parameters 'name', 'className' or 'methodName' has to be specified.");
+        if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(ClassName) && string.IsNullOrEmpty(MethodName) && string.IsNullOrEmpty(StdOut))
+            throw new SpecSyncConfigurationException("At least one of the plugin parameters 'name', 'className', 'methodName' or 'stdOut' has to be specified.");
     }
 
     public static PluginParameters FromPluginParameters(Dictionary<string, object> parameters)
