@@ -52,6 +52,23 @@ You can use different column names, but in that case you need to configure the n
 * `TestNameColumnName`
 * `ErrorMessageColumnName`
 
+For the Test Case ID cell, you can also specify a *value regex* with the `TestCaseIdValueRegex` parameter. 
+This can be used to convert the value from the Excel (e.g. remove prefix). 
+The regex must contain a regular expression group named `value`. 
+For example to remove the prefix `TC_` from the Test Case ID (`ID` column in Excel by default), you can use the following configuration:
+
+```
+"plugins": [
+  {
+    "packageId": "SpecSync.Plugin.ExcelTestResults",
+    [...]
+    "parameters": {
+      "TestCaseIdValueRegex": "TC_(?<value>.*)",
+      [...]
+    }
+  }
+]
+```
 
 In order to use the plugin, you have to specify `Excel` for the `--testResultFileFormat` (or `-f`) command line option:
 

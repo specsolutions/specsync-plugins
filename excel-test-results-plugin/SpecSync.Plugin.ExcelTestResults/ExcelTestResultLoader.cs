@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.IO;
+using System.Text.RegularExpressions;
 using ExcelDataReader;
 using SpecSync.PublishTestResults;
 using SpecSync.PublishTestResults.Loaders;
@@ -59,7 +60,7 @@ public class ExcelTestResultLoader : ITestResultLoader
             var testRunTestResult = new TestRunTestResult
             {
                 Name = $"Excel row {rowNumber}",
-                Outcome = GetOutcome(row[_excelResultParameters.OutcomeColumnName].ToString(), rowNumber),
+                Outcome = GetOutcome(row, rowNumber),
                 ErrorMessage = GetErrorMessage(row)
             };
             foreach (DataColumn column in testResultTable.Columns)
@@ -80,53 +81,69 @@ public class ExcelTestResultLoader : ITestResultLoader
                string.IsNullOrWhiteSpace(testDefinition.Name);
     }
 
-    protected virtual TestOutcome GetOutcome(string outcomeValue, int rowNumber)
+    protected virtual TestOutcome GetOutcome(DataRow row, int rowNumber)
+    {
+        var outcomeValue = GetCellValue(row, _excelResultParameters.OutcomeColumnName);
+        return ConvertOutcome(outcomeValue, rowNumber);
+    }
+
+    protected virtual TestOutcome ConvertOutcome(string outcomeValue, int rowNumber)
     {
         if (Enum.TryParse<TestOutcome>(outcomeValue, true, out var outcome))
             return outcome;
 
-        throw new SpecSyncException($"Invalid outcome value at row {rowNumber}: '{outcomeValue}'. Possible values: {string.Join(", ", Enum.GetNames(typeof(TestOutcome)))}.");
+        throw new SpecSyncException($"Invalid outcome value or the column {_excelResultParameters.OutcomeColumnName} is not defined at row {rowNumber}: '{outcomeValue}'. Possible values: {string.Join(", ", Enum.GetNames(typeof(TestOutcome)))}.");
+    }
+
+    private bool TryGetCellValue(DataRow row, string columnName, out string value, string valueRegex = null)
+    {
+        if (row.Table.Columns.Contains(columnName))
+        {
+            value = CellValueConverter.Convert(row[columnName]?.ToString(), valueRegex);
+            return true;
+        }
+
+        value = null;
+        return false;
+    }
+
+    private string GetCellValue(DataRow row, string columnName, string valueRegex = null)
+    {
+        if (TryGetCellValue(row, columnName, out var value, valueRegex))
+            return value;
+        return null;
     }
 
     private string GetErrorMessage(DataRow row)
     {
-        if (string.IsNullOrEmpty(_excelResultParameters.ErrorMessageColumnName) ||
-            !row.Table.Columns.Contains(_excelResultParameters.ErrorMessageColumnName))
-            return null;
-        return row[_excelResultParameters.ErrorMessageColumnName].ToString();
+        return GetCellValue(row, _excelResultParameters.ErrorMessageColumnName);
     }
 
     private string GetMethodName(DataRow row)
     {
-        if (row.Table.Columns.Contains(_excelResultParameters.TestCaseIdColumnName))
-            return row[_excelResultParameters.TestCaseIdColumnName].ToString();
-        if (row.Table.Columns.Contains(_excelResultParameters.ScenarioColumnName))
-            return row[_excelResultParameters.ScenarioColumnName].ToString();
-        return string.Empty;
+        return GetTestCaseId(row) ??
+               GetCellValue(row, _excelResultParameters.ScenarioColumnName) ??
+               string.Empty;
+    }
+
+    private string GetTestCaseId(DataRow row)
+    {
+        return GetCellValue(row, _excelResultParameters.TestCaseIdColumnName, _excelResultParameters.TestCaseIdValueRegex);
     }
 
     private string GetClassName(DataRow row)
     {
-        if (row.Table.Columns.Contains(_excelResultParameters.FeatureFileColumnName))
-            return row[_excelResultParameters.FeatureFileColumnName].ToString();
-        if (row.Table.Columns.Contains(_excelResultParameters.FeatureColumnName))
-            return row[_excelResultParameters.FeatureColumnName].ToString();
-        return string.Empty;
+        return GetCellValue(row, _excelResultParameters.FeatureFileColumnName) ??
+               GetCellValue(row, _excelResultParameters.FeatureColumnName) ??
+               string.Empty;
     }
 
     private string GetName(DataRow row)
     {
-        string testName = null;
-        if (row.Table.Columns.Contains(_excelResultParameters.TestNameColumnName))
-            testName = row[_excelResultParameters.TestNameColumnName].ToString();
-
-        if (string.IsNullOrWhiteSpace(testName) && row.Table.Columns.Contains(_excelResultParameters.ScenarioColumnName))
-            testName = row[_excelResultParameters.ScenarioColumnName].ToString();
-
-        if (string.IsNullOrWhiteSpace(testName))
-            testName = GetMethodName(row);
-
-        return testName;
+        return GetCellValue(row, _excelResultParameters.TestNameColumnName) ??
+               GetCellValue(row, _excelResultParameters.ScenarioColumnName) ??
+               GetTestCaseId(row) ??
+               string.Empty;
     }
 
     public DataTable LoadExcelDataTable(string filePath, string sheetName = null)
