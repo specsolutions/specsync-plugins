@@ -26,6 +26,8 @@ For that you need to have an Excel file that contains some of the columns below 
 * `Outcome`: The column that contains the outcome (Passed, Failed, NotExecuted). Mandatory.
 * `Error`: The column that contains the error message. Optional, no error message is recoded if not specified.
 
+The plugin ignores the rows where none of the reference columns (`Feature`, `Feature File`, `Scenario`, `ID`) are specified or they are empty. To see the skipped rows, you should use verbose mode (`-v`).
+
 By default the first sheet of the Excel file is processed, but your can specify the sheet name as a paramter to select another sheet:
 
 ```

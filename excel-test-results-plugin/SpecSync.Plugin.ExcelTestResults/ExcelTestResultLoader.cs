@@ -49,6 +49,13 @@ public class ExcelTestResultLoader : ITestResultLoader
                 MethodName = GetMethodName(row),
                 Name = GetName(row),
             };
+
+            if (IsEmptyTestDefinition(testDefinition))
+            {
+                args.Tracer.LogVerbose($"Row {rowNumber} does not contain test reference. Skipping.");
+                continue;
+            }
+
             var testRunTestResult = new TestRunTestResult
             {
                 Outcome = GetOutcome(row[_excelResultParameters.OutcomeColumnName].ToString(), rowNumber),
@@ -63,6 +70,13 @@ public class ExcelTestResultLoader : ITestResultLoader
         }
 
         return localTestRun;
+    }
+
+    private bool IsEmptyTestDefinition(TestRunTestDefinition testDefinition)
+    {
+        return string.IsNullOrWhiteSpace(testDefinition.ClassName) &&
+               string.IsNullOrWhiteSpace(testDefinition.MethodName) &&
+               string.IsNullOrWhiteSpace(testDefinition.Name);
     }
 
     protected virtual TestOutcome GetOutcome(string outcomeValue, int rowNumber)
