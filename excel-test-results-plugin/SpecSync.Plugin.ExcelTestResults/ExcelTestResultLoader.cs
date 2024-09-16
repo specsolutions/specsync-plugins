@@ -58,6 +58,7 @@ public class ExcelTestResultLoader : ITestResultLoader
 
             var testRunTestResult = new TestRunTestResult
             {
+                Name = $"Excel row {rowNumber}",
                 Outcome = GetOutcome(row[_excelResultParameters.OutcomeColumnName].ToString(), rowNumber),
                 ErrorMessage = GetErrorMessage(row)
             };

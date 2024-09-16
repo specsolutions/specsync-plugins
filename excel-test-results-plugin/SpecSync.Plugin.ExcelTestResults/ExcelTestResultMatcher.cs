@@ -61,7 +61,10 @@ namespace SpecSync.Plugin.ExcelTestResults
 
         private T GetCellValue<T>(TestRunTestDefinition testDefinition, string columnName)
         {
-            return testDefinition.Results.First().GetProperty<T>(columnName);
+            var objValue = testDefinition.Results.First().GetProperty<object>(columnName);
+            if (objValue is T value)
+                return value;
+            return (T)Convert.ChangeType(objValue, typeof(T));
         }
 
         public override bool CanProcess(TestRunnerResultMatcherArgs args)
