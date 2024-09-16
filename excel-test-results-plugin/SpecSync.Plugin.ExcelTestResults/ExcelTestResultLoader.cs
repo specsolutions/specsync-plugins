@@ -39,8 +39,10 @@ public class ExcelTestResultLoader : ITestResultLoader
             Name = $"{Path.GetFileName(args.TestResultFilePath)} - {testResultTable.TableName}"
         };
 
-        foreach (DataRow row in testResultTable.Rows)
+        for (int rowIndex = 0; rowIndex < testResultTable.Rows.Count; rowIndex++)
         {
+            DataRow row = testResultTable.Rows[rowIndex];
+            int rowNumber = rowIndex + 2; // rowIndex is 0-indexed, include header row
             var testDefinition = new TestRunTestDefinition
             {
                 ClassName = GetClassName(row),
@@ -49,7 +51,7 @@ public class ExcelTestResultLoader : ITestResultLoader
             };
             var testRunTestResult = new TestRunTestResult
             {
-                Outcome = GetOutcome(row[_excelResultParameters.OutcomeColumnName].ToString()),
+                Outcome = GetOutcome(row[_excelResultParameters.OutcomeColumnName].ToString(), rowNumber),
                 ErrorMessage = GetErrorMessage(row)
             };
             foreach (DataColumn column in testResultTable.Columns)
@@ -63,17 +65,18 @@ public class ExcelTestResultLoader : ITestResultLoader
         return localTestRun;
     }
 
-    protected virtual TestOutcome GetOutcome(string outcomeValue)
+    protected virtual TestOutcome GetOutcome(string outcomeValue, int rowNumber)
     {
         if (Enum.TryParse<TestOutcome>(outcomeValue, true, out var outcome))
             return outcome;
 
-        throw new SpecSyncException($"Invalid outcome value: '{outcome}'. Possible values: {string.Join(", ", Enum.GetNames(typeof(TestOutcome)))}.");
+        throw new SpecSyncException($"Invalid outcome value at row {rowNumber}: '{outcomeValue}'. Possible values: {string.Join(", ", Enum.GetNames(typeof(TestOutcome)))}.");
     }
 
     private string GetErrorMessage(DataRow row)
     {
-        if (string.IsNullOrEmpty(_excelResultParameters.ErrorMessageColumnName))
+        if (string.IsNullOrEmpty(_excelResultParameters.ErrorMessageColumnName) ||
+            !row.Table.Columns.Contains(_excelResultParameters.ErrorMessageColumnName))
             return null;
         return row[_excelResultParameters.ErrorMessageColumnName].ToString();
     }
