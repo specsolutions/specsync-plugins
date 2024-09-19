@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using ExcelTestSource.SpecSyncPlugin;
-using Newtonsoft.Json.Linq;
 using SpecSync.Configuration;
+using SpecSync.Plugin.ExcelTestSource;
 using SpecSync.Plugins;
 
 [assembly: SpecSyncPlugin(typeof(ExcelTestSourcePlugin))]
 
-namespace ExcelTestSource.SpecSyncPlugin;
+namespace SpecSync.Plugin.ExcelTestSource;
 
 public class ExcelTestSourcePlugin : ISpecSyncPlugin
 {
@@ -21,12 +19,12 @@ public class ExcelTestSourcePlugin : ISpecSyncPlugin
     {
         args.Tracer.LogVerbose($"Initializing '{Name}' plugin...");
 
-        var fieldUpdaterColumnParameters = LoadParameters(args);
+        var parameters = ExcelTestSourceParameters.FromPluginParameters(args.Parameters);
 
         args.ServiceRegistry.BddProjectLoaderProvider
             .Register(new ExcelFolderProjectLoader());
         args.ServiceRegistry.LocalTestCaseContainerParserProvider
-            .Register(new ExcelTestCaseSourceParser(fieldUpdaterColumnParameters));
+            .Register(new ExcelTestCaseSourceParser(parameters));
         args.ServiceRegistry.LocalTestCaseAnalyzerProvider
             .Register(new ExcelTestCaseAnalyzer());
 
@@ -43,11 +41,11 @@ public class ExcelTestSourcePlugin : ISpecSyncPlugin
             (args.Configuration.Customizations.IgnoreNotSupportedLocalTags.NotSupportedTags ?? Array.Empty<string>())
             .Concat(new[] { $"{InternalTagPrefix}*" }).ToArray();
 
-        foreach (var fieldUpdaterColumnParameter in fieldUpdaterColumnParameters)
+        foreach (var fieldUpdaterColumnParameter in parameters.FieldUpdaterColumnParameters)
         {
             if (fieldUpdaterColumnParameter.TagNamePrefix == null)
             {
-                args.Configuration.Synchronization.FieldUpdates.Add(fieldUpdaterColumnParameter.ActualFieldName, 
+                args.Configuration.Synchronization.FieldUpdates.Add(fieldUpdaterColumnParameter.ActualFieldName,
                     new FieldUpdateValueConfiguration
                     {
                         Condition = $"@{fieldUpdaterColumnParameter.GeneratedTagNamePrefix}*",
@@ -55,25 +53,5 @@ public class ExcelTestSourcePlugin : ISpecSyncPlugin
                     });
             }
         }
-    }
-
-    private List<FieldUpdaterColumnParameter> LoadParameters(PluginInitializeArgs args)
-    {
-        if (!args.Parameters.TryGetValue("fieldUpdateColumns", out var fieldUpdateColumnObj))
-            return new List<FieldUpdaterColumnParameter>();
-
-        if (fieldUpdateColumnObj is not JArray fieldUpdateColumnArray)
-            throw new SpecSyncConfigurationException("The 'fieldUpdateColumns' must contain an array.");
-
-        var result = fieldUpdateColumnArray.ToObject<List<FieldUpdaterColumnParameter>>()
-            ?? new List<FieldUpdaterColumnParameter>();
-
-        foreach (var parameter in result)
-        {
-            if (string.IsNullOrEmpty(parameter.ColumnName))
-                throw new SpecSyncConfigurationException("The 'fieldUpdateColumns/columnName' must be specified.");
-        }
-
-        return result;
     }
 }

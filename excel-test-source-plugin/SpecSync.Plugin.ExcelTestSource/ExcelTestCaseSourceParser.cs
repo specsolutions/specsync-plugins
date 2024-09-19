@@ -9,20 +9,20 @@ using SpecSync.Synchronization;
 using SpecSync.Tracing;
 using SpecSync.Utils;
 
-namespace ExcelTestSource.SpecSyncPlugin;
+namespace SpecSync.Plugin.ExcelTestSource;
 
 public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
 {
-    private readonly List<FieldUpdaterColumnParameter> _fieldUpdaterColumnParameters;
+    private readonly ExcelTestSourceParameters _parameters;
 
-    public ExcelTestCaseSourceParser(List<FieldUpdaterColumnParameter> fieldUpdaterColumnParameters)
+    public ExcelTestCaseSourceParser(ExcelTestSourceParameters parameters)
     {
-        _fieldUpdaterColumnParameters = fieldUpdaterColumnParameters;
+        _parameters = parameters;
     }
 
     public string ServiceDescription => "Excel Test Case source parser";
 
-    public bool CanProcess(LocalTestCaseContainerParseArgs args) 
+    public bool CanProcess(LocalTestCaseContainerParseArgs args)
         => ".xlsx".Equals(Path.GetExtension(args.SourceFile.ProjectRelativePath), StringComparison.InvariantCultureIgnoreCase);
 
     private string GetFieldColumn(IXLRow headerRow, string field, bool throwIfMissing)
@@ -49,15 +49,15 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
             if (testCaseRows.Length == 0)
                 continue;
 
-            var idColumn = GetFieldColumn(headerRow, "ID", true);
-            var titleColumn = GetFieldColumn(headerRow, "Title", true);
-            var stepIndexColumn = GetFieldColumn(headerRow, "Test Step", true);
-            var stepActionColumn = GetFieldColumn(headerRow, "Step Action", true);
-            var stepExpectedValueColumn = GetFieldColumn(headerRow, "Step Expected", true);
-            var tagsColumn = GetFieldColumn(headerRow, "Tags", false);
-            var descriptionColumn = GetFieldColumn(headerRow, "Description", false);
-            var automationStatusColumn = GetFieldColumn(headerRow, "Automation Status", false);
-            var automatedTestNameColumn = GetFieldColumn(headerRow, "Automated Test Name", false);
+            var idColumn = GetFieldColumn(headerRow, _parameters.TestCaseIdColumnName, true);
+            var titleColumn = GetFieldColumn(headerRow, _parameters.TitleColumnName, true);
+            var stepIndexColumn = GetFieldColumn(headerRow, _parameters.TestStepColumnName, true);
+            var stepActionColumn = GetFieldColumn(headerRow, _parameters.TestStepActionColumnName, true);
+            var stepExpectedValueColumn = GetFieldColumn(headerRow, _parameters.TestStepExpectedColumnName, false);
+            var tagsColumn = GetFieldColumn(headerRow, _parameters.TagsColumnName, false);
+            var descriptionColumn = GetFieldColumn(headerRow, _parameters.DescriptionColumnName, false);
+            var automationStatusColumn = GetFieldColumn(headerRow, _parameters.AutomationStatusColumnName, false);
+            var automatedTestNameColumn = GetFieldColumn(headerRow, _parameters.AutomatedTestNameColumnName, false);
 
             for (int rowIndex = 0; rowIndex < testCaseRows.Length; rowIndex++)
             {
@@ -96,13 +96,16 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                             Text = new ParameterizedText(stepAction),
                             IsExpectedResult = false
                         });
-                    var expectedResult = stepRow.Cell(stepExpectedValueColumn).GetString();
-                    if (!string.IsNullOrWhiteSpace(expectedResult))
-                        steps.Add(new TestStepSourceData
-                        {
-                            Text = new ParameterizedText(expectedResult),
-                            IsThenStep = true
-                        });
+                    if (stepExpectedValueColumn != null)
+                    {
+                        var expectedResult = stepRow.Cell(stepExpectedValueColumn).GetString();
+                        if (!string.IsNullOrWhiteSpace(expectedResult))
+                            steps.Add(new TestStepSourceData
+                            {
+                                Text = new ParameterizedText(expectedResult),
+                                IsThenStep = true
+                            });
+                    }
                 }
 
                 string description = null;
@@ -124,7 +127,7 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                     automatedTestName = row.Cell(automatedTestNameColumn).GetString();
                 }
 
-                foreach (var fieldUpdaterColumnParameter in _fieldUpdaterColumnParameters)
+                foreach (var fieldUpdaterColumnParameter in _parameters.FieldUpdaterColumnParameters)
                 {
                     var column = GetFieldColumn(headerRow, fieldUpdaterColumnParameter.ColumnName, false);
                     if (column != null)

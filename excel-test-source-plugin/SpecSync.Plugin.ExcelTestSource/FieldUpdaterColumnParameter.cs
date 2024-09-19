@@ -1,4 +1,4 @@
-﻿namespace ExcelTestSource.SpecSyncPlugin;
+﻿namespace SpecSync.Plugin.ExcelTestSource;
 
 public class FieldUpdaterColumnParameter
 {

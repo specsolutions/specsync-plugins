@@ -2,7 +2,7 @@
 using ClosedXML.Excel;
 using SpecSync.Parsing;
 
-namespace ExcelTestSource.SpecSyncPlugin;
+namespace SpecSync.Plugin.ExcelTestSource;
 
 public class ExcelUpdater : LocalTestCaseContainerUpdaterBase
 {

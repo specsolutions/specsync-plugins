@@ -5,7 +5,7 @@ using SpecSync.Integration.AzureDevOps;
 using SpecSync.Parsing;
 using SpecSync.Synchronization;
 
-namespace ExcelTestSource.SpecSyncPlugin;
+namespace SpecSync.Plugin.ExcelTestSource;
 
 public class ExcelLocalTestCase : ILocalTestCase, IAutomationSettingsProvider
 {

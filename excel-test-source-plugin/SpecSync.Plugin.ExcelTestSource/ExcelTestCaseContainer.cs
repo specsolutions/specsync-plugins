@@ -2,7 +2,7 @@
 using SpecSync.Parsing;
 using SpecSync.Projects;
 
-namespace ExcelTestSource.SpecSyncPlugin;
+namespace SpecSync.Plugin.ExcelTestSource;
 
 public class ExcelTestCaseContainer : ILocalTestCaseContainer
 {

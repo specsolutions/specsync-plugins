@@ -2,7 +2,7 @@
 using System.Linq;
 using SpecSync.Projects;
 
-namespace ExcelTestSource.SpecSyncPlugin;
+namespace SpecSync.Plugin.ExcelTestSource;
 
 public class ExcelFolderProjectLoader : FolderProjectLoaderBase
 {

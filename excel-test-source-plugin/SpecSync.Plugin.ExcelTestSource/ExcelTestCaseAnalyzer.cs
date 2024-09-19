@@ -2,7 +2,7 @@
 using System.Linq;
 using SpecSync.Analyzing;
 
-namespace ExcelTestSource.SpecSyncPlugin;
+namespace SpecSync.Plugin.ExcelTestSource;
 
 public class ExcelTestCaseAnalyzer : ILocalTestCaseAnalyzer
 {
