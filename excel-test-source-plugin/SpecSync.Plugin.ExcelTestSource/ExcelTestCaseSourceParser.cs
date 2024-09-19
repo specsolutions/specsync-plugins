@@ -29,7 +29,7 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
     {
         var cell = headerRow.Cells().FirstOrDefault(c => field.Equals(c.GetString(), StringComparison.InvariantCultureIgnoreCase));
         if (cell == null && throwIfMissing)
-            throw new SpecSyncException($"Unable to find column '{field}' on worksheet {headerRow.Worksheet.Name}");
+            throw new MissingColumnException(field, headerRow.Worksheet.Name);
         return cell?.WorksheetColumn().ColumnLetter();
     }
 
@@ -39,114 +39,145 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
         var wb = OpenWorkbook(filePath, out var isReadOnly, args);
 
         var localTestCases = new List<ILocalTestCase>();
+        var firstWorksheet = true;
 
         foreach (var worksheet in wb.Worksheets)
         {
-            var headerRow = worksheet.RowsUsed().FirstOrDefault();
-            if (headerRow == null)
-                continue;
-            var testCaseRows = worksheet.RowsUsed().Skip(1).ToArray();
-            if (testCaseRows.Length == 0)
-                continue;
-
-            var idColumn = GetFieldColumn(headerRow, _parameters.TestCaseIdColumnName, true);
-            var titleColumn = GetFieldColumn(headerRow, _parameters.TitleColumnName, true);
-            var stepIndexColumn = GetFieldColumn(headerRow, _parameters.TestStepColumnName, true);
-            var stepActionColumn = GetFieldColumn(headerRow, _parameters.TestStepActionColumnName, true);
-            var stepExpectedValueColumn = GetFieldColumn(headerRow, _parameters.TestStepExpectedColumnName, false);
-            var tagsColumn = GetFieldColumn(headerRow, _parameters.TagsColumnName, false);
-            var descriptionColumn = GetFieldColumn(headerRow, _parameters.DescriptionColumnName, false);
-            var automationStatusColumn = GetFieldColumn(headerRow, _parameters.AutomationStatusColumnName, false);
-            var automatedTestNameColumn = GetFieldColumn(headerRow, _parameters.AutomatedTestNameColumnName, false);
-
-            for (int rowIndex = 0; rowIndex < testCaseRows.Length; rowIndex++)
+            try
             {
-                var row = testCaseRows[rowIndex];
-                var testCaseTitle = row.Cell(titleColumn).GetString();
-                if (string.IsNullOrWhiteSpace(testCaseTitle))
-                    continue;
-
-                var idCellValue = row.Cell(idColumn).GetString();
-                TestCaseLink testCaseLink = null;
-                if (!string.IsNullOrWhiteSpace(idCellValue))
-                {
-                    var testCaseId = int.Parse(idCellValue);
-                    testCaseLink = new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(testCaseId), "");
-                }
-
-                var tags = new List<ILocalTestCaseTag>();
-                if (tagsColumn != null)
-                {
-                    var tagsCellValue = row.Cell(tagsColumn).GetString();
-                    if (!string.IsNullOrWhiteSpace(tagsCellValue))
-                    {
-                        tags.AddRange(tagsCellValue.Split(',').Select(t => new LocalTestCaseTag(t.Trim())));
-                    }
-                }
-
-                var steps = new List<TestStepSourceData>();
-                while (rowIndex < testCaseRows.Length - 1 && !testCaseRows[rowIndex + 1].Cell(stepIndexColumn).IsEmpty())
-                {
-                    rowIndex++;
-                    var stepRow = testCaseRows[rowIndex];
-                    var stepAction = stepRow.Cell(stepActionColumn).GetString();
-                    if (!string.IsNullOrWhiteSpace(stepAction))
-                        steps.Add(new TestStepSourceData
-                        {
-                            Text = new ParameterizedText(stepAction),
-                            IsExpectedResult = false
-                        });
-                    if (stepExpectedValueColumn != null)
-                    {
-                        var expectedResult = stepRow.Cell(stepExpectedValueColumn).GetString();
-                        if (!string.IsNullOrWhiteSpace(expectedResult))
-                            steps.Add(new TestStepSourceData
-                            {
-                                Text = new ParameterizedText(expectedResult),
-                                IsThenStep = true
-                            });
-                    }
-                }
-
-                string description = null;
-                if (descriptionColumn != null)
-                {
-                    description = row.Cell(descriptionColumn).GetString();
-                }
-
-                if (automationStatusColumn != null)
-                {
-                    var automationStatus = row.Cell(automationStatusColumn).GetString();
-                    if (!"automated".Equals(automationStatus, StringComparison.InvariantCultureIgnoreCase))
-                        tags.Add(new LocalTestCaseTag(ExcelTestSourcePlugin.ManualTagName));
-                }
-
-                string automatedTestName = null;
-                if (automatedTestNameColumn != null)
-                {
-                    automatedTestName = row.Cell(automatedTestNameColumn).GetString();
-                }
-
-                foreach (var fieldUpdaterColumnParameter in _parameters.FieldUpdaterColumnParameters)
-                {
-                    var column = GetFieldColumn(headerRow, fieldUpdaterColumnParameter.ColumnName, false);
-                    if (column != null)
-                    {
-                        var value = row.Cell(column).GetString() ?? "";
-                        tags.Add(new LocalTestCaseTag($"{fieldUpdaterColumnParameter.TagNamePrefix ?? fieldUpdaterColumnParameter.GeneratedTagNamePrefix}{value}"));
-                    }
-                }
-
-                var testCase = new ExcelLocalTestCase(testCaseTitle, tags.ToArray(), testCaseLink, steps.ToArray(),
-                    worksheet, row.RowNumber(), idColumn, description, automatedTestName);
-
-                localTestCases.Add(testCase);
+                ProcessWorksheet(worksheet, localTestCases);
             }
+            catch (MissingColumnException ex)
+            {
+                if (firstWorksheet)
+                    throw;
+                args.Tracer.TraceInformation($"Worksheet '{worksheet.Name}' is skipped because of missing column '{ex.ColumnName}'");
+            }
+
+            firstWorksheet = false;
         }
 
         var updater = isReadOnly ? null : new ExcelUpdater(wb, filePath);
 
         return new ExcelTestCaseContainer(Path.GetFileNameWithoutExtension(filePath), args.BddProject, args.SourceFile, localTestCases.ToArray(), updater);
+    }
+
+    private void ProcessWorksheet(IXLWorksheet worksheet, List<ILocalTestCase> localTestCases)
+    {
+        var headerRow = worksheet.RowsUsed().FirstOrDefault();
+        if (headerRow == null)
+            return;
+        var testCaseRows = worksheet.RowsUsed().Skip(1).ToArray();
+        if (testCaseRows.Length == 0)
+            return;
+
+        var idColumn = GetFieldColumn(headerRow, _parameters.TestCaseIdColumnName, true);
+        var titleColumn = GetFieldColumn(headerRow, _parameters.TitleColumnName, true);
+        var stepActionColumn = GetFieldColumn(headerRow, _parameters.TestStepActionColumnName, true);
+        var stepIndexColumn = GetFieldColumn(headerRow, _parameters.TestStepColumnName, false);
+        var stepExpectedValueColumn = GetFieldColumn(headerRow, _parameters.TestStepExpectedColumnName, false);
+        var stepIndicatorColumns = new[] { stepIndexColumn, stepActionColumn, stepExpectedValueColumn }.Where(c => c != null).ToArray();
+        var tagsColumn = GetFieldColumn(headerRow, _parameters.TagsColumnName, false);
+        var descriptionColumn = GetFieldColumn(headerRow, _parameters.DescriptionColumnName, false);
+        var automationStatusColumn = GetFieldColumn(headerRow, _parameters.AutomationStatusColumnName, false);
+        var automatedTestNameColumn = GetFieldColumn(headerRow, _parameters.AutomatedTestNameColumnName, false);
+
+        for (int rowIndex = 0; rowIndex < testCaseRows.Length; rowIndex++)
+        {
+            var row = testCaseRows[rowIndex];
+            var testCaseTitle = row.Cell(titleColumn).GetString();
+            if (string.IsNullOrWhiteSpace(testCaseTitle))
+                continue;
+
+            var idCellValue = row.Cell(idColumn).GetString();
+            TestCaseLink testCaseLink = null;
+            if (!string.IsNullOrWhiteSpace(idCellValue))
+            {
+                var testCaseId = int.Parse(idCellValue);
+                testCaseLink = new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(testCaseId), "");
+            }
+
+            var tags = new List<ILocalTestCaseTag>();
+            if (tagsColumn != null)
+            {
+                var tagsCellValue = row.Cell(tagsColumn).GetString();
+                if (!string.IsNullOrWhiteSpace(tagsCellValue))
+                {
+                    tags.AddRange(tagsCellValue.Split(',').Select(t => new LocalTestCaseTag(t.Trim())));
+                }
+            }
+
+            bool HasStepData(IXLRow r) => !stepIndicatorColumns.All(c => r.Cell(c).IsEmpty());
+            var steps = new List<TestStepSourceData>();
+            var readFirstStepFromTestCaseRow = HasStepData(row);
+            while (readFirstStepFromTestCaseRow || 
+                   (rowIndex < testCaseRows.Length - 1 && 
+                    testCaseRows[rowIndex + 1].Cell(titleColumn).IsEmpty() && // not a test case row
+                    HasStepData(testCaseRows[rowIndex + 1]))) // has step data
+            {
+                if (readFirstStepFromTestCaseRow)
+                {
+                    // keep rowIndex
+                    readFirstStepFromTestCaseRow = false;
+                }
+                else
+                {
+                    rowIndex++;
+                }
+                var stepRow = testCaseRows[rowIndex];
+                var stepAction = stepRow.Cell(stepActionColumn).GetString();
+                if (!string.IsNullOrWhiteSpace(stepAction))
+                    steps.Add(new TestStepSourceData
+                    {
+                        Text = new ParameterizedText(stepAction),
+                        IsExpectedResult = false
+                    });
+                if (stepExpectedValueColumn != null)
+                {
+                    var expectedResult = stepRow.Cell(stepExpectedValueColumn).GetString();
+                    if (!string.IsNullOrWhiteSpace(expectedResult))
+                        steps.Add(new TestStepSourceData
+                        {
+                            Text = new ParameterizedText(expectedResult),
+                            IsThenStep = true
+                        });
+                }
+            }
+
+            string description = null;
+            if (descriptionColumn != null)
+            {
+                description = row.Cell(descriptionColumn).GetString();
+            }
+
+            if (automationStatusColumn != null)
+            {
+                var automationStatus = row.Cell(automationStatusColumn).GetString();
+                if (!"automated".Equals(automationStatus, StringComparison.InvariantCultureIgnoreCase))
+                    tags.Add(new LocalTestCaseTag(ExcelTestSourcePlugin.ManualTagName));
+            }
+
+            string automatedTestName = null;
+            if (automatedTestNameColumn != null)
+            {
+                automatedTestName = row.Cell(automatedTestNameColumn).GetString();
+            }
+
+            foreach (var fieldUpdaterColumnParameter in _parameters.FieldUpdaterColumnParameters)
+            {
+                var column = GetFieldColumn(headerRow, fieldUpdaterColumnParameter.ColumnName, false);
+                if (column != null)
+                {
+                    var value = row.Cell(column).GetString() ?? "";
+                    tags.Add(new LocalTestCaseTag($"{fieldUpdaterColumnParameter.TagNamePrefix ?? fieldUpdaterColumnParameter.GeneratedTagNamePrefix}{value}"));
+                }
+            }
+
+            var testCase = new ExcelLocalTestCase(testCaseTitle, tags.ToArray(), testCaseLink, steps.ToArray(),
+                worksheet, row.RowNumber(), idColumn, description, automatedTestName);
+
+            localTestCases.Add(testCase);
+        }
     }
 
     private XLWorkbook OpenWorkbook(string filePath, out bool isReadOnly, LocalTestCaseContainerParseArgs args)
@@ -160,7 +191,7 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
         {
             // The file might be open in Excel. We load it to the memory and open from there.
             // Alternatively we could copy it to a temp file and open it from there.
-            args.Tracer.LogVerbose("Unable to open workbook", ex);
+            args.Tracer.LogVerbose($"Unable to open file for writing. It might be open in Excel. Error: {ex.Message}");
             try
             {
                 void CopyStream(Stream input, Stream output)
@@ -178,7 +209,8 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                 isReadOnly = true;
                 var workbook = new XLWorkbook(memoryStream);
 
-                args.Tracer.TraceWarning(new TraceWarningItem("Unable to open file for writing. It might be open in Excel. Linking new test cases is disabled for this file!"));
+                if (!args.Configuration.Synchronization.DisableLocalChanges)
+                    args.Tracer.TraceWarning(new TraceWarningItem("Unable to open file for writing. It might be open in Excel. Linking new test cases is disabled for this file!"));
 
                 return workbook;
             }

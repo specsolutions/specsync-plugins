@@ -13,7 +13,7 @@ The Test Cases are loaded from the Excel from a hierarchical structure: a Test C
 In order to load the Test Cases from excel, the plugin uses the following columns in the Excel file:
 * Test Case ID (default column name: `ID`), mandatory column.
 * Test Case Title (default column name: `Title`), mandatory column.
-* Test Case Step Index (default column name: `Test Step`), mandatory column.
+* Test Case Step Index (default column name: `Test Step`), optional column.
 * Test Case Step Action (default column name: `Step Action`), mandatory column.
 * Test Case Step Expected Result (default column name: `Step Expected`), optional column.
 * Test Case Tags (default column name: `Tags`), optional column.

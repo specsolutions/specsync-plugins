@@ -17,11 +17,6 @@ public class ExcelTestSourceParameters
     public string TestCaseIdColumnName { get; set; } = "ID";
 
     /// <summary>
-    /// The regular expression containing a "value" group to convert the value. 
-    /// </summary>
-    public string TestCaseIdValueRegex { get; set; } = null;
-
-    /// <summary>
     /// The column name contains the Test Case title.
     /// </summary>
     public string TitleColumnName { get; set; } = "Title";
