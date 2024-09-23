@@ -7,7 +7,6 @@ using SpecSync.Analyzing;
 using SpecSync.Parsing;
 using SpecSync.Synchronization;
 using SpecSync.Tracing;
-using SpecSync.Utils;
 
 namespace SpecSync.Plugin.ExcelTestSource;
 
@@ -45,7 +44,7 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
         {
             try
             {
-                ProcessWorksheet(worksheet, localTestCases);
+                ProcessWorksheet(worksheet, localTestCases, args.TagServices);
             }
             catch (MissingColumnException ex)
             {
@@ -57,12 +56,12 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
             firstWorksheet = false;
         }
 
-        var updater = isReadOnly ? null : new ExcelUpdater(wb, filePath);
+        var updater = isReadOnly ? null : new ExcelUpdater(wb, filePath, args.Configuration, _parameters);
 
         return new ExcelTestCaseContainer(Path.GetFileNameWithoutExtension(filePath), args.BddProject, args.SourceFile, localTestCases.ToArray(), updater);
     }
 
-    private void ProcessWorksheet(IXLWorksheet worksheet, List<ILocalTestCase> localTestCases)
+    private void ProcessWorksheet(IXLWorksheet worksheet, List<ILocalTestCase> localTestCases, ITagServices tagServices)
     {
         var headerRow = worksheet.RowsUsed().FirstOrDefault();
         if (headerRow == null)
@@ -90,12 +89,7 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                 continue;
 
             var idCellValue = row.Cell(idColumn).GetString();
-            TestCaseLink testCaseLink = null;
-            if (!string.IsNullOrWhiteSpace(idCellValue))
-            {
-                var testCaseId = int.Parse(idCellValue);
-                testCaseLink = new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(testCaseId), "");
-            }
+            var testCaseLink = GetTestCaseLink(idCellValue, tagServices);
 
             var tags = new List<ILocalTestCaseTag>();
             if (tagsColumn != null)
@@ -178,6 +172,23 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
 
             localTestCases.Add(testCase);
         }
+    }
+
+    private static TestCaseLink GetTestCaseLink(string idCellValue, ITagServices tagServices)
+    {
+        if (string.IsNullOrWhiteSpace(idCellValue))
+            return null;
+
+        var tags = new ILocalTestCaseTag[] {new LocalTestCaseTag(idCellValue) };
+        var testCaseLink = tagServices.GetTestCaseLinkFromTags(tags);
+
+        if (testCaseLink == null)
+        {
+            var testCaseId = int.Parse(idCellValue);
+            testCaseLink = new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(testCaseId), "");
+        }
+
+        return testCaseLink;
     }
 
     private XLWorkbook OpenWorkbook(string filePath, out bool isReadOnly, LocalTestCaseContainerParseArgs args)

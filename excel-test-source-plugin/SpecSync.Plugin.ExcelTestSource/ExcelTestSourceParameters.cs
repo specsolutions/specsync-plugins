@@ -17,6 +17,11 @@ public class ExcelTestSourceParameters
     public string TestCaseIdColumnName { get; set; } = "ID";
 
     /// <summary>
+    /// Whether the ID cell is updated with the prefixed ID ("tc:1234)".
+    /// </summary>
+    public bool WriteIdWithPrefix { get; set; } = false;
+
+    /// <summary>
     /// The column name contains the Test Case title.
     /// </summary>
     public string TitleColumnName { get; set; } = "Title";
