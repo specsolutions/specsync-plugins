@@ -89,6 +89,9 @@ public class ExcelTestResultLoader : ITestResultLoader
 
     protected virtual TestOutcome ConvertOutcome(string outcomeValue, int rowNumber)
     {
+        if (string.IsNullOrWhiteSpace(outcomeValue))
+            return TestOutcome.NotExecuted;
+
         if (Enum.TryParse<TestOutcome>(outcomeValue, true, out var outcome))
             return outcome;
 
