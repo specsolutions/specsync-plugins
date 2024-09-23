@@ -52,6 +52,18 @@ You can use different column names, but in that case you need to configure the n
 * `TestNameColumnName`
 * `ErrorMessageColumnName`
 
+The Test Case ID can also be specified using prefixed format (e.g. `tc:1234`). The prefix (`tc`) can be configured with the "synchronization/testCaseTagPrefix" setting and the prefix separator (`:`) with the "synchronization/tagPrefixSeparators" setting. For example to allow IDs to be specified in the `TC_1234` format, you can specify:
+
+```
+{
+  [...]
+  "synchronization": {
+    "testCaseTagPrefix": "TC", // sets prefix to "TC"
+    "tagPrefixSeparators": ["_", ":"] // allows both "_" and ":" as separators
+  }
+}
+```
+
 For the Test Case ID cell, you can also specify a *value regex* with the `TestCaseIdValueRegex` parameter. 
 This can be used to convert the value from the Excel (e.g. remove prefix). 
 The regex must contain a regular expression group named `value`. 

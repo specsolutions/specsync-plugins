@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Data;
 using System.IO;
-using System.Text.RegularExpressions;
 using ExcelDataReader;
+using SpecSync.Analyzing;
+using SpecSync.Parsing;
 using SpecSync.PublishTestResults;
 using SpecSync.PublishTestResults.Loaders;
+using SpecSync.Synchronization;
 using SpecSync.Utils;
 
 namespace SpecSync.Plugin.ExcelTestResults;
@@ -47,8 +49,8 @@ public class ExcelTestResultLoader : ITestResultLoader
             var testDefinition = new TestRunTestDefinition
             {
                 ClassName = GetClassName(row),
-                MethodName = GetMethodName(row),
-                Name = GetName(row),
+                MethodName = GetMethodName(row, args.TagServices),
+                Name = GetName(row, args.TagServices),
             };
 
             if (IsEmptyTestDefinition(testDefinition))
@@ -122,16 +124,34 @@ public class ExcelTestResultLoader : ITestResultLoader
         return GetCellValue(row, _excelResultParameters.ErrorMessageColumnName);
     }
 
-    private string GetMethodName(DataRow row)
+    private string GetMethodName(DataRow row, ITagServices tagServices)
     {
-        return GetTestCaseId(row) ??
+        return GetTestCaseId(row, tagServices) ??
                GetCellValue(row, _excelResultParameters.ScenarioColumnName) ??
                string.Empty;
     }
 
-    private string GetTestCaseId(DataRow row)
+    private string GetTestCaseId(DataRow row, ITagServices tagServices)
     {
-        return GetCellValue(row, _excelResultParameters.TestCaseIdColumnName, _excelResultParameters.TestCaseIdValueRegex);
+        var cellValue = GetCellValue(row, _excelResultParameters.TestCaseIdColumnName, _excelResultParameters.TestCaseIdValueRegex);
+        return GetTestCaseLink(cellValue, tagServices)?.TestCaseId.ToString();
+    }
+
+    public static TestCaseLink GetTestCaseLink(string idCellValue, ITagServices tagServices)
+    {
+        if (string.IsNullOrWhiteSpace(idCellValue))
+            return null;
+
+        var tags = new ILocalTestCaseTag[] { new LocalTestCaseTag(idCellValue) };
+        var testCaseLink = tagServices.GetTestCaseLinkFromTags(tags);
+
+        if (testCaseLink == null)
+        {
+            var testCaseId = int.Parse(idCellValue);
+            testCaseLink = new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(testCaseId), "");
+        }
+
+        return testCaseLink;
     }
 
     private string GetClassName(DataRow row)
@@ -141,11 +161,11 @@ public class ExcelTestResultLoader : ITestResultLoader
                string.Empty;
     }
 
-    private string GetName(DataRow row)
+    private string GetName(DataRow row, ITagServices tagServices)
     {
         return GetCellValue(row, _excelResultParameters.TestNameColumnName) ??
                GetCellValue(row, _excelResultParameters.ScenarioColumnName) ??
-               GetTestCaseId(row) ??
+               GetTestCaseId(row, tagServices) ??
                string.Empty;
     }
 

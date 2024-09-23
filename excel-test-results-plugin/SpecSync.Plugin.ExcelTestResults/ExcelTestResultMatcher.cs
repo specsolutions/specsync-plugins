@@ -36,23 +36,28 @@ namespace SpecSync.Plugin.ExcelTestResults
             var featureFileName = Path.GetFileName(localTestCaseContainer.SourceFile.ProjectRelativePath);
             var testCaseId = localTestCase.TestCaseLink.TestCaseId.GetNumericId();
 
+            string IdCellValueConverter(string cellValue)
+            {
+                return ExcelTestResultLoader.GetTestCaseLink(cellValue, args.TagServices)?.TestCaseId.ToString();
+            }
+
             return CombineSelectors(
                 CreateColumnMatch(_excelResultParameters.FeatureFileColumnName, featureFileName),
                 CreateColumnMatch(_excelResultParameters.FeatureColumnName, featureName),
                 CreateColumnMatch(_excelResultParameters.ScenarioColumnName, scenarioName),
-                CreateNumericColumnMatch(_excelResultParameters.TestCaseIdColumnName, testCaseId, _excelResultParameters.TestCaseIdValueRegex)
+                CreateNumericColumnMatch(_excelResultParameters.TestCaseIdColumnName, testCaseId, _excelResultParameters.TestCaseIdValueRegex, IdCellValueConverter)
             );
         }
 
-        private MatchResultSelector CreateColumnMatch(string columnName, string value, string valueRegex = null)
+        private MatchResultSelector CreateColumnMatch(string columnName, string value, string valueRegex = null, Func<string, string> cellValueConverter = null)
         {
             return new MatchResultSelector($"[{columnName}] is '{value}' (if specified)",
-                td => EqualsToStringIfSpecified(td, columnName, value, valueRegex));
+                td => EqualsToStringIfSpecified(td, columnName, value, valueRegex, cellValueConverter));
         }
 
-        private MatchResultSelector CreateNumericColumnMatch(string columnName, int value, string valueRegex = null)
+        private MatchResultSelector CreateNumericColumnMatch(string columnName, int value, string valueRegex = null, Func<string, string> cellValueConverter = null)
         {
-            return CreateColumnMatch(columnName, value.ToString(), valueRegex);
+            return CreateColumnMatch(columnName, value.ToString(), valueRegex, cellValueConverter);
         }
 
         private MatchResultSelector CombineSelectors(params MatchResultSelector[] selectors)
@@ -64,9 +69,11 @@ namespace SpecSync.Plugin.ExcelTestResults
             );
         }
 
-        private bool EqualsToStringIfSpecified(TestRunTestDefinition testDefinition, string columnName, string value, string valueRegex)
+        private bool EqualsToStringIfSpecified(TestRunTestDefinition testDefinition, string columnName, string value, string valueRegex, Func<string, string> cellValueConverter)
         {
             var cellValue = CellValueConverter.Convert(GetCellValue<string>(testDefinition, columnName), valueRegex);
+            if (cellValueConverter != null)
+                cellValue = cellValueConverter(cellValue);
             return string.IsNullOrEmpty(cellValue) || value.Equals(cellValue, StringComparison.OrdinalIgnoreCase);
         }
 
