@@ -100,11 +100,11 @@ public class ExcelTestResultLoader : ITestResultLoader
         throw new SpecSyncException($"Invalid outcome value or the column {_excelResultParameters.OutcomeColumnName} is not defined at row {rowNumber}: '{outcomeValue}'. Possible values: {string.Join(", ", Enum.GetNames(typeof(TestOutcome)))}.");
     }
 
-    private bool TryGetCellValue(DataRow row, string columnName, out string value, string valueRegex = null)
+    private bool TryGetCellValue(DataRow row, string columnName, out string value)
     {
         if (row.Table.Columns.Contains(columnName))
         {
-            value = CellValueConverter.Convert(row[columnName]?.ToString(), valueRegex);
+            value = row[columnName]?.ToString();
             return true;
         }
 
@@ -112,9 +112,9 @@ public class ExcelTestResultLoader : ITestResultLoader
         return false;
     }
 
-    private string GetCellValue(DataRow row, string columnName, string valueRegex = null)
+    private string GetCellValue(DataRow row, string columnName)
     {
-        if (TryGetCellValue(row, columnName, out var value, valueRegex))
+        if (TryGetCellValue(row, columnName, out var value))
             return value;
         return null;
     }
@@ -133,7 +133,7 @@ public class ExcelTestResultLoader : ITestResultLoader
 
     private string GetTestCaseId(DataRow row, ITagServices tagServices)
     {
-        var cellValue = GetCellValue(row, _excelResultParameters.TestCaseIdColumnName, _excelResultParameters.TestCaseIdValueRegex);
+        var cellValue = GetCellValue(row, _excelResultParameters.TestCaseIdColumnName);
         return GetTestCaseLink(cellValue, tagServices)?.TestCaseId.ToString();
     }
 

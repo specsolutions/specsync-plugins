@@ -45,19 +45,19 @@ namespace SpecSync.Plugin.ExcelTestResults
                 CreateColumnMatch(_excelResultParameters.FeatureFileColumnName, featureFileName),
                 CreateColumnMatch(_excelResultParameters.FeatureColumnName, featureName),
                 CreateColumnMatch(_excelResultParameters.ScenarioColumnName, scenarioName),
-                CreateNumericColumnMatch(_excelResultParameters.TestCaseIdColumnName, testCaseId, _excelResultParameters.TestCaseIdValueRegex, IdCellValueConverter)
+                CreateNumericColumnMatch(_excelResultParameters.TestCaseIdColumnName, testCaseId, IdCellValueConverter)
             );
         }
 
-        private MatchResultSelector CreateColumnMatch(string columnName, string value, string valueRegex = null, Func<string, string> cellValueConverter = null)
+        private MatchResultSelector CreateColumnMatch(string columnName, string value, Func<string, string> cellValueConverter = null)
         {
             return new MatchResultSelector($"[{columnName}] is '{value}' (if specified)",
-                td => EqualsToStringIfSpecified(td, columnName, value, valueRegex, cellValueConverter));
+                td => EqualsToStringIfSpecified(td, columnName, value, cellValueConverter));
         }
 
-        private MatchResultSelector CreateNumericColumnMatch(string columnName, int value, string valueRegex = null, Func<string, string> cellValueConverter = null)
+        private MatchResultSelector CreateNumericColumnMatch(string columnName, int value, Func<string, string> cellValueConverter = null)
         {
-            return CreateColumnMatch(columnName, value.ToString(), valueRegex, cellValueConverter);
+            return CreateColumnMatch(columnName, value.ToString(), cellValueConverter);
         }
 
         private MatchResultSelector CombineSelectors(params MatchResultSelector[] selectors)
@@ -69,9 +69,9 @@ namespace SpecSync.Plugin.ExcelTestResults
             );
         }
 
-        private bool EqualsToStringIfSpecified(TestRunTestDefinition testDefinition, string columnName, string value, string valueRegex, Func<string, string> cellValueConverter)
+        private bool EqualsToStringIfSpecified(TestRunTestDefinition testDefinition, string columnName, string value, Func<string, string> cellValueConverter)
         {
-            var cellValue = CellValueConverter.Convert(GetCellValue<string>(testDefinition, columnName), valueRegex);
+            var cellValue = GetCellValue<string>(testDefinition, columnName);
             if (cellValueConverter != null)
                 cellValue = cellValueConverter(cellValue);
             return string.IsNullOrEmpty(cellValue) || value.Equals(cellValue, StringComparison.OrdinalIgnoreCase);

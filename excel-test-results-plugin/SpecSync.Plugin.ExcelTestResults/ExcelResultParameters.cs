@@ -40,11 +40,6 @@ public class ExcelResultParameters
     public string TestCaseIdColumnName { get; set; } = "ID";
 
     /// <summary>
-    /// The regular expression containing a "value" group to convert the value. 
-    /// </summary>
-    public string TestCaseIdValueRegex { get; set; } = null;
-
-    /// <summary>
     /// The column name contains the name (displayed in Azure DevOps).
     /// </summary>
     public string TestNameColumnName { get; set; } = "Test Name";
