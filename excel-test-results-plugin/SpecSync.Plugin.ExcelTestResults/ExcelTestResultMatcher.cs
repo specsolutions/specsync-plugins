@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SpecSync.Gherkin;
+using SpecSync.Parsing;
 using SpecSync.PublishTestResults;
 using SpecSync.PublishTestResults.Matchers;
 
 namespace SpecSync.Plugin.ExcelTestResults
 {
-    public class ExcelTestResultMatcher : GherkinTestRunnerResultMatcher
+    public class ExcelTestResultMatcher : ITestRunnerResultMatcher
     {
         private readonly ExcelResultParameters _excelResultParameters;
 
@@ -16,14 +17,24 @@ namespace SpecSync.Plugin.ExcelTestResults
             _excelResultParameters = excelResultParameters;
         }
 
-        public override string ServiceDescription => "Excel Test Result";
+        public virtual string ServiceDescription => "Excel Test Result";
+        public virtual bool CanProcess(TestRunnerResultMatcherArgs args)
+            => args.TestFrameworkIdentifier.Equals(ExcelTestResultLoader.FormatSpecifier, StringComparison.InvariantCultureIgnoreCase);
 
-        protected override MatchResultSelector GetScenarioResultSelector(ScenarioLocalTestCase scenarioLocalTestCase, FeatureFileLocalTestCaseContainer featureFileLocalTestCaseContainer, TestRunnerResultMatcherArgs args)
+
+        public MatchResultSelector GetLocalTestCaseResultSelector(ILocalTestCase localTestCase,
+            ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
         {
-            var scenarioName = scenarioLocalTestCase.Name;
-            var featureName = featureFileLocalTestCaseContainer.Name;
-            var featureFileName = Path.GetFileName(featureFileLocalTestCaseContainer.SourceFile.ProjectRelativePath);
-            var testCaseId = scenarioLocalTestCase.TestCaseLink.TestCaseId.GetNumericId();
+            //TODO: replace by ltc.Name with SpecSync v3.5
+            string GetCompatibilityLocalTestCaseName(ILocalTestCase ltc)
+            {
+                return (string)ltc.GetType().GetProperty("Name")?.GetValue(ltc);
+            }
+
+            var scenarioName = GetCompatibilityLocalTestCaseName(localTestCase);
+            var featureName = localTestCaseContainer.Name;
+            var featureFileName = Path.GetFileName(localTestCaseContainer.SourceFile.ProjectRelativePath);
+            var testCaseId = localTestCase.TestCaseLink.TestCaseId.GetNumericId();
 
             return CombineSelectors(
                 CreateColumnMatch(_excelResultParameters.FeatureFileColumnName, featureFileName),
@@ -67,7 +78,9 @@ namespace SpecSync.Plugin.ExcelTestResults
             return (T)Convert.ChangeType(objValue, typeof(T));
         }
 
-        public override bool CanProcess(TestRunnerResultMatcherArgs args)
-            => args.TestFrameworkIdentifier.Equals(ExcelTestResultLoader.FormatSpecifier, StringComparison.InvariantCultureIgnoreCase);
+        public IDictionary<string, string> GetDataRow(TestRunTestResult testResult, TestRunTestDefinition testDefinition, ILocalTestCase localTestCase, ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
+        {
+            return null;
+        }
     }
 }
