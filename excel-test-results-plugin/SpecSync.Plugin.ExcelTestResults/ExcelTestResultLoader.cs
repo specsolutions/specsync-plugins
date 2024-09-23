@@ -94,10 +94,13 @@ public class ExcelTestResultLoader : ITestResultLoader
         if (string.IsNullOrWhiteSpace(outcomeValue))
             return TestOutcome.NotExecuted;
 
-        if (Enum.TryParse<TestOutcome>(outcomeValue, true, out var outcome))
+        var convertedOutcomeValue = _excelResultParameters.OutcomeMappings.TryGetValue(outcomeValue, out var mappedValue) ? 
+                mappedValue : outcomeValue;
+
+        if (Enum.TryParse<TestOutcome>(convertedOutcomeValue, true, out var outcome))
             return outcome;
 
-        throw new SpecSyncException($"Invalid outcome value or the column {_excelResultParameters.OutcomeColumnName} is not defined at row {rowNumber}: '{outcomeValue}'. Possible values: {string.Join(", ", Enum.GetNames(typeof(TestOutcome)))}.");
+        throw new SpecSyncException($"Invalid outcome value or the column {_excelResultParameters.OutcomeColumnName} is not defined at row {rowNumber}: '{outcomeValue}'. Possible values: {string.Join(", ", Enum.GetNames(typeof(TestOutcome)))}. You can map custom values using the 'OutcomeMapping' parameter in 'PASS=Passed,FAIL=Failed' format.");
     }
 
     private bool TryGetCellValue(DataRow row, string columnName, out string value)

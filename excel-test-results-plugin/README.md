@@ -64,6 +64,20 @@ The Test Case ID can also be specified using prefixed format (e.g. `tc:1234`). T
 }
 ```
 
+By default you need to specify the standardized outcome values, like `Passed` or `Failed`, but you can also use custom values as well if you specify them with the `OutcomeMapping` parameter. For example the following configuration enables to use `PASS` and `FAIL`:
+
+```
+"plugins": [
+  {
+    "packageId": "SpecSync.Plugin.ExcelTestResults",
+    [...]
+    "parameters": {
+      "OutcomeMapping": "PASS=Passed,FAIL=Failed"
+    }
+  }
+]
+```
+
 In order to use the plugin, you have to specify `Excel` for the `--testResultFileFormat` (or `-f`) command line option:
 
 ```

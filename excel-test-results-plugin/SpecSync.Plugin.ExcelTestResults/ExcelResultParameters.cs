@@ -49,8 +49,26 @@ public class ExcelResultParameters
     /// </summary>
     public string ErrorMessageColumnName { get; set; } = "Error";
 
+    /// <summary>
+    /// Specifies a custom mapping for outcome values in "PASS=Passed,FAIL=Failed" format.
+    /// </summary>
+    public string OutcomeMapping { get; set; } = null;
+
+
+    internal Dictionary<string, string> OutcomeMappings { get; } = new CaseInsensitiveKeyDictionary<string>();
+
     public void Verify()
     {
+        if (!string.IsNullOrWhiteSpace(OutcomeMapping))
+        {
+            var mappings = OutcomeMapping.Split(',').Select(m => m.Split('=')).ToList();
+            foreach (var mapping in mappings)
+            {
+                if (mapping.Length != 2)
+                    throw new SpecSyncConfigurationException($"Invalid OutcomeMapping value: '{OutcomeMapping}'");
+                OutcomeMappings[mapping[0].Trim()] = mapping[1].Trim();
+            }
+        }
     }
 
     public static ExcelResultParameters FromPluginParameters(Dictionary<string, object> parameters)
