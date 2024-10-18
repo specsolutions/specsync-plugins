@@ -1,90 +1,96 @@
-# Excel Test Source SpecSync Plugin: SpecSync.Plugin.ExcelTestSource
+# Only Publish Test Results Plugin: SpecSync.Plugin.OnlyPublishTestResults
 
-This plugin can be used to synchronize a local test cases from Excel file using the format that Azure DevOps uses when you export Test Cases to CSV. 
+This plugin can be used in cases when you would like to publish test results with SpecSync for Test Cases that were not synchronized by SpecSync, but created manually or with other tools.
 
-*You can find more information about the SpecSync sample plugins in the [repository page](https://github.com/specsolutions/specsync-sample-plugins#readme).*
 
-* Plugin package: [SpecSync.Plugin.ExcelTestSource](https://www.nuget.org/packages/SpecSync.Plugin.ExcelTestSource)
-* Plugin source: [SpecSync.Plugin.ExcelTestSource](SpecSync.Plugin.ExcelTestSource)
+*You can find more information about the SpecSync sample plugins in the [repository page](https://github.com/specsolutions/specsync-plugins#readme).*
+
+* Plugin package: [SpecSync.Plugin.OnlyPublishTestResults](https://www.nuget.org/packages/SpecSync.Plugin.OnlyPublishTestResults)
+* Plugin source: [SpecSync.Plugin.OnlyPublishTestResults](SpecSync.Plugin.OnlyPublishTestResults)
 * Sample project: [SampleProject](SampleProject)
 
-The Test Cases are loaded from the Excel from a hierarchical structure: a Test Case row (step fields empty) and additional test step rows (Test Case fields empty).
+Normally SpecSync requires the local test case sources (e.g. feature files) as well for publishing test results, because the Test Case ID of a particular executed test is obtained from that. There are cases however, when the test results contain the Test Case ID and the test result should be just published to the referred Test Case. 
 
-In order to load the Test Cases from excel, the plugin uses the following columns in the Excel file:
-* Test Case ID (default column name: `ID`), mandatory column.
-* Test Case Title (default column name: `Title`), mandatory column.
-* Test Case Step Index (default column name: `Test Step`), optional column.
-* Test Case Step Action (default column name: `Step Action`), mandatory column.
-* Test Case Step Expected Result (default column name: `Step Expected`), optional column.
-* Test Case Tags (default column name: `Tags`), optional column.
-* Test Case Description (default column name: `Description`), optional column.
-* Test Case Automation Status (default column name: `Automation Status`), optional column.
-* Test Case Automated Test Name (default column name: `Automated Test Name`), optional column.
+This plugin can be used to publish test results in this situation.
 
-The default column names can be changed using plugin parameters. The following example shows how to rename all columns:
+### Prerequisites & Setup
 
-```
-    "plugins": [
-      {
-        "packageId": "SpecSync.Plugin.ExcelTestSource",
-        [...]
-        "parameters": {
-          "TestCaseIdColumnName": "My ID",
-          "TitleColumnName": "My Title",
-          "TestStepColumnName": "My Test Step",
-          "TestStepActionColumnName": "My Step Action",
-          "TestStepExpectedColumnName": "My Step Expected",
-          "TagsColumnName": "My Tags",
-          "DescriptionColumnName": "My Description",
-          "AutomationStatusColumnName": "My Automation Status",
-          "AutomatedTestNameColumnName": "My Automated Test Name",
-        }
-      }
-    ]
-```
+1. The test results must contain the Test Case ID as a test result property. Test result properties are set for example by the `<property>` element in JUnit XML results, but the [SpecSync.Plugin.ExcelTestResults](https://github.com/specsolutions/specsync-plugins/tree/main/excel-test-results-plugin) also sets the properties based on the Excel columns.
+2. The plugin can only be used for `publish-test-results` SpecSync command. For all other commands (e.g. `push`) it fails. In order to use the same configuration file for other commands, you either need to remove the plugin or set `local/projectType` to `folder` or `projectFile`.
+3. The Test Case ID can be set to a result property of any name, but this name has to be specified as a plugin parameter `TestCaseIdPropertyName`.
 
+The property can contain the ID directly (e.g. `1234`) or in a prefixed form (e.g. `tc:1234`). When the prefixed form is used, the `synchronization/testCaseTagPrefix` and the `synchronization/tagPrefixSeparators` settings are considered. See example below.
 
-All other columns can be automatically updated to fields of the Test Case. In order to do that, you need to add an item to the `fieldUpdateColumns` plugin parameter setting, like
-
-```
-    "plugins": [
-      {
-        "packageId": "SpecSync.Plugin.ExcelTestSource",
-        [...]
-        "parameters": {
-          "fieldUpdateColumns": [
-            {
-              "columnName": "Priority",
-              "fieldName": "Priority" // can be omitted if the same as 'columnName'
-            }
-          ]
-        }
-      }
-    ]
-```
-
-If the automatic update is not enough (e.g. because you need to transform the value), you can also convert the column values to normal tags and then use the "updateFields" feature to save them to fields. For this, the `TagNamePrefix` setting has to be specified:
+The following example shows how this plugin can be used to publish test results from an Excel file if it contains `TestCaseId` column:
 
 
 ```
     "plugins": [
       {
-        "packageId": "SpecSync.Plugin.ExcelTestSource",
+        "packageId": "SpecSync.Plugin.OnlyPublishTestResults",
         [...]
         "parameters": {
-          "fieldUpdateColumns": [
-            {
-              "columnName": "Priority",
-              "tagNamePrefix": "priority:" // generates tags, like `@priority:high`
-            }
-          ]
+          "TestCaseIdPropertyName": "TestCaseId" // specifying the property name that contains the Test Case ID
+        }
+      },
+      {
+        "packageId": "SpecSync.Plugin.ExcelTestResults",
+        "packageVersion": "1.3.0",
+        "parameters": {
+          "TestCaseIdColumnName": "TestCaseId"
         }
       }
     ]
 ```
 
-If the Excel contains new Test Case rows (where the ID cell is empty), SpecSync will create a new Test Case and 
-set the ID cell value with the ID of the created Test Case. 
-When the `WriteIdWithPrefix` plugin parameter is set to `true`, SpecSync will write back the ID to excel with prefix (e.g. `tc:1234`) otherwise (default) only the number will be written.
+The second example can be used to load a JUnit XML test result file, that includes a `test_case` property with a prefixed version of the Test Case ID. In this example the [SpecSync.Plugin.GenericTestResultMatcher](https://github.com/specsolutions/specsync-plugins/tree/main/generic-test-result-matcher-plugin) is used to match the results to the Test Case.
 
-The plugins that override local test source require a SpecSync Enterprise license to run. Please [contact us](https://specsolutions.gitbook.io/specsync/contact/specsync-support) to get an evaluation license that you can use to try out this plugin.
+The JUnit XML test result file looks like this.
+
+```
+<testsuite name="my test run">
+    <testcase name="Sample scenario" classname="My Feature" status="passed">
+        <properties>
+            <property name="test_case" value="TC-32249" />
+        </properties>
+    </testcase>
+</testsuite>
+```
+
+In order to process this test result file, the following configuration has to be used.
+
+```
+{
+  "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-latest.json",
+  "compatibilityVersion": "1.0",
+
+  "toolSettings": {
+    "plugins": [
+      {
+        "packageId": "SpecSync.Plugin.OnlyPublishTestResults",
+        "packageVersion": "1.0.0",
+
+        "parameters": {
+          "TestCaseIdPropertyName": "test_case"
+        }
+      },
+      {
+        "packageId": "SpecSync.Plugin.GenericTestResultMatcher",
+        "packageVersion": "1.2.0",
+        "parameters": {
+          "TestResultProperties": {
+            "test_case": "^TC-{test-case-id}$" // the 'test_case' parameter should contain the Test Case ID with the 'TC-' prefix.
+          }
+        }
+      }
+    ]
+  },
+  "remote": {
+    "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo"
+  },
+  "synchronization": {
+    "testCaseTagPrefix": "TC",
+    "tagPrefixSeparators": ["-", ":"]
+  }
+}
+```

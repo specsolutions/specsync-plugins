@@ -28,22 +28,5 @@
     "testSuite": {
       "name": "ExcelTestResults"
     }
-  },
-  "synchronization": {
-    "automation": {
-      "enabled": true,
-      "automatedTestType": "Script"
-    },
-    "format": {
-      "useExpectedResult": true
-    },
-    "links": [
-      {
-        "tagPrefix": "story"
-      }
-    ],
-    "fieldUpdates": {
-      "Description": "{local-test-case-description}"
-    }
   }
 }

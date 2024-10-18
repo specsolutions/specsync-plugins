@@ -10,13 +10,13 @@
 
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Description>A SpecSync plugin for publishing test results to Test Cases that were not synchronized by SpecSync.</Description>
-    <RepositoryUrl>https://github.com/specsolutions/specsync-sample-plugins</RepositoryUrl>
+    <RepositoryUrl>https://github.com/specsolutions/specsync-plugins</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>SpecSync-Icon.png</PackageIcon>
     <PackageProjectUrl>https://speclink.me/specsync</PackageProjectUrl>
     <Copyright>Copyright © 2016-$([System.DateTime]::UtcNow.ToString("yyyy")) Spec Solutions</Copyright>
     <PackageTags>specsync plugin test-results</PackageTags>
-    <PackageReleaseNotes>Please check https://github.com/specsolutions/specsync-sample-plugins/releases for release note details.</PackageReleaseNotes>
+    <PackageReleaseNotes>Please check https://github.com/specsolutions/specsync-plugins/releases for release note details.</PackageReleaseNotes>
     <Authors>Spec Solutions</Authors>
   </PropertyGroup>
 
