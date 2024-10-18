@@ -25,12 +25,28 @@ public class GenericMatcher : ITestRunnerResultMatcher
 
     public MatchResultSelector GetLocalTestCaseResultSelector(ILocalTestCase localTestCase, ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
     {
-        return CombineSelectors(
+        var selectors = new List<MatchResultSelector>
+        {
             CreateNameMatch(localTestCase, localTestCaseContainer, args),
             CreateClassNameMatch(localTestCase, localTestCaseContainer, args),
             CreateMethodNameMatch(localTestCase, localTestCaseContainer, args),
             CreateStdOutMatch(localTestCase, localTestCaseContainer, args)
-        );
+        };
+        if (_pluginParameters.TestResultProperties != null)
+            foreach (var testResultProperty in _pluginParameters.TestResultProperties)
+            {
+                selectors.Add(CreateTestResultPropertyMatch(localTestCase, localTestCaseContainer, args, testResultProperty));
+            }
+
+        return CombineSelectors(selectors.ToArray());
+    }
+
+    private MatchResultSelector CreateTestResultPropertyMatch(ILocalTestCase localTestCase, ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args, KeyValuePair<string, string> testResultProperty)
+    {
+        return CreateMatch($"TestResultProperty:{testResultProperty.Key}", 
+            testResultProperty.Value, 
+            td => td.Results.FirstOrDefault()?.GetProperty<object>(testResultProperty.Key)?.ToString(), 
+            localTestCase, localTestCaseContainer, args);
     }
 
     private MatchResultSelector CreateNameMatch(ILocalTestCase localTestCase, ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
@@ -59,9 +75,10 @@ public class GenericMatcher : ITestRunnerResultMatcher
             return null;
 
         var regexString = paramRe;
-        regexString = regexString.Replace("{local-test-case-name}", Regex.Escape(localTestCase.Name));
+        regexString = regexString.Replace("{local-test-case-name}", Regex.Escape(localTestCase.GetName()));
         regexString = regexString.Replace("{local-test-case-container-name}", Regex.Escape(localTestCaseContainer.Name));
         regexString = regexString.Replace("{local-test-case-container-filename}", Regex.Escape(GetFileName(localTestCaseContainer)));
+        regexString = regexString.Replace("{test-case-id}", Regex.Escape(localTestCase.TestCaseLink.TestCaseId.GetExistingIdAsString()));
         var regex = new Regex(regexString);
 
         return new MatchResultSelector($"<{paramName}> matches /{regexString}/",

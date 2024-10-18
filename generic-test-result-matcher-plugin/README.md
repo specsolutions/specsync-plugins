@@ -25,13 +25,14 @@ that might include special placeholders to refer to the local test case details 
 
 The following parameters can be used:
 
-* `Name` - matches to the test result "name" parameter
-* `ClassName` - matches to the test result "className" or "classname" parameter
-* `MethodName` - matches to the test result "methodName" parameter (TRX only)
+* `Name` - matches the test result "name" parameter
+* `ClassName` - matches the test result "className" or "classname" parameter
+* `MethodName` - matches the test result "methodName" parameter (TRX only)
+* `StdOut` - matches the test result output
+* `TestResultProperties` - matches the test result custom properties, see example below
 
-In order to see the "name", "className" or the "methodName" you can run 
-the SpecSync "publish-test-results" command with 
-additional `-v --diagCategories TestResult`. 
+In order to see the "name", "className", "methodName" or the custom properties you can run 
+the SpecSync "publish-test-results" command with additional `-v --diagCategories TestResult`. 
 
 For testing it is also recommended to use the `--dryRun` option that collects all information, but does not publish the results.
 
@@ -40,4 +41,20 @@ The following placeholeds can be used:
 * `{local-test-case-name}` - the name of the local test case (name of the scenario)
 * `{local-test-case-container-name}` - the name of the local test case container (name of the feature)
 * `{local-test-case-container-filename}` - the file name of the source file with extension
+* `{test-case-id}` - the ID of the test case, see example below
 
+In some cases the test result also contains the Test Case ID that could be used for matching. Assuming the Test Case ID is added to the result as a custom parameter `test_case_id`, the configuration could be the following:
+
+```
+"plugins": [
+  {
+    "packageId": "SpecSync.Plugin.GenericTestResultMatcher",
+    [...]
+    "parameters": {
+      "TestResultProperties": {
+        "test_case_id": "^{test-case-id}$"
+      }
+    }
+  }
+]
+```
