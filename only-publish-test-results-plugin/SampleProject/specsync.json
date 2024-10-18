@@ -16,11 +16,9 @@
       },
       {
         "packageId": "SpecSync.Plugin.ExcelTestResults",
-        "packageVersion": "1.2.0",
+        "packageVersion": "1.3.0",
         "parameters": {
-          "TestCaseIdColumnName": "TestCaseId",
-          "FeatureColumnName": "X",
-          "ScenarioColumnName":  "Y"
+          "TestCaseIdColumnName": "TestCaseId"
         }
       }
     ]
