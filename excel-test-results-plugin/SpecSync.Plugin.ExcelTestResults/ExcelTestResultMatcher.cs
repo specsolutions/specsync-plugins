@@ -41,26 +41,24 @@ namespace SpecSync.Plugin.ExcelTestResults
                 return ExcelTestResultLoader.GetTestCaseLink(cellValue, args.TagServices)?.TestCaseId.ToString();
             }
 
-            return CombineSelectors(
-                CreateColumnMatch(_excelResultParameters.FeatureFileColumnName, featureFileName),
-                CreateColumnMatch(_excelResultParameters.FeatureColumnName, featureName),
-                CreateColumnMatch(_excelResultParameters.ScenarioColumnName, scenarioName),
-                CreateNumericColumnMatch(_excelResultParameters.TestCaseIdColumnName, testCaseId, IdCellValueConverter)
-            );
+            return 
+                CombineSelectorsOr(
+                    CreateColumnMatch(_excelResultParameters.TestCaseIdColumnName, testCaseId.ToString(), IdCellValueConverter, resultIfNotSpecified: false),
+                    CombineSelectorsAnd(
+                        CreateColumnMatch(_excelResultParameters.FeatureFileColumnName, featureFileName),
+                        CreateColumnMatch(_excelResultParameters.FeatureColumnName, featureName),
+                        CreateColumnMatch(_excelResultParameters.ScenarioColumnName, scenarioName),
+                        CreateColumnMatch(_excelResultParameters.TestCaseIdColumnName, testCaseId.ToString(), IdCellValueConverter)
+                ));
         }
 
-        private MatchResultSelector CreateColumnMatch(string columnName, string value, Func<string, string> cellValueConverter = null)
+        private MatchResultSelector CreateColumnMatch(string columnName, string value, Func<string, string> cellValueConverter = null, bool resultIfNotSpecified = true)
         {
             return new MatchResultSelector($"[{columnName}] is '{value}' (if specified)",
-                td => EqualsToStringIfSpecified(td, columnName, value, cellValueConverter));
+                td => EqualsToStringIfSpecified(td, columnName, value, cellValueConverter, resultIfNotSpecified));
         }
 
-        private MatchResultSelector CreateNumericColumnMatch(string columnName, int value, Func<string, string> cellValueConverter = null)
-        {
-            return CreateColumnMatch(columnName, value.ToString(), cellValueConverter);
-        }
-
-        private MatchResultSelector CombineSelectors(params MatchResultSelector[] selectors)
+        private MatchResultSelector CombineSelectorsAnd(params MatchResultSelector[] selectors)
         {
             var validSelectors = selectors.Where(s => s != null).ToArray();
             return new MatchResultSelector(
@@ -69,12 +67,23 @@ namespace SpecSync.Plugin.ExcelTestResults
             );
         }
 
-        private bool EqualsToStringIfSpecified(TestRunTestDefinition testDefinition, string columnName, string value, Func<string, string> cellValueConverter)
+        private MatchResultSelector CombineSelectorsOr(params MatchResultSelector[] selectors)
+        {
+            var validSelectors = selectors.Where(s => s != null).ToArray();
+            return new MatchResultSelector(
+                string.Join(" or ", validSelectors.Select(s => $"({s.DiagMessage})")),
+                td => validSelectors.Any(s => s.Func(td))
+            );
+        }
+
+        private bool EqualsToStringIfSpecified(TestRunTestDefinition testDefinition, string columnName, string value, Func<string, string> cellValueConverter, bool resultIfNotSpecified)
         {
             var cellValue = GetCellValue<string>(testDefinition, columnName);
             if (cellValueConverter != null)
                 cellValue = cellValueConverter(cellValue);
-            return string.IsNullOrEmpty(cellValue) || value.Equals(cellValue, StringComparison.OrdinalIgnoreCase);
+            if (string.IsNullOrEmpty(cellValue))
+                return resultIfNotSpecified;
+            return value.Equals(cellValue, StringComparison.OrdinalIgnoreCase);
         }
 
         private T GetCellValue<T>(TestRunTestDefinition testDefinition, string columnName)
