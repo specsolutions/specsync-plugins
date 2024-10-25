@@ -351,6 +351,5 @@ MigrationBackup/
 specsync.lic
 *.ncrunchproject
 *.ncrunchsolution
-specsync.json.skip
 /testng-test-source-plugin/SampleProject/target/
 .idea/
