@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using SpecSync.Configuration;
 using SpecSync.Projects;
 using SpecSync.PublishTestResults;
@@ -44,7 +46,7 @@ public class TestResultProjectLoader : IBddProjectLoader
 
         var testResults = synchronizationContext.PublishTestResultContext.LocalTestRun.TestDefinitions
             .SelectMany(td => td.Results.SelectMany(GetFlattenLeafResults)
-                .Select(tr => new { TestRunTestDefinition = td, Result = tr, TestCaseId = tr.GetProperty<object>(_parameters.TestCaseIdPropertyName)?.ToString() }))
+                .Select(tr => new { TestRunTestDefinition = td, Result = tr, TestCaseId = GetTestCaseIdValue(td, tr) }))
             .ToArray();
 
         var testResultsById = testResults
@@ -61,5 +63,26 @@ public class TestResultProjectLoader : IBddProjectLoader
             .Select(rg => new TestCaseResultDocumentSource(rg.Key))
             .ToList();
         return new TestResultProject(args.BaseFolder, documents);
+    }
+
+    private string GetTestCaseIdValue(TestRunTestDefinition testDefinition, TestRunTestResult testResult)
+    {
+        var propertyValue = GetPropertyValue(testDefinition, testResult, _parameters.TestCaseIdPropertyName);
+        if (!string.IsNullOrEmpty(propertyValue) && !string.IsNullOrEmpty(_parameters.ValueRegex))
+        {
+            var match = Regex.Match(propertyValue, _parameters.ValueRegex);
+            if (match.Success && match.Groups["id"].Success)
+                propertyValue = match.Groups["id"].Value;
+            else
+                propertyValue = null;
+        }
+        return propertyValue;
+    }
+
+    private string GetPropertyValue(TestRunTestDefinition testDefinition, TestRunTestResult testResult, string propertyName)
+    {
+        return testResult.GetProperty<object>(propertyName)?.ToString() ??
+               testResult.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(testResult)?.ToString() ??
+               testDefinition.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(testDefinition)?.ToString();
     }
 }

@@ -13,13 +13,18 @@ Normally SpecSync requires the local test case sources (e.g. feature files) as w
 
 This plugin can be used to publish test results in this situation.
 
-### Prerequisites & Setup
+## Prerequisites & Setup
 
-1. The test results must contain the Test Case ID as a test result property. Test result properties are set for example by the `<property>` element in JUnit XML results, but the [SpecSync.Plugin.ExcelTestResults](https://github.com/specsolutions/specsync-plugins/tree/main/excel-test-results-plugin) also sets the properties based on the Excel columns.
+1. The test results must contain the Test Case ID as a test result property. Test result properties are set for example by the `<property>` element in JUnit XML results, but the [SpecSync.Plugin.ExcelTestResults](https://github.com/specsolutions/specsync-plugins/tree/main/excel-test-results-plugin) also sets the properties based on the Excel columns. The plugin can also be used if the ID is part of any core test result property, like `MethodName`, `ClassName` or `Name`, e.g. if the test method name is like `SomeTestMethod_TC1234`.
 2. The plugin can only be used for `publish-test-results` SpecSync command. For all other commands (e.g. `push`) it fails. In order to use the same configuration file for other commands, you either need to remove the plugin or set `local/projectType` to `folder` or `projectFile`.
 3. The Test Case ID can be set to a result property of any name, but this name has to be specified as a plugin parameter `TestCaseIdPropertyName`.
+4. If the property value is not equal but only contains the Test Case ID, then the `ValueRegex` parameter can be used to specify a regular expression that extracts the ID from the property value. The regex must contain a named capture group `id` that contains the ID. For example, if the property value is like `SomeTestMethod_TC1234`, then the regex `^.*_TC(?<id>\d+)$` can be used to extract the ID.
 
 The property can contain the ID directly (e.g. `1234`) or in a prefixed form (e.g. `tc:1234`). When the prefixed form is used, the `synchronization/testCaseTagPrefix` and the `synchronization/tagPrefixSeparators` settings are considered. See example below.
+
+## Examples
+
+### Example 1
 
 The following example shows how this plugin can be used to publish test results from an Excel file if it contains `TestCaseId` column:
 
@@ -42,6 +47,8 @@ The following example shows how this plugin can be used to publish test results 
       }
     ]
 ```
+
+### Example 2
 
 The second example can be used to load a JUnit XML test result file, that includes a `test_case` property with a prefixed version of the Test Case ID. In this example the [SpecSync.Plugin.GenericTestResultMatcher](https://github.com/specsolutions/specsync-plugins/tree/main/generic-test-result-matcher-plugin) is used to match the results to the Test Case.
 
@@ -91,6 +98,41 @@ In order to process this test result file, the following configuration has to be
   "synchronization": {
     "testCaseTagPrefix": "TC",
     "tagPrefixSeparators": ["-", ":"]
+  }
+}
+```
+
+### Example 3
+
+The third example shows how this plugin can be used to publish test results from a TRX file if it contains the Test Case ID in the `TestMethod` property, i.e. the test method name is like `SomeTestMethod_TC1234`.
+
+```
+{
+  "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-latest.json",
+  "compatibilityVersion": "1.0",
+
+  "toolSettings": {
+    "plugins": [
+      {
+        "packageId": "SpecSync.Plugin.OnlyPublishTestResults",
+        "packageVersion": "1.0.0",
+
+        "parameters": {
+          "TestCaseIdPropertyName": "MethodName",
+          "ValueRegex": "^.*_TC(?<id>\\d+)$"
+        }
+      },
+      {
+        "packageId": "SpecSync.Plugin.GenericTestResultMatcher",
+        "packageVersion": "1.2.0",
+        "parameters": {
+          "MethodName": "^.*_TC{test-case-id}$"
+        }
+      }
+    ]
+  },
+  "remote": {
+    "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo"
   }
 }
 ```
