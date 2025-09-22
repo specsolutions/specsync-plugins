@@ -20,7 +20,7 @@ namespace SpecSync.Plugin.MsTestTestSource
             args.ServiceRegistry.LocalTestCaseContainerParserProvider
                 .Register(new MsTestTestClassParser());
             args.ServiceRegistry.LocalTestCaseAnalyzerProvider
-            .Register(new MsTestTestAnalyzer());
+                .Register(new MsTestTestAnalyzer());
 
             args.ServiceRegistry.TestResultMatcherProvider
                 .Register(new MsTestUnitTestMatcher(), ServicePriority.High);

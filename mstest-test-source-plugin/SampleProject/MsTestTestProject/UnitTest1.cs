@@ -23,7 +23,7 @@ namespace MsTestTestProject
             Assert.Fail("This is a simulated error");
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("foo", 1, DisplayName = "First")]
         [DataRow("bar", 2, DisplayName = "Second")]
         [DataRow("baz", 3, DisplayName = "Third")]

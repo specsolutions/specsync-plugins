@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecSync.Plugin.GenericTest
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SampleProject", "SampleProject\", "{E8E5F281-4FA3-48F2-A9D6-FC34F8CDE4EC}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8.1"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_58654"
 		Debug.AspNetCompiler.PhysicalPath = "SampleProject\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_58654\"

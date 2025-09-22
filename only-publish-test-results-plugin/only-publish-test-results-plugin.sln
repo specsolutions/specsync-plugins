@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecSync.Plugin.OnlyPublish
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "SampleProject", "SampleProject\", "{11E13B13-F13B-4607-BA37-83281959B802}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8.1"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_65493"
 		Debug.AspNetCompiler.PhysicalPath = "SampleProject\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_65493\"
