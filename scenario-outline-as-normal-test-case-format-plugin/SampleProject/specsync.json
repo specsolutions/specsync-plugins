@@ -23,7 +23,7 @@
       "name": "ScenarioOutlineAsNormalTestCase",
       "type": "single",
       "node": {
-        "testPlan": "ScenarioOutlinePerExamplesTestCasePlan",
+        "testPlan": "ScenarioOutlineAsNormalTestCasePlan",
         "path": "ScenarioOutlineAsNormalTestCase"
       }
     }
