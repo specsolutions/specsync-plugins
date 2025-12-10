@@ -1,8 +1,5 @@
-﻿using System;
-using SpecSync.Parsing;
+﻿using SpecSync.Parsing;
 using SpecSync.Plugin.TestNGTestSource.Java;
-using System.Collections.Generic;
-using System.Linq;
 using SpecSync.Plugin.TestNGTestSource.JavaCode;
 using SpecSync.Utils.Code;
 
@@ -14,7 +11,7 @@ public class TestNGTestClassParser : JavaTestClassParserBase
     public const string TestAttributeName = "Test";
     public const string GroupElementName = "groups";
     public static readonly string[] NonTestAttributeNames =
-    {
+    [
         "BeforeSuite",
         "AfterSuite",
         "BeforeTest",
@@ -27,27 +24,27 @@ public class TestNGTestClassParser : JavaTestClassParserBase
         "AfterMethod",
         "DataProvider",
         "Factory"
-    };
+    ];
 
     public override string ServiceDescription => "TestNG test class parser";
 
-    public override string GetTestCaseLinkTemplate(ILocalTestCase localTestCase)
+    public override string GetTestCaseLinkTemplate(ILocalArtifact localTestCase)
     {
         throw new NotSupportedException(); // link template is implemented in TestNGTestUpdater
     }
 
-    public override IEnumerable<ILocalTestCaseTag> FindTags(JavaMethodBlock testJavaMethodBlock, LocalTestCaseContainerParseArgs args)
+    public override IEnumerable<ILocalArtifactTag> FindTags(JavaMethodBlock testJavaMethodBlock, SourceDocumentParserArgs args)
     {
         var categoryAttributes = testJavaMethodBlock.ClassAnnotations
             .Concat(testJavaMethodBlock.Annotations)
             .Where(a => IsAttributeOf(a, TestNGPackage, TestAttributeName) &&
                         a.Elements.Any(e => e.Name == GroupElementName))
-            .SelectMany(a => a.Elements.First(e => e.Name == GroupElementName).GetElementArrayValue() ?? Array.Empty<JavaAnnotationElement>(), 
+            .SelectMany(a => a.Elements.First(e => e.Name == GroupElementName).GetElementArrayValue() ?? [], 
                 (a,g) => 
                     (
                         Annotation: a, 
                         Group: g,
-                        GroupValue: g.GetStringValue()
+                        GroupValue: g.GetStringValue()!
                     ))
             .GroupBy(g => g.GroupValue)
             .Select(g => g.First());
@@ -65,7 +62,7 @@ public class TestNGTestClassParser : JavaTestClassParserBase
              !HasAttributeOfAny(methodBlock.Annotations, TestNGPackage, NonTestAttributeNames));
     }
 
-    protected override JavaTestMethodLocalTestCase CreateTestMethodLocalTestCase(JavaMethodBlock testJavaMethodBlock, ILocalTestCaseTag[] tags, TestCaseLink testCaseLink, LocalTestCaseDataRow[] dataRows, LocalTestCaseContainerParseArgs args)
+    protected override JavaTestMethodLocalTestCase CreateTestMethodLocalTestCase(JavaMethodBlock testJavaMethodBlock, ILocalArtifactTag[] tags, IdLink? testCaseLink, LocalTestCaseDataRow[]? dataRows, SourceDocumentParserArgs args)
     {
         var methodTestAnnotation = testJavaMethodBlock.Annotations
             .FirstOrDefault(a => IsAttributeOf(a, TestNGPackage, TestAttributeName));
@@ -73,7 +70,7 @@ public class TestNGTestClassParser : JavaTestClassParserBase
         return new TestNGTestMethodLocalTestCase(testJavaMethodBlock, methodTestAnnotation, GetTestName(testJavaMethodBlock), tags, testCaseLink, dataRows, GetDescription(testJavaMethodBlock));
     }
 
-    protected override JavaTestUpdater CreateUpdater(EditableCodeFile codeFile, LocalTestCaseContainerParseArgs args)
+    protected override JavaTestUpdater CreateUpdater(EditableCodeFile codeFile, SourceDocumentParserArgs args)
     {
         return new TestNGTestUpdater(codeFile, args.Configuration, args.Tracer);
     }

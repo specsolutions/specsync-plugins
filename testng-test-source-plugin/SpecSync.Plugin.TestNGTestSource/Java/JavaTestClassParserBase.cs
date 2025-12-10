@@ -1,53 +1,47 @@
 ﻿using SpecSync.Parsing;
 using SpecSync.Utils.Code;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System;
-using System.IO;
+using SpecSync.IO;
 using SpecSync.Plugin.TestNGTestSource.JavaCode;
-using SpecSync.PluginDependency.CSharpSource.TestMethodSource;
+using SpecSync.TestMethodSource;
 
 namespace SpecSync.Plugin.TestNGTestSource.Java;
 
-public abstract class JavaTestClassParserBase : ILocalTestCaseContainerParser
+public abstract class JavaTestClassParserBase : ISourceDocumentParser
 {
     public abstract string ServiceDescription { get; }
 
-    public bool CanProcess(LocalTestCaseContainerParseArgs args)
-        => args.SourceFile.ProjectRelativePath.EndsWith(".java", StringComparison.OrdinalIgnoreCase);
+    public bool CanProcess(SourceDocumentParserArgs args)
+        => args.SourceReference.ProjectRelativePath.EndsWith(".java", StringComparison.OrdinalIgnoreCase);
 
-    public virtual ILocalTestCaseContainer Parse(LocalTestCaseContainerParseArgs args)
+    public virtual ISourceDocument Parse(SourceDocumentParserArgs args)
     {
-        var filePath = Path.Combine(args.BddProject.ProjectFolder, args.SourceFile.ProjectRelativePath);
-        var codeFile = LoadCodeFile(filePath);
+        var filePath = args.Project.GetFullPath(args.SourceReference);
+        var codeFile = LoadCodeFile(filePath, args.CommandContext.FileSystem);
 
         var testMethodTestCases = GetTestMethodLocalTestCases(args, codeFile).ToArray();
 
         var updater = CreateUpdater(codeFile, args);
         var keywordParser = CreateKeywordParser(args);
-        return new TestClassLocalTestCaseContainer(codeFile, args.SourceFile, args.SourceFile.ProjectRelativePath, args.BddProject, testMethodTestCases, updater, keywordParser);
+        return new TestClassSourceDocument(codeFile, args.SourceReference, args.SourceReference.ProjectRelativePath, args.Project, testMethodTestCases, updater, keywordParser);
     }
 
-    protected virtual IKeywordParser CreateKeywordParser(LocalTestCaseContainerParseArgs args)
-    {
-        return new NoKeywordParser();
-    }
+    protected virtual IKeywordParser CreateKeywordParser(SourceDocumentParserArgs args) => NoKeywordParser.Instance;
 
-    protected virtual JavaTestUpdater CreateUpdater(EditableCodeFile codeFile, LocalTestCaseContainerParseArgs args)
+    protected virtual JavaTestUpdater CreateUpdater(EditableCodeFile codeFile, SourceDocumentParserArgs args)
     {
         return new JavaTestUpdater(codeFile, GetTestCaseLinkTemplate, args.Configuration, args.Tracer);
     }
 
-    public abstract string GetTestCaseLinkTemplate(ILocalTestCase localTestCase);
+    public abstract string GetTestCaseLinkTemplate(ILocalArtifact localTestCase);
 
-    protected virtual EditableCodeFile LoadCodeFile(string filePath)
+    protected virtual EditableCodeFile LoadCodeFile(string filePath, IFileSystem fileSystem)
     {
-        return EditableCodeFile.Load(filePath);
+        return EditableCodeFile.Load(filePath, fileSystem);
     }
 
     protected internal virtual IEnumerable<TestMethodLocalTestCase> GetTestMethodLocalTestCases(
-        LocalTestCaseContainerParseArgs args, EditableCodeFile codeFile)
+        SourceDocumentParserArgs args, EditableCodeFile codeFile)
     {
         var methodBlocks = ParseMethodBlocks(codeFile);
         var testJavaMethodBlocks = GetTestJavaMethodBlocks(methodBlocks, args);
@@ -61,17 +55,17 @@ public abstract class JavaTestClassParserBase : ILocalTestCaseContainerParser
         }
     }
 
-    public virtual LocalTestCaseDataRow[] GetDataRows(JavaMethodBlock javaMethodBlock)
+    public virtual LocalTestCaseDataRow[]? GetDataRows(JavaMethodBlock javaMethodBlock)
     {
         return null;
     }
 
-    protected virtual JavaTestMethodLocalTestCase CreateTestMethodLocalTestCase(JavaMethodBlock testJavaMethodBlock, ILocalTestCaseTag[] tags, TestCaseLink testCaseLink, LocalTestCaseDataRow[] dataRows, LocalTestCaseContainerParseArgs args)
+    protected virtual JavaTestMethodLocalTestCase CreateTestMethodLocalTestCase(JavaMethodBlock testJavaMethodBlock, ILocalArtifactTag[] tags, IdLink? testCaseLink, LocalTestCaseDataRow[]? dataRows, SourceDocumentParserArgs args)
     {
         return new JavaTestMethodLocalTestCase(testJavaMethodBlock, GetTestName(testJavaMethodBlock), tags, testCaseLink, dataRows, GetDescription(testJavaMethodBlock));
     }
 
-    protected virtual string GetDescription(JavaMethodBlock testJavaMethodBlock)
+    protected virtual string? GetDescription(JavaMethodBlock testJavaMethodBlock)
     {
         var docComment = testJavaMethodBlock.DocCommentSpan?.Text;
         if (docComment == null)
@@ -93,15 +87,15 @@ public abstract class JavaTestClassParserBase : ILocalTestCaseContainerParser
         var parser = new JavaMethodBlockParser();
         return parser.Parse(codeFile);
     }
-    protected virtual CodeFileLocalTestCaseTag CreateCodeFileLocalTestCaseTag(string tagName, CodeSpan sourceSpan, LocalTestCaseContainerParseArgs args)
+    protected virtual CodeFileLocalArtifactTag CreateCodeFileLocalTestCaseTag(string tagName, CodeSpan sourceSpan, SourceDocumentParserArgs args)
     {
         args.TagServices.TryParseTagName(tagName, out var prefix, out var artifactId, out var artifactLabel);
-        return new CodeFileLocalTestCaseTag(tagName, sourceSpan, prefix, artifactId, artifactLabel);
+        return new CodeFileLocalArtifactTag(tagName, sourceSpan, prefix, artifactId, artifactLabel);
     }
 
-    public abstract IEnumerable<ILocalTestCaseTag> FindTags(JavaMethodBlock testJavaMethodBlock, LocalTestCaseContainerParseArgs args);
+    public abstract IEnumerable<ILocalArtifactTag> FindTags(JavaMethodBlock testJavaMethodBlock, SourceDocumentParserArgs args);
 
-    protected virtual IEnumerable<JavaMethodBlock> GetTestJavaMethodBlocks(JavaMethodBlock[] methodBlocks, LocalTestCaseContainerParseArgs args)
+    protected virtual IEnumerable<JavaMethodBlock> GetTestJavaMethodBlocks(JavaMethodBlock[] methodBlocks, SourceDocumentParserArgs args)
     {
         return methodBlocks.Where(IsTestMethodBlock);
     }

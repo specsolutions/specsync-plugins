@@ -1,4 +1,4 @@
-﻿using SpecSync.PluginDependency.CSharpSource.TestMethodSource;
+﻿using SpecSync.TestMethodSource;
 
 namespace SpecSync.Plugin.TestNGTestSource.TestNG;
 

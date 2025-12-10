@@ -1,19 +1,15 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AwesomeAssertions;
 using Moq;
 using SpecSync.Analyzing;
 using SpecSync.Configuration;
 using SpecSync.Parsing;
-using SpecSync.PluginDependency.CSharpSource.NUnit;
-using SpecSync.PluginDependency.CSharpSource.TestMethodSource;
 using SpecSync.Projects;
 using SpecSync.Synchronization;
 using SpecSync.Utils.Code;
 using SpecSync.Utils;
-using System.Collections.Generic;
-using System;
-using System.Linq;
-using FluentAssertions;
+using SpecSync.IO;
 using SpecSync.Plugin.TestNGTestSource.TestNG;
+using SpecSync.TestMethodSource;
 using SpecSync.Tracing;
 
 namespace SpecSync.PluginDependency.JavaSource.Tests.TestNG;
@@ -21,52 +17,47 @@ namespace SpecSync.PluginDependency.JavaSource.Tests.TestNG;
 [TestClass]
 public class TestNGTestClassParserTests : JavaTestSourceTestBase
 {
-    private readonly Mock<ISynchronizationContext> _syncContextMock;
-    private readonly FileListBddProject _stubBddProject;
+    private readonly Mock<ICommandContext> _commandContextMock;
+    private readonly FileListSyncProject _stubSyncProject;
 
     public TestNGTestClassParserTests()
     {
         var tagServicesMock = new Mock<ITagServices>();
 
-        _syncContextMock = new Mock<ISynchronizationContext>();
-        _syncContextMock.Setup(ctx => ctx.TagServices)
+        _commandContextMock = new Mock<ICommandContext>();
+        _commandContextMock.Setup(ctx => ctx.TagServices)
             .Returns(tagServicesMock.Object);
 
-        var settingsMock = new Mock<ISyncSettings>();
+        var settingsMock = new Mock<ISpecSyncSettings>();
         var specSyncConfiguration = new SpecSyncConfiguration();
         settingsMock.SetupGet(s => s.Configuration).Returns(specSyncConfiguration);
-        _syncContextMock.SetupGet(ctx => ctx.Settings).Returns(settingsMock.Object);
+        _commandContextMock.SetupGet(ctx => ctx.Settings).Returns(settingsMock.Object);
 
-        _syncContextMock.SetupGet(ctx => ctx.Tracer).Returns(new Mock<ISpecSyncTracer>().Object);
+        _commandContextMock.SetupGet(ctx => ctx.Tracer).Returns(new Mock<ISpecSyncTracer>().Object);
 
-        _stubBddProject = new FileListBddProject(GetProjectFolder(), new[] { GetFilePath(@"somefile.cs") });
+        _stubSyncProject = new FileListSyncProject(GetProjectFolder(), [GetFilePath(@"someFile.cs")]);
     }
 
     private TestableTestNGTestClassParser CreateSut(string code)
     {
-        var editableCodeFile = new EditableCodeFile(new InMemoryWritableTextFile(code));
+        var editableCodeFile = new EditableCodeFile(new InMemoryWritableTextFile(new Mock<IFileSystem>().Object, code));
         return new TestableTestNGTestClassParser(editableCodeFile);
     }
 
-    class TestableTestNGTestClassParser : TestNGTestClassParser
+    class TestableTestNGTestClassParser(EditableCodeFile editableCodeFile) : TestNGTestClassParser
     {
-        public EditableCodeFile EditableCodeFile { get; }
+        public EditableCodeFile EditableCodeFile { get; } = editableCodeFile;
 
-        public TestableTestNGTestClassParser(EditableCodeFile editableCodeFile)
+        protected override EditableCodeFile LoadCodeFile(string filePath, IFileSystem fileSystem)
         {
-            EditableCodeFile = editableCodeFile;
-        }
-
-        protected override EditableCodeFile LoadCodeFile(string filePath)
-        {
-            return EditableCodeFile ?? base.LoadCodeFile(filePath);
+            return EditableCodeFile;
         }
     }
 
     private string CreateClassFile(params string[] annotations)
         => CreateClassFileEx(annotations);
 
-    private string CreateClassFileEx(string[] annotations, string parameters = "", string[] classAnnotations = null)
+    private string CreateClassFileEx(string[] annotations, string parameters = "", string[]? classAnnotations = null)
     {
         return """
             package MyCompany.MyNamespace;
@@ -95,7 +86,7 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
     {
         var code = CreateClassFile(annotation);
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
 
         Dump(result);
 
@@ -132,7 +123,7 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
             }
             """;
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
 
         Dump(result);
 
@@ -145,10 +136,10 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
     [TestMethod]
     public void Should_find_tags()
     {
-        var code = CreateClassFileEx(new[] {@"@Test(groups = { ""tag1"", ""story:123"" })"}, 
-            classAnnotations: new []{ @"@Test(groups = { ""class-tag1"", ""tag1"" })" });
+        var code = CreateClassFileEx([@"@Test(groups = { ""tag1"", ""story:123"" })"], 
+            classAnnotations: [@"@Test(groups = { ""class-tag1"", ""tag1"" })"]);
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
 
         Dump(result);
 
@@ -183,7 +174,7 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
             }
             """;
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
 
         Dump(result);
 
@@ -198,12 +189,12 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
     [TestMethod]
     public void Should_create_updater_that_generates_valid_attribute_for_tests_without_explicit_method_annotation()
     {
-        var code = CreateClassFileEx(Array.Empty<string>(), classAnnotations: new[] { @"@Test" });
+        var code = CreateClassFileEx(Array.Empty<string>(), classAnnotations: ["@Test"]);
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
         result.LocalTestCases.Should().NotBeEmpty();
 
-        result.Updater.SetTestCaseLink(result.LocalTestCases[0], new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
+        result.Updater.SetArtifactLink(result.LocalTestCases[0], new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
         result.Updater.Flush();
         sut.EditableCodeFile.UpdatedSourceCode.Should().Contain("""
                 @Test(groups = { "tc:42" })
@@ -214,16 +205,16 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
     }
 
     [TestMethod]
-    [DataRow(@"@Test")]
-    [DataRow(@"@Test()")]
+    [DataRow("@Test")]
+    [DataRow("@Test()")]
     public void Should_create_updater_that_generates_valid_attribute_for_tests_without_annotation_elements(string annotation)
     {
-        var code = CreateClassFileEx(new[] { annotation });
+        var code = CreateClassFileEx([annotation]);
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
         result.LocalTestCases.Should().NotBeEmpty();
 
-        result.Updater.SetTestCaseLink(result.LocalTestCases[0], new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
+        result.Updater.SetArtifactLink(result.LocalTestCases[0], new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
         result.Updater.Flush();
         Console.WriteLine(sut.EditableCodeFile.UpdatedSourceCode);
         sut.EditableCodeFile.UpdatedSourceCode.Should().Contain("""
@@ -239,12 +230,12 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
     [TestMethod]
     public void Should_create_updater_that_generates_valid_attribute_for_tests_without_groups()
     {
-        var code = CreateClassFileEx(new[] { @"@Test(threadPoolSize = 3, invocationCount = 10)" });
+        var code = CreateClassFileEx(["@Test(threadPoolSize = 3, invocationCount = 10)"]);
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
         result.LocalTestCases.Should().NotBeEmpty();
 
-        result.Updater.SetTestCaseLink(result.LocalTestCases[0], new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
+        result.Updater.SetArtifactLink(result.LocalTestCases[0], new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
         result.Updater.Flush();
         Console.WriteLine(sut.EditableCodeFile.UpdatedSourceCode);
         sut.EditableCodeFile.UpdatedSourceCode.Should().Contain("""
@@ -260,17 +251,17 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
     [TestMethod]
     [DataRow(@"{ ""tag1"", ""tag2"" }", @" ""tc:42"", ""tag1"", ""tag2"" ")]
     [DataRow(@"{""tag1"",""tag2""}", @"""tc:42"", ""tag1"",""tag2""")]
-    [DataRow(@"{}", @"""tc:42""")]
-    [DataRow(@"{ }", @" ""tc:42""")]
-    [DataRow(@"null", @" ""tc:42"" ")]
+    [DataRow("{}", @"""tc:42""")]
+    [DataRow("{ }", @" ""tc:42""")]
+    [DataRow("null", @" ""tc:42"" ")]
     public void Should_create_updater_that_generates_valid_attribute_for_tests_with_groups(string groupsContent, string expectedGroupsContent)
     {
-        var code = CreateClassFileEx(new[] { @$"@Test(groups = {groupsContent})" });
+        var code = CreateClassFileEx([$"@Test(groups = {groupsContent})"]);
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
         result.LocalTestCases.Should().NotBeEmpty();
 
-        result.Updater.SetTestCaseLink(result.LocalTestCases[0], new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
+        result.Updater.SetArtifactLink(result.LocalTestCases[0], new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
         result.Updater.Flush();
         Console.WriteLine(sut.EditableCodeFile.UpdatedSourceCode);
         sut.EditableCodeFile.UpdatedSourceCode.Should().Contain("""
@@ -287,13 +278,13 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
     [TestMethod]
     public void Should_create_updater_that_can_change_attribute()
     {
-        var code = CreateClassFileEx(new[] { @"@Test(groups = { ""tc:1"", ""tag1"" })" });
+        var code = CreateClassFileEx([@"@Test(groups = { ""tc:1"", ""tag1"" })"]);
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
         result.LocalTestCases.Should().NotBeEmpty();
 
         var localTestCase = result.LocalTestCases[0];
-        result.Updater.UpdateTestCaseLink(localTestCase, new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(1), "tc"), new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
+        result.Updater.UpdateArtifactLink(localTestCase, new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(1), "tc"), new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(42), "tc"));
         result.Updater.Flush();
         sut.EditableCodeFile.UpdatedSourceCode.Should().Contain("""
             {
@@ -309,17 +300,17 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
     [DataRow(@"""bug:34"", ""tag1""", 0, @" ""tag1"" ")]
     [DataRow(@"""tc:1"", ""bug:34"", ""tag1""", 1, @" ""tc:1"", ""tag1"" ")]
     [DataRow(@"""tc:1"", ""bug:34""", 1, @" ""tc:1"" ")]
-    [DataRow(@"""bug:34""", 0, @" ")]
+    [DataRow(@"""bug:34""", 0, " ")]
     [DataRow("\"tc:1\", \r\n    \"bug:34\", \r\n\"tag1\"", 1, " \"tc:1\", \r\n    \"tag1\" ")]
     public void Should_be_able_to_remove_artifact_link(string groups, int tagIndex, string expectedGroups)
     {
-        var code = CreateClassFileEx(new[] { @$"@Test(groups = {{ {groups} }})" });
+        var code = CreateClassFileEx([$"@Test(groups = {{ {groups} }})"]);
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
         result.LocalTestCases.Should().NotBeEmpty();
 
         var localTestCase = result.LocalTestCases[0];
-        result.Updater.UpdateArtifactLink(localTestCase, new ArtifactLink("34", sourceTag: localTestCase.Tags[tagIndex]), null);
+        result.Updater.UpdateResourceLink(localTestCase, new ResourceLink("34", sourceTag: localTestCase.Tags[tagIndex]), null);
         result.Updater.Flush();
         sut.EditableCodeFile.UpdatedSourceCode.Should().Contain("""
             {
@@ -337,13 +328,13 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
     [DataRow("story", "my_text", "story:43;my_text")]
     public void Should_be_able_to_change_artifact_link(string linkPrefix, string label, string expectedTag)
     {
-        var code = CreateClassFileEx(new[] { @"@Test(groups = { ""tc:1"", ""bug:34"", ""tag1"" })" });
+        var code = CreateClassFileEx([@"@Test(groups = { ""tc:1"", ""bug:34"", ""tag1"" })"]);
         var sut = CreateSut(code);
-        var result = sut.Parse(new LocalTestCaseContainerParseArgs(_stubBddProject, _stubBddProject.LocalTestContainerFiles.First(), _syncContextMock.Object));
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
         result.LocalTestCases.Should().NotBeEmpty();
 
         var localTestCase = result.LocalTestCases[0];
-        result.Updater.UpdateArtifactLink(localTestCase, new ArtifactLink("34", sourceTag: localTestCase.Tags[1]), new ArtifactLink("43", linkPrefix: linkPrefix, label: label));
+        result.Updater.UpdateResourceLink(localTestCase, new ResourceLink("34", sourceTag: localTestCase.Tags[1]), new ResourceLink("43", linkPrefix: linkPrefix, label: label));
         result.Updater.Flush();
         sut.EditableCodeFile.UpdatedSourceCode.Should().Contain("""
             {
@@ -355,9 +346,9 @@ public class TestNGTestClassParserTests : JavaTestSourceTestBase
             """.Replace("<expected>", expectedTag));
     }
 
-    private void Dump(ILocalTestCaseContainer result)
+    private void Dump(ISourceDocument result)
     {
-        Console.WriteLine($"{result.Name}: {result.SourceFile.ProjectRelativePath}");
+        Console.WriteLine($"{result.Name}: {result.SourceReference.ProjectRelativePath}");
         foreach (var localTestCase in result.LocalTestCases)
         {
             Console.WriteLine($"  {localTestCase.Name}");

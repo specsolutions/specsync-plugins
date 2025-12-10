@@ -1,8 +1,7 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Antlr4.Runtime.Tree;
 using Antlr4.Runtime;
-using JavaParserPlay.JavaCode.JavaGrammar;
+using SpecSync.PluginDependency.JavaSource.JavaCode.JavaGrammar;
 using SpecSync.Utils.Code;
 using System.Text.RegularExpressions;
 

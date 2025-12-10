@@ -1,8 +1,5 @@
-using System;
-using System.Linq;
 using System.Text.RegularExpressions;
-using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using AwesomeAssertions;
 using SpecSync.Plugin.TestNGTestSource.JavaCode;
 
 namespace SpecSync.PluginDependency.JavaSource.Tests;
@@ -66,17 +63,17 @@ public class JavaMethodBlockParserTests
 
         var sampleMethod1 = result[0];
         sampleMethod1.Should().NotBeNull();
-        sampleMethod1!.ClassName.Should().Be("MyClass");
-        sampleMethod1!.PackageName.Should().Be("MyCompany.MyPackage");
-        sampleMethod1!.MethodName.Should().Be("MyMethod1");
-        sampleMethod1!.ParameterNames.Should().BeEquivalentTo("param1", "param2");
+        sampleMethod1.ClassName.Should().Be("MyClass");
+        sampleMethod1.PackageName.Should().Be("MyCompany.MyPackage");
+        sampleMethod1.MethodName.Should().Be("MyMethod1");
+        sampleMethod1.ParameterNames.Should().BeEquivalentTo("param1", "param2");
 
         var sampleMethod2 = result[1];
         sampleMethod2.Should().NotBeNull();
-        sampleMethod2!.ClassName.Should().Be("MyClass");
-        sampleMethod2!.PackageName.Should().Be("MyCompany.MyPackage");
-        sampleMethod2!.MethodName.Should().Be("MyMethod2");
-        sampleMethod2!.ParameterNames.Should().BeEquivalentTo("param3");
+        sampleMethod2.ClassName.Should().Be("MyClass");
+        sampleMethod2.PackageName.Should().Be("MyCompany.MyPackage");
+        sampleMethod2.MethodName.Should().Be("MyMethod2");
+        sampleMethod2.ParameterNames.Should().BeEquivalentTo("param3");
     }
 
     [TestMethod]
@@ -127,15 +124,15 @@ public class JavaMethodBlockParserTests
 
         var sampleMethod1 = result[0];
         sampleMethod1.Should().NotBeNull();
-        sampleMethod1!.MethodName.Should().Be("MyMethod1");
-        sampleMethod1!.ClassName.Should().Be("MyClass.NestedClass");
-        sampleMethod1!.PackageName.Should().Be("MyCompany.MyPackage");
+        sampleMethod1.MethodName.Should().Be("MyMethod1");
+        sampleMethod1.ClassName.Should().Be("MyClass.NestedClass");
+        sampleMethod1.PackageName.Should().Be("MyCompany.MyPackage");
 
         var sampleMethod2 = result[1];
         sampleMethod2.Should().NotBeNull();
-        sampleMethod2!.MethodName.Should().Be("MyMethod2");
-        sampleMethod2!.ClassName.Should().Be("MyClass");
-        sampleMethod2!.PackageName.Should().Be("MyCompany.MyPackage");
+        sampleMethod2.MethodName.Should().Be("MyMethod2");
+        sampleMethod2.ClassName.Should().Be("MyClass");
+        sampleMethod2.PackageName.Should().Be("MyCompany.MyPackage");
     }
 
     [TestMethod]
@@ -311,9 +308,9 @@ public class JavaMethodBlockParserTests
         var annotation = resultMethod.Annotations.Should().ContainSingle(a => a.Name == "Annotation1")
             .Subject;
         annotation.StartLine.Should().Be(2);
-        annotation.StartColon.Should().Be(17);
+        annotation.StartColumn.Should().Be(17);
         annotation.EndLine.Should().Be(expectedEndLine);
-        annotation.EndColon.Should().Be(expectedEndColumn);
+        annotation.EndColumn.Should().Be(expectedEndColumn);
         if (expectedElmsEndLine < 0)
         {
             annotation.ElementsSpan.Should().BeNull();
@@ -321,10 +318,10 @@ public class JavaMethodBlockParserTests
         else
         {
             annotation.ElementsSpan.Should().NotBeNull();
-            annotation.ElementsSpan.StartLine.Should().Be(2);
-            annotation.ElementsSpan.StartColon.Should().Be(30);
+            annotation.ElementsSpan!.StartLine.Should().Be(2);
+            annotation.ElementsSpan.StartColumn.Should().Be(30);
             annotation.ElementsSpan.EndLine.Should().Be(expectedElmsEndLine);
-            annotation.ElementsSpan.EndColon.Should().Be(expectedElmsEndColumn);
+            annotation.ElementsSpan.EndColumn.Should().Be(expectedElmsEndColumn);
         }
 
         if (annotation.Elements.Any())
@@ -332,9 +329,9 @@ public class JavaMethodBlockParserTests
             var firstElement = annotation.Elements[0];
             firstElement.ValueSpan.Should().NotBeNull();
             firstElement.ValueSpan.StartLine.Should().Be(expectedElmsEndLine);
-            firstElement.ValueSpan.StartColon.Should().Be(expectedElmsEndColumn - 2);
+            firstElement.ValueSpan.StartColumn.Should().Be(expectedElmsEndColumn - 2);
             firstElement.ValueSpan.EndLine.Should().Be(expectedElmsEndLine);
-            firstElement.ValueSpan.EndColon.Should().Be(expectedElmsEndColumn);
+            firstElement.ValueSpan.EndColumn.Should().Be(expectedElmsEndColumn);
             firstElement.ValueSpan.Text.Should().Be("42");
         }
     }
@@ -392,9 +389,9 @@ public class JavaMethodBlockParserTests
         var sampleMethod = result.Should().ContainSingle(m => m.MethodName == methodName).Subject;
         sampleMethod.SourceSpan.Should().NotBeNull();
         sampleMethod.SourceSpan.Start.Line.Should().Be(startLine);
-        sampleMethod.SourceSpan.Start.Colon.Should().Be(startColumn);
+        sampleMethod.SourceSpan.Start.Column.Should().Be(startColumn);
         sampleMethod.SourceSpan.End.Line.Should().Be(endLine);
-        sampleMethod.SourceSpan.End.Colon.Should().Be(endColumn);
+        sampleMethod.SourceSpan.End.Column.Should().Be(endColumn);
         sampleMethod.SourceSpan.Text.Should().EndWith("}");
     }
 
@@ -459,10 +456,10 @@ public class JavaMethodBlockParserTests
         else
         {
             sampleMethod.DocCommentSpan.Should().NotBeNull();
-            sampleMethod.DocCommentSpan.Start.Line.Should().Be(startLine);
-            sampleMethod.DocCommentSpan.Start.Colon.Should().Be(startColumn);
+            sampleMethod.DocCommentSpan!.Start.Line.Should().Be(startLine);
+            sampleMethod.DocCommentSpan.Start.Column.Should().Be(startColumn);
             sampleMethod.DocCommentSpan.End.Line.Should().Be(endLine);
-            sampleMethod.DocCommentSpan.End.Colon.Should().Be(endColumn);
+            sampleMethod.DocCommentSpan.End.Column.Should().Be(endColumn);
         }
     }
 }

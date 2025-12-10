@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using SpecSync.Parsing;
-using SpecSync.PluginDependency.CSharpSource.TestMethodSource;
 using SpecSync.PublishTestResults;
 using SpecSync.PublishTestResults.Matchers;
+using SpecSync.TestMethodSource;
 
 namespace SpecSync.Plugin.TestNGTestSource.Java;
 
@@ -15,8 +13,8 @@ public class JavaTestResultMatcher : ITestRunnerResultMatcher
     public virtual bool CanProcess(TestRunnerResultMatcherArgs args)
         => args.TestFrameworkIdentifier.IndexOf("java", StringComparison.InvariantCultureIgnoreCase) >= 0;
 
-    public virtual MatchResultSelector GetLocalTestCaseResultSelector(ILocalTestCase localTestCase,
-        ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
+    public MatchResultSelector GetLocalTestCaseResultSelector(ILocalTestCase localTestCase, ISourceDocument sourceDocument,
+        TestRunnerResultMatcherArgs args)
     {
         var testMethodLocalTestCase = (TestMethodLocalTestCase)localTestCase;
         var methodName = testMethodLocalTestCase.MethodName;
@@ -29,12 +27,11 @@ public class JavaTestResultMatcher : ITestRunnerResultMatcher
 
         return new MatchResultSelector($"<className> is '{fullClassName}' && <name> matches '{methodNameRe}'",
             td =>
-                td.ClassName.Equals(fullClassName) && methodNameRe.IsMatch(td.Name ?? ""));
+                fullClassName.Equals(td.ClassName) && methodNameRe.IsMatch(td.Name ?? ""));
     }
 
-    public virtual IDictionary<string, string> GetDataRow(TestRunTestResult testResult, TestRunTestDefinition testDefinition,
-        ILocalTestCase localTestCase,
-        ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
+    public IDictionary<string, string>? GetInvocationArguments(LocalTestResult testResult, ILocalTestCase localTestCase,
+        ISourceDocument sourceDocument, TestRunnerResultMatcherArgs args)
     {
         return null;
     }

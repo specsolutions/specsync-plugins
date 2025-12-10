@@ -1,44 +1,37 @@
-﻿using System.Linq;
-using SpecSync.Utils.Code;
+﻿using SpecSync.Utils.Code;
 
 namespace SpecSync.Plugin.TestNGTestSource.JavaCode;
 
-public class JavaAnnotationElement
+public class JavaAnnotationElement(string? name, object value, CodeSpan valueSpan)
 {
-    public string Name { get; }
-    public object Value { get; }
-    public CodeSpan ValueSpan { get; }
+    public string? Name { get; } = name;
+    public object Value { get; } = value;
+    public CodeSpan ValueSpan { get; } = valueSpan;
 
-    public JavaAnnotationElement(string name, object value, CodeSpan valueSpan)
-    {
-        Name = name;
-        Value = value;
-        ValueSpan = valueSpan;
-    }
     public JavaAnnotationElement(object value, CodeSpan valueSpan) : this(null, value, valueSpan)
     {
     }
 
-    public JavaAnnotationElement[] GetElementArrayValue()
+    public JavaAnnotationElement[]? GetElementArrayValue()
     {
         if (Value is JavaAnnotationElement[] arrayValue)
             return arrayValue;
         return null;
     }
 
-    public string[] GetStringArrayValue()
+    public string?[]? GetStringArrayValue()
     {
         if (Value is object[] arrayValue)
             return arrayValue.Select(av => av?.ToString()).ToArray();
         return null;
     }
 
-    public string GetStringValue()
+    public string? GetStringValue()
     {
         return GetStringValue(Value);
     }
 
-    private string GetStringValue(object value)
+    private string? GetStringValue(object? value)
     {
         if (value is object[] arrayValue)
         {
@@ -50,6 +43,6 @@ public class JavaAnnotationElement
 
     public override string ToString()
     {
-        return GetStringValue();
+        return GetStringValue() ?? "";
     }
 }

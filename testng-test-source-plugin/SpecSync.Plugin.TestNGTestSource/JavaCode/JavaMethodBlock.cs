@@ -1,52 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using SpecSync.Utils.Code;
 
 namespace SpecSync.Plugin.TestNGTestSource.JavaCode;
 
-public class JavaMethodBlock
+public class JavaMethodBlock(
+    string? packageName,
+    string className,
+    string methodName,
+    string[]? parameterNames,
+    JavaAnnotation[] annotations,
+    JavaAnnotation[] classAnnotations,
+    CodeSpan sourceSpan,
+    CodeSpan? docCommentSpan)
 {
-    public string PackageName { get; }
+    public string? PackageName { get; } = packageName;
 
-    public string ClassName { get; }
+    public string ClassName { get; } = className;
 
-    public string MethodName { get; }
+    public string MethodName { get; } = methodName;
 
-    public string[] ParameterNames { get; }
-    public JavaAnnotation[] Annotations { get; }
-    public JavaAnnotation[] ClassAnnotations { get; }
+    public string[] ParameterNames { get; } = parameterNames ?? [];
+    public JavaAnnotation[] Annotations { get; } = annotations;
+    public JavaAnnotation[] ClassAnnotations { get; } = classAnnotations;
 
-    public CodeSpan SourceSpan { get; }
-    public CodeSpan DocCommentSpan { get; }
+    public CodeSpan SourceSpan { get; } = sourceSpan;
+    public CodeSpan? DocCommentSpan { get; } = docCommentSpan;
 
     public IEnumerable<CodeSpan> Metadata
         => Annotations
-            .Concat(DocCommentSpan != null ? new[] { DocCommentSpan } : Array.Empty<CodeSpan>())
+            .Concat(DocCommentSpan != null ? new[] { DocCommentSpan } : [])
             .OrderBy(md => md.StartLine)
-            .ThenBy(md => md.StartColon);
-
-    public JavaMethodBlock(string packageName, string className, string methodName, string[] parameterNames,
-        JavaAnnotation[] annotations, JavaAnnotation[] classAnnotations, CodeSpan sourceSpan, CodeSpan docCommentSpan)
-    {
-        PackageName = packageName;
-        ClassName = className;
-        Annotations = annotations;
-        ClassAnnotations = classAnnotations;
-        SourceSpan = sourceSpan;
-        DocCommentSpan = docCommentSpan;
-        MethodName = methodName;
-        ParameterNames = parameterNames ?? Array.Empty<string>();
-    }
+            .ThenBy(md => md.StartColumn);
 
     public override string ToString()
     {
         var result = new StringBuilder();
         if (PackageName != null)
             result.Append(PackageName + "::");
-        if (ClassName != null)
-            result.Append(ClassName + "::");
+        result.Append(ClassName + "::");
         result.Append(MethodName);
         result.Append("(");
         result.Append(string.Join(",", ParameterNames));

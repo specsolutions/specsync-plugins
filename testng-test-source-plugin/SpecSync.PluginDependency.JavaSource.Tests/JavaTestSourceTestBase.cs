@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace SpecSync.PluginDependency.JavaSource.Tests;
+﻿namespace SpecSync.PluginDependency.JavaSource.Tests;
 
 public abstract class JavaTestSourceTestBase
 {

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Antlr4.Runtime;
 using Antlr4.Runtime.Tree;
-using JavaParserPlay.JavaCode.JavaGrammar;
+using SpecSync.PluginDependency.JavaSource.JavaCode.JavaGrammar;
 using SpecSync.Utils.Code;
 
 namespace SpecSync.Plugin.TestNGTestSource.JavaCode;
@@ -14,11 +11,11 @@ internal class JavaMethodBlockParserVisitor : JavaParserBaseVisitor<object>
     private readonly CodeFile _codeFile;
     private readonly IList<IToken> _tokens;
 
-    private string _packageName = null;
+    private string? _packageName = null;
     private readonly Stack<string> _classNames = new();
-    private string _methodName = null;
+    private string? _methodName = null;
     private readonly List<string> _methodParameters = new();
-    private string _annotationName = null;
+    private string? _annotationName = null;
     private readonly List<JavaAnnotation> _methodAnnotations = new();
     private readonly List<JavaAnnotation> _classAnnotations = new();
     private List<JavaAnnotation> _annotationTarget;
@@ -68,10 +65,10 @@ internal class JavaMethodBlockParserVisitor : JavaParserBaseVisitor<object>
         _methodName = null;
         _methodParameters.Clear();
 
-        return null;
+        return DefaultResult;
     }
 
-    private CodeSpan FindDocCommentSpanBetweenModifiers(JavaParser.ClassBodyDeclarationContext context)
+    private CodeSpan? FindDocCommentSpanBetweenModifiers(JavaParser.ClassBodyDeclarationContext context)
     {
         var modifiers = context.children.OfType<JavaParser.ModifierContext>().ToArray();
 
@@ -88,7 +85,7 @@ internal class JavaMethodBlockParserVisitor : JavaParserBaseVisitor<object>
         return null;
     }
 
-    private CodeSpan FindDocCommentSpan(int searchFrom, int searchUntil)
+    private CodeSpan? FindDocCommentSpan(int searchFrom, int searchUntil)
     {
         var docCommentTokenIndex = searchFrom - 1;
         while (docCommentTokenIndex > searchUntil)
@@ -124,7 +121,7 @@ internal class JavaMethodBlockParserVisitor : JavaParserBaseVisitor<object>
         return base.VisitIdentifier(context);
     }
 
-    private bool MatchParents(RuleContext context, params Type[] parentTypes)
+    private bool MatchParents(RuleContext context, params Type?[] parentTypes)
     {
         foreach (var parentType in parentTypes)
         {
@@ -147,7 +144,7 @@ internal class JavaMethodBlockParserVisitor : JavaParserBaseVisitor<object>
         return base.VisitQualifiedName(context);
     }
 
-    private ITerminalNode GetTerminalNode(ParserRuleContext context, int index, int nodeType)
+    private ITerminalNode? GetTerminalNode(ParserRuleContext context, int index, int nodeType)
     {
         var node = context.GetChild<TerminalNodeImpl>(index);
         if (node == null || node.Symbol.Type != nodeType)
@@ -159,6 +156,9 @@ internal class JavaMethodBlockParserVisitor : JavaParserBaseVisitor<object>
     {
         _annotationName = null;
         base.VisitAnnotation(context);
+        if (_annotationName == null)
+            return DefaultResult; // should not happen
+
         var elementsOpen = GetTerminalNode(context, 1, JavaLexer.LPAREN);
         var elementsClose = GetTerminalNode(context, 2, JavaLexer.RPAREN);
         var elementsSpan = elementsOpen == null || elementsClose == null
@@ -167,7 +167,7 @@ internal class JavaMethodBlockParserVisitor : JavaParserBaseVisitor<object>
         var javaAnnotation = new JavaAnnotation(_codeFile, context.Start.StartIndex, context.Stop.StopIndex - context.Start.StartIndex + 1, _annotationName, _annotationElements.ToArray(), elementsSpan);
         _annotationTarget.Add(javaAnnotation);
         _annotationElements.Clear();
-        return null;
+        return DefaultResult;
     }
 
     public override object VisitClassBody(JavaParser.ClassBodyContext context)
@@ -198,7 +198,7 @@ internal class JavaMethodBlockParserVisitor : JavaParserBaseVisitor<object>
             _annotationElements.Add(new JavaAnnotationElement(elementValue, valueSpan));
         }
 
-        return null;
+        return DefaultResult;
     }
 
     private object GetElementValue(JavaParser.ElementValueContext context)

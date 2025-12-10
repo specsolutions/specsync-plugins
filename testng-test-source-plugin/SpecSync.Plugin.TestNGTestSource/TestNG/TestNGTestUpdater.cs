@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using SpecSync.Configuration;
+﻿using SpecSync.Configuration;
 using SpecSync.Parsing;
 using SpecSync.Plugin.TestNGTestSource.Java;
 using SpecSync.Tracing;
@@ -8,14 +6,10 @@ using SpecSync.Utils.Code;
 
 namespace SpecSync.Plugin.TestNGTestSource.TestNG;
 
-public class TestNGTestUpdater : JavaTestUpdater
+public class TestNGTestUpdater(EditableCodeFile codeFile, SpecSyncConfiguration configuration, ISpecSyncTracer tracer)
+    : JavaTestUpdater(codeFile, @"""{tag}""", configuration, tracer)
 {
-    public TestNGTestUpdater(EditableCodeFile codeFile, SpecSyncConfiguration configuration, ISpecSyncTracer tracer) 
-        : base(codeFile, @"""{tag}""", configuration, tracer)
-    {
-    }
-
-    protected override void SetTestCaseLinkInternal(JavaTestMethodLocalTestCase methodLocalTestCase, TestCaseLink testCaseLink)
+    protected override void SetTestCaseLinkInternal(JavaTestMethodLocalTestCase methodLocalTestCase, IdLink testCaseLink)
     {
         var testCase = (TestNGTestMethodLocalTestCase)methodLocalTestCase;
         if (testCase.MethodTestAnnotation == null)
@@ -24,7 +18,7 @@ public class TestNGTestUpdater : JavaTestUpdater
         {
             var tagName = GetTagName(testCaseLink);
             var quotedTagName = @$"""{tagName}""";
-            var groupsParam = $@"{TestNGTestClassParser.GroupElementName} = {{ {quotedTagName} }}";
+            var groupsParam = $"{TestNGTestClassParser.GroupElementName} = {{ {quotedTagName} }}";
 
             var groupsElement = testCase.MethodTestAnnotation.Elements
                 .FirstOrDefault(e => e.Name == TestNGTestClassParser.GroupElementName);
@@ -32,15 +26,15 @@ public class TestNGTestUpdater : JavaTestUpdater
             {
                 if (testCase.MethodTestAnnotation.ElementsSpan == null)
                 {
-                    _codeFile.Updater.Insert(testCase.MethodTestAnnotation.End, "(" + groupsParam + ")");
+                    CodeFile.Updater.Insert(testCase.MethodTestAnnotation.End, "(" + groupsParam + ")");
                 }
                 else if (testCase.MethodTestAnnotation.Elements.Length == 0)
                 {
-                    _codeFile.Updater.Insert(testCase.MethodTestAnnotation.ElementsSpan.Start, groupsParam);
+                    CodeFile.Updater.Insert(testCase.MethodTestAnnotation.ElementsSpan.Start, groupsParam);
                 }
                 else
                 {
-                    _codeFile.Updater.Insert(testCase.MethodTestAnnotation.ElementsSpan.Start, groupsParam + ", ");
+                    CodeFile.Updater.Insert(testCase.MethodTestAnnotation.ElementsSpan.Start, groupsParam + ", ");
                 }
             }
             else
@@ -50,7 +44,7 @@ public class TestNGTestUpdater : JavaTestUpdater
                 var curlyCloseIndex = valueSpanText.IndexOf('}');
                 if (curlyOpenIndex < 0 || curlyCloseIndex < 0 || curlyCloseIndex < curlyOpenIndex)
                 {
-                    _codeFile.Updater.Replace(groupsElement.ValueSpan, "{ " + quotedTagName + " }");
+                    CodeFile.Updater.Replace(groupsElement.ValueSpan, "{ " + quotedTagName + " }");
                 }
                 else
                 {
@@ -61,14 +55,14 @@ public class TestNGTestUpdater : JavaTestUpdater
                     }
 
                     var isEmpty = valueSpanText[startPosition] == '}';
-                    var insertPosition = _codeFile.GetPosition(_codeFile.GetSourceCodeIndex(groupsElement.ValueSpan.Start) + startPosition);
-                    _codeFile.Updater.Insert(insertPosition, quotedTagName + (isEmpty ? "" : ", "));
+                    var insertPosition = CodeFile.GetPosition(CodeFile.GetSourceCodeIndex(groupsElement.ValueSpan.Start) + startPosition);
+                    CodeFile.Updater.Insert(insertPosition, quotedTagName + (isEmpty ? "" : ", "));
                 }
             }
         }
     }
 
-    protected override string GetTestCaseLinkAnnotation(ILocalTestCase localTestCase, TestCaseLink testCaseLink)
+    protected override string GetTestCaseLinkAnnotation(ILocalTestCase localTestCase, IdLink testCaseLink)
     {
         var tagName = GetTagName(testCaseLink);
         return $"@Test(groups = {{ {GetTagText(localTestCase, tagName)} }})";
