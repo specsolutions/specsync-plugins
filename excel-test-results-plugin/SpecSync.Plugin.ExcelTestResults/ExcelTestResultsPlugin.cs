@@ -1,5 +1,4 @@
-﻿using System;
-using SpecSync.Plugin.ExcelTestResults;
+﻿using SpecSync.Plugin.ExcelTestResults;
 using SpecSync.Plugins;
 
 [assembly: SpecSyncPlugin(typeof(ExcelTestResultsPlugin))]
@@ -14,7 +13,8 @@ public class ExcelTestResultsPlugin : ISpecSyncPlugin
     {
         args.Tracer.LogVerbose($"Initializing '{Name}' plugin...");
 
-        var parameters = ExcelResultParameters.FromPluginParameters(args.Parameters);
+        var parameters = args.GetParametersAs<ExcelResultParameters>();
+        parameters.Verify();
 
         args.ServiceRegistry.TestResultLoaderProvider.Register(new ExcelTestResultLoader(parameters), ServicePriority.High);
         args.ServiceRegistry.TestResultMatcherProvider.Register(new ExcelTestResultMatcher(parameters), ServicePriority.High);

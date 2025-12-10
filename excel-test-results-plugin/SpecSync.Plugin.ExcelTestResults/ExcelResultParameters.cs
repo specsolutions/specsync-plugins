@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SpecSync.Configuration;
+﻿using SpecSync.Configuration;
 
 namespace SpecSync.Plugin.ExcelTestResults;
 
@@ -13,7 +10,7 @@ public class ExcelResultParameters
     /// <summary>
     /// The sheet name that contains the test results. Optional, uses the first sheet if not specified.
     /// </summary>
-    public string TestResultSheetName { get; set; }
+    public string? TestResultSheetName { get; set; }
 
     /// <summary>
     /// The column name that contains the feature name.
@@ -52,7 +49,7 @@ public class ExcelResultParameters
     /// <summary>
     /// Specifies a custom mapping for outcome values in "PASS=Passed,FAIL=Failed" format.
     /// </summary>
-    public string OutcomeMapping { get; set; } = null;
+    public string? OutcomeMapping { get; set; } = null;
 
 
     internal Dictionary<string, string> OutcomeMappings { get; } = new CaseInsensitiveKeyDictionary<string>();
@@ -61,7 +58,7 @@ public class ExcelResultParameters
     {
         if (!string.IsNullOrWhiteSpace(OutcomeMapping))
         {
-            var mappings = OutcomeMapping.Split(',').Select(m => m.Split('=')).ToList();
+            var mappings = OutcomeMapping!.Split(',').Select(m => m.Split('=')).ToList();
             foreach (var mapping in mappings)
             {
                 if (mapping.Length != 2)
@@ -69,19 +66,5 @@ public class ExcelResultParameters
                 OutcomeMappings[mapping[0].Trim()] = mapping[1].Trim();
             }
         }
-    }
-
-    public static ExcelResultParameters FromPluginParameters(Dictionary<string, object> parameters)
-    {
-        var result = new ExcelResultParameters();
-        foreach (var parameter in parameters)
-        {
-            var property = result.GetType().GetProperties().FirstOrDefault(p => p.Name.Equals(parameter.Key, StringComparison.InvariantCultureIgnoreCase));
-            if (property == null)
-                throw new SpecSyncConfigurationException($"Invalid parameter: '{parameter.Key}'");
-            property.SetValue(result, parameter.Value);
-        }
-
-        return result;
     }
 }
