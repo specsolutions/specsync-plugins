@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using SpecSync.Configuration;
-using SpecSync.Plugin.OnlyPublishTestResults;
+﻿using SpecSync.Plugin.OnlyPublishTestResults;
 using SpecSync.Plugins;
 
 [assembly: SpecSyncPlugin(typeof(OnlyPublishTestResultsPlugin))]
@@ -16,13 +13,14 @@ public class OnlyPublishTestResultsPlugin : ISpecSyncPlugin
     {
         args.Tracer.LogVerbose($"Initializing '{Name}' plugin...");
 
-        var parameters = OnlyPublishTestResultsPluginParameters.FromPluginParameters(args.Parameters);
+        var parameters = args.GetParametersAs<OnlyPublishTestResultsPluginParameters>();
+        parameters.Verify();
 
-        args.ServiceRegistry.BddProjectLoaderProvider
+        args.ServiceRegistry.ProjectLoaderProvider
             .Register(new TestResultProjectLoader(parameters), ServicePriority.High);
-        args.ServiceRegistry.LocalTestCaseContainerParserProvider
+        args.ServiceRegistry.SourceDocumentParserProvider
             .Register(new TestCaseResultSourceParser(), ServicePriority.High);
-        args.ServiceRegistry.LocalTestCaseAnalyzerProvider
+        args.ServiceRegistry.LocalArtifactAnalyzerProvider
             .Register(new TestCaseResultAnalyzer(), ServicePriority.High);
     }
 }

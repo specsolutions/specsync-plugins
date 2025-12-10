@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.RegularExpressions;
 using SpecSync.Configuration;
 using SpecSync.Projects;
@@ -10,48 +8,40 @@ using SpecSync.Utils;
 
 namespace SpecSync.Plugin.OnlyPublishTestResults;
 
-public class TestResultProjectLoader : IBddProjectLoader
+public class TestResultProjectLoader(OnlyPublishTestResultsPluginParameters parameters) : ISyncProjectLoader
 {
-    private readonly OnlyPublishTestResultsPluginParameters _parameters;
-
-    public TestResultProjectLoader(OnlyPublishTestResultsPluginParameters parameters)
-    {
-        _parameters = parameters;
-    }
-
     public string ServiceDescription => "Test Case Result loader";
-    public string GetSourceDescription(BddProjectLoaderArgs args) => "test results";
+    public string GetProjectDescription(SyncProjectLoaderArgs args) => "test results";
 
-    public bool CanProcess(BddProjectLoaderArgs args) 
+    public bool CanProcess(SyncProjectLoaderArgs args) 
         => args.LocalConfiguration.IsType(LocalProjectType.AutoDetect) ||
            args.LocalConfiguration.IsType("TestResult");
 
-    public IBddProject LoadProject(BddProjectLoaderArgs args)
+    public ISyncProject LoadProject(SyncProjectLoaderArgs args)
     {
         if (args.Command != "publish-test-results")
             throw new SpecSyncException($"Invalid SpecSync command '{args.Command}'. The 'OnlyPublishTestResultsPlugin' can only be used with the 'publish-test-results' command.");
 
-        var synchronizationContext = args.GetSynchronizationContext();
+        var commandContext = args.CommandContext;
 
-        IEnumerable<TestRunTestResult> GetFlattenLeafResults(TestRunTestResult tr)
-            => tr.InnerResults.Any() ? GetFlattenLeafInnerResults(tr) : new[] { tr };
+        IEnumerable<LocalTestResult> GetFlattenLeafResults(LocalTestResult tr)
+            => tr.InnerResults.Any() ? GetFlattenLeafInnerResults(tr) : [tr];
 
-        IEnumerable<TestRunTestResult> GetFlattenLeafInnerResults(TestRunTestResult tr)
+        IEnumerable<LocalTestResult> GetFlattenLeafInnerResults(LocalTestResult tr)
         {
             return tr.InnerResults.SelectMany(ir =>
                 ir.InnerResults.Any() ?
-                    GetFlattenLeafInnerResults(ir) :
-                    new[] { ir });
+                    GetFlattenLeafInnerResults(ir) : [ir]);
         }
 
-        var testResults = synchronizationContext.PublishTestResultContext.LocalTestRun.TestDefinitions
-            .SelectMany(td => td.Results.SelectMany(GetFlattenLeafResults)
-                .Select(tr => new { TestRunTestDefinition = td, Result = tr, TestCaseId = GetTestCaseIdValue(td, tr) }))
+        var testResults = commandContext.PublishTestResultContext.LocalTestRun.TestResults
+            .SelectMany(GetFlattenLeafResults)
+            .Select(tr => new { Result = tr, TestCaseId = GetTestCaseIdValue(tr) })
             .ToArray();
 
         var testResultsById = testResults
             .Where(r => r.TestCaseId != null)
-            .GroupBy(r => r.TestCaseId)
+            .GroupBy(r => r.TestCaseId!)
             .ToArray();
 
         if (testResultsById.Length == 0 && testResults.Length > 0)
@@ -65,12 +55,12 @@ public class TestResultProjectLoader : IBddProjectLoader
         return new TestResultProject(args.BaseFolder, documents);
     }
 
-    private string GetTestCaseIdValue(TestRunTestDefinition testDefinition, TestRunTestResult testResult)
+    private string? GetTestCaseIdValue(LocalTestResult testResult)
     {
-        var propertyValue = GetPropertyValue(testDefinition, testResult, _parameters.TestCaseIdPropertyName);
-        if (!string.IsNullOrEmpty(propertyValue) && !string.IsNullOrEmpty(_parameters.ValueRegex))
+        var propertyValue = GetPropertyValue(testResult, parameters.TestCaseIdPropertyName);
+        if (!string.IsNullOrEmpty(propertyValue) && !string.IsNullOrEmpty(parameters.ValueRegex))
         {
-            var match = Regex.Match(propertyValue, _parameters.ValueRegex);
+            var match = Regex.Match(propertyValue, parameters.ValueRegex);
             if (match.Success && match.Groups["id"].Success)
                 propertyValue = match.Groups["id"].Value;
             else
@@ -79,10 +69,9 @@ public class TestResultProjectLoader : IBddProjectLoader
         return propertyValue;
     }
 
-    private string GetPropertyValue(TestRunTestDefinition testDefinition, TestRunTestResult testResult, string propertyName)
+    private string? GetPropertyValue(LocalTestResult testResult, string propertyName)
     {
         return testResult.GetProperty<object>(propertyName)?.ToString() ??
-               testResult.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(testResult)?.ToString() ??
-               testDefinition.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(testDefinition)?.ToString();
+               testResult.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public)?.GetValue(testResult)?.ToString();
     }
 }

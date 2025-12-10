@@ -1,26 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using SpecSync.Projects;
 
 namespace SpecSync.Plugin.OnlyPublishTestResults;
 
-public class TestResultProject : IBddProject
+public class TestResultProject(string projectFolder, List<TestCaseResultDocumentSource> documents)
+    : ISyncProject
 {
-    private readonly List<TestCaseResultDocumentSource> _documents;
-
     public string Type => "TestResult";
-    public CultureInfo DefaultCulture => null;
-    public IEnumerable<ISourceFile> LocalTestContainerFiles => _documents;
-    public string ProjectFolder { get; }
+    public CultureInfo? DefaultCulture => null;
+    public IEnumerable<ISourceReference> SourceReferences => documents;
+    public string ProjectFolder { get; } = projectFolder;
 
-    public TestResultProject(string projectFolder, List<TestCaseResultDocumentSource> documents)
+    public string GetFullPath(ISourceReference sourceReference)
     {
-        _documents = documents;
-        ProjectFolder = projectFolder;
-    }
-
-    public string GetFullPath(string projectRelativePath)
-    {
-        return projectRelativePath;
+        return sourceReference.ProjectRelativePath;
     }
 }
