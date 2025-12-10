@@ -1,21 +1,21 @@
 ﻿{
-  "$schema": "http://schemas.specsolutions.eu/specsync4azuredevops-config-latest.json",
-  "compatibilityVersion": "3.4",
-
+  "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-v5-latest.json",
+  "compatibilityVersion": "5",
+  "configurationKey": "nunit-test-source-plugin-sample",
   "toolSettings": {
     "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
     "plugins": [
       {
         "packageId": "SpecSync.Plugin.NUnitTestSource",
-        "packageVersion": "1.0.2-local",
+        "packageVersion": "5.0.0-local",
         "packageSource": "..\\..\\SpecSync.Plugin.NUnitTestSource\\bin\\Debug"
       }
     ]
   },
   "remote": {
     "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
-    "testSuite": {
-      "name": "NUnit Tests"
+    "scope": {
+      "type": "tag"
     }
   },
   "synchronization": {
@@ -31,5 +31,15 @@
     "fieldUpdates": {
       "Description": "<pre>{feature-file-path:HtmlEncode}:{br}{scenario-source:HtmlEncode}</pre>"
     }
-  }
+  },
+  "hierarchies": [
+    {
+      "name": "NUnit Tests",
+      "type": "single",
+      "node": {
+        "testPlan": "NUnitPlan",
+        "path": "NUnit Tests"
+      }
+    }
+  ]
 }

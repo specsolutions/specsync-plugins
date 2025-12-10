@@ -1,10 +1,8 @@
-﻿using System;
-using SpecSync.PluginDependency.CSharpSource.TestMethodSource;
+﻿using SpecSync.TestMethodSource;
 
-namespace SpecSync.Plugin.NUnitTestSource
+namespace SpecSync.Plugin.NUnitTestSource;
+
+public class NUnitTestAnalyzer : TestMethodAnalyzerBase
 {
-    public class NUnitTestAnalyzer : TestMethodAnalyzerBase
-    {
-        public override string ServiceDescription => "NUnit test analyzer";
-    }
+    public override string ServiceDescription => "NUnit test analyzer";
 }
