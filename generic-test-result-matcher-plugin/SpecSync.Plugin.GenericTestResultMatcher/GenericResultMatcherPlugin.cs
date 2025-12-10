@@ -13,7 +13,8 @@ public class GenericResultMatcherPlugin : ISpecSyncPlugin
     {
         args.Tracer.LogVerbose($"Initializing '{Name}' plugin...");
 
-        var parameters = PluginParameters.FromPluginParameters(args.Parameters);
+        var parameters = args.GetParametersAs<PluginParameters>();
+        parameters.Verify();
 
         args.ServiceRegistry.TestResultMatcherProvider.Register(new GenericMatcher(parameters), ServicePriority.High);
     }

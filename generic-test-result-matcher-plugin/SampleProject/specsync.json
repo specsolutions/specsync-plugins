@@ -1,13 +1,13 @@
 ﻿{
-  "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-latest.json",
-  "compatibilityVersion": "3.4",
-
+  "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-v5-latest.json",
+  "compatibilityVersion": "5",
+  "configurationKey": "generic-test-result-matcher-plugin-sample",
   "toolSettings": {
     "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
     "plugins": [
       {
         "packageId": "SpecSync.Plugin.GenericTestResultMatcher",
-        "packageVersion": "1.2.0-local",
+        "packageVersion": "5.0.0-local",
         "packageSource": "..\\SpecSync.Plugin.GenericTestResultMatcher\\bin\\Debug",
 
         "parameters": {
@@ -18,8 +18,18 @@
   },
   "remote": {
     "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
-    "testSuite": {
-      "name": "GenericResultMatcher"
+    "scope": {
+      "type": "tag"
     }
-  }
+  },
+  "hierarchies": [
+    {
+      "name": "GenericResultMatcher",
+      "type": "single",
+      "node": {
+        "testPlan": "GenericResultMatcherSample",
+        "path": "GenericResultMatcher"
+      }
+    }
+  ]
 }
