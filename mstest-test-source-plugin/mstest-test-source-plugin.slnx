@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/SampleProject/">
+    <File Path="SampleProject/.config/dotnet-tools.json" />
+    <Project Path="SampleProject/MsTestTestProject/MsTestTestProject.csproj">
+      <BuildDependency Project="SpecSync.Plugin.MsTestTestSource/SpecSync.Plugin.MsTestTestSource.csproj" />
+    </Project>
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="SpecSync.Plugin.MsTestTestSource/SpecSync.Plugin.MsTestTestSource.csproj" />
+</Solution>

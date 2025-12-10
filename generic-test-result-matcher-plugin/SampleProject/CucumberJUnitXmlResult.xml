@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- 
+  This is a sample custom Cucumber Java JUnit XML file, where the test case name includes the "Test: " prefix 
+  that is ignored for matching by the configured plugin.
+  To test it with SpecSync, specify CucumberJavaJUnitXml as format ('-f CucumberJavaJUnitXml').
+-->
 <testsuite errors="0" failures="1" skipped="0" tests="1" time="0.173">
   <testcase classname="myClass" name="Test: Add two numbers" time="0.003">
     <failure message="expected: &lt;11&gt; but was: &lt;10&gt;">

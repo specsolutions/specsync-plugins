@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="SampleProject/SampleProject.csproj" />
+  <Project Path="SpecSync.Plugin.TestNGTestSource/SpecSync.Plugin.TestNGTestSource.csproj" />
+  <Project Path="SpecSync.PluginDependency.JavaSource.Tests/SpecSync.PluginDependency.JavaSource.Tests.csproj" />
+</Solution>

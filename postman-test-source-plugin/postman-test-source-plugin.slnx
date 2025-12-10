@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="SampleProject/SampleProject.csproj" />
+  <Project Path="SpecSync.Plugin.PostmanTestSource.Tests/SpecSync.Plugin.PostmanTestSource.Tests.csproj" />
+  <Project Path="SpecSync.Plugin.PostmanTestSource/SpecSync.Plugin.PostmanTestSource.csproj" />
+</Solution>

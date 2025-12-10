@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 
+    This is a pseudo project to show the sample content files, just like a simple folder. It does not have any "build" action 
+    Feel free to remove this project file if you use the sample in IDEs other than Visual Studio.
+  -->
+  <PropertyGroup>
+    <BuildProject>false</BuildProject>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <ProduceOutputs>false</ProduceOutputs>
+    <CopyBuildOutputToOutputDirectory>false</CopyBuildOutputToOutputDirectory>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Remove="@(Compile)" />
+    <None Include="**\*" Exclude="$(DefaultItemExcludes)" />
+  </ItemGroup>
+</Project>
