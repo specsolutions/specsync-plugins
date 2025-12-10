@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using SpecSync.Configuration;
+﻿using SpecSync.Configuration;
 using SpecSync.Plugin.ExcelTestSource;
 using SpecSync.Plugins;
 
@@ -19,13 +17,14 @@ public class ExcelTestSourcePlugin : ISpecSyncPlugin
     {
         args.Tracer.LogVerbose($"Initializing '{Name}' plugin...");
 
-        var parameters = ExcelTestSourceParameters.FromPluginParameters(args.Parameters);
+        var parameters = args.GetParametersAs<ExcelTestSourceParameters>();
+        parameters.Verify();
 
-        args.ServiceRegistry.BddProjectLoaderProvider
-            .Register(new ExcelFolderProjectLoader());
-        args.ServiceRegistry.LocalTestCaseContainerParserProvider
-            .Register(new ExcelTestCaseSourceParser(parameters));
-        args.ServiceRegistry.LocalTestCaseAnalyzerProvider
+        args.ServiceRegistry.ProjectLoaderProvider
+            .Register(new ExcelFolderProjectLoader(), ServicePriority.High);
+        args.ServiceRegistry.SourceDocumentParserProvider
+            .Register(new ExcelSourceDocumentParser(parameters));
+        args.ServiceRegistry.LocalArtifactAnalyzerProvider
             .Register(new ExcelTestCaseAnalyzer());
 
         // configure automation condition based on the "Automation Status" column
@@ -38,10 +37,10 @@ public class ExcelTestSourcePlugin : ISpecSyncPlugin
 
         args.Configuration.Customizations.IgnoreNotSupportedLocalTags.Enabled = true;
         args.Configuration.Customizations.IgnoreNotSupportedLocalTags.NotSupportedTags =
-            (args.Configuration.Customizations.IgnoreNotSupportedLocalTags.NotSupportedTags ?? Array.Empty<string>())
-            .Concat(new[] { $"{InternalTagPrefix}*" }).ToArray();
+            args.Configuration.Customizations.IgnoreNotSupportedLocalTags.NotSupportedTags
+            .Concat([$"{InternalTagPrefix}*"]).ToArray();
 
-        foreach (var fieldUpdaterColumnParameter in parameters.FieldUpdaterColumnParameters)
+        foreach (var fieldUpdaterColumnParameter in parameters.FieldUpdateColumns)
         {
             if (fieldUpdaterColumnParameter.TagNamePrefix == null)
             {

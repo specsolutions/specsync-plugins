@@ -1,30 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using SpecSync.Analyzing;
 using SpecSync.Parsing;
+using SpecSync.Projects;
 using SpecSync.Synchronization;
 using SpecSync.Tracing;
 
 namespace SpecSync.Plugin.ExcelTestSource;
 
-public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
+public class ExcelSourceDocumentParser(ExcelTestSourceParameters parameters) : ISourceDocumentParser
 {
-    private readonly ExcelTestSourceParameters _parameters;
-
-    public ExcelTestCaseSourceParser(ExcelTestSourceParameters parameters)
-    {
-        _parameters = parameters;
-    }
-
     public string ServiceDescription => "Excel Test Case source parser";
 
-    public bool CanProcess(LocalTestCaseContainerParseArgs args)
-        => ".xlsx".Equals(Path.GetExtension(args.SourceFile.ProjectRelativePath), StringComparison.InvariantCultureIgnoreCase);
+    public bool CanProcess(SourceDocumentParserArgs args)
+        => ".xlsx".Equals(Path.GetExtension(args.SourceReference.ProjectRelativePath), StringComparison.InvariantCultureIgnoreCase);
 
-    private string GetFieldColumn(IXLRow headerRow, string field, bool throwIfMissing)
+    private string? GetFieldColumn(IXLRow headerRow, string field, bool throwIfMissing)
     {
         var cell = headerRow.Cells().FirstOrDefault(c => field.Equals(c.GetString(), StringComparison.InvariantCultureIgnoreCase));
         if (cell == null && throwIfMissing)
@@ -32,9 +22,9 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
         return cell?.WorksheetColumn().ColumnLetter();
     }
 
-    public ILocalTestCaseContainer Parse(LocalTestCaseContainerParseArgs args)
+    public ISourceDocument Parse(SourceDocumentParserArgs args)
     {
-        var filePath = args.BddProject.GetFullPath(args.SourceFile.ProjectRelativePath);
+        var filePath = args.Project.GetFullPath(args.SourceReference);
         var wb = OpenWorkbook(filePath, out var isReadOnly, args);
 
         var localTestCases = new List<ILocalTestCase>();
@@ -56,9 +46,9 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
             firstWorksheet = false;
         }
 
-        var updater = isReadOnly ? null : new ExcelUpdater(wb, filePath, args.Configuration, _parameters);
+        ISourceDocumentUpdater updater = isReadOnly ? new ReadOnlySourceDocumentUpdater() : new ExcelUpdater(wb, filePath, args.Configuration, parameters);
 
-        return new ExcelTestCaseContainer(Path.GetFileNameWithoutExtension(filePath), args.BddProject, args.SourceFile, localTestCases.ToArray(), updater);
+        return new ExcelSourceDocument(Path.GetFileNameWithoutExtension(filePath), args.Project, args.SourceReference.AsSourceFile(), localTestCases.ToArray(), updater);
     }
 
     private void ProcessWorksheet(IXLWorksheet worksheet, List<ILocalTestCase> localTestCases, ITagServices tagServices)
@@ -70,16 +60,16 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
         if (testCaseRows.Length == 0)
             return;
 
-        var idColumn = GetFieldColumn(headerRow, _parameters.TestCaseIdColumnName, true);
-        var titleColumn = GetFieldColumn(headerRow, _parameters.TitleColumnName, true);
-        var stepActionColumn = GetFieldColumn(headerRow, _parameters.TestStepActionColumnName, true);
-        var stepIndexColumn = GetFieldColumn(headerRow, _parameters.TestStepColumnName, false);
-        var stepExpectedValueColumn = GetFieldColumn(headerRow, _parameters.TestStepExpectedColumnName, false);
+        var idColumn = GetFieldColumn(headerRow, parameters.TestCaseIdColumnName, true)!;
+        var titleColumn = GetFieldColumn(headerRow, parameters.TitleColumnName, true)!;
+        var stepActionColumn = GetFieldColumn(headerRow, parameters.TestStepActionColumnName, true)!;
+        var stepIndexColumn = GetFieldColumn(headerRow, parameters.TestStepColumnName, false);
+        var stepExpectedValueColumn = GetFieldColumn(headerRow, parameters.TestStepExpectedColumnName, false);
         var stepIndicatorColumns = new[] { stepIndexColumn, stepActionColumn, stepExpectedValueColumn }.Where(c => c != null).ToArray();
-        var tagsColumn = GetFieldColumn(headerRow, _parameters.TagsColumnName, false);
-        var descriptionColumn = GetFieldColumn(headerRow, _parameters.DescriptionColumnName, false);
-        var automationStatusColumn = GetFieldColumn(headerRow, _parameters.AutomationStatusColumnName, false);
-        var automatedTestNameColumn = GetFieldColumn(headerRow, _parameters.AutomatedTestNameColumnName, false);
+        var tagsColumn = GetFieldColumn(headerRow, parameters.TagsColumnName, false);
+        var descriptionColumn = GetFieldColumn(headerRow, parameters.DescriptionColumnName, false);
+        var automationStatusColumn = GetFieldColumn(headerRow, parameters.AutomationStatusColumnName, false);
+        var automatedTestNameColumn = GetFieldColumn(headerRow, parameters.AutomatedTestNameColumnName, false);
 
         for (int rowIndex = 0; rowIndex < testCaseRows.Length; rowIndex++)
         {
@@ -91,18 +81,18 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
             var idCellValue = row.Cell(idColumn).GetString();
             var testCaseLink = GetTestCaseLink(idCellValue, tagServices);
 
-            var tags = new List<ILocalTestCaseTag>();
+            var tags = new List<ILocalArtifactTag>();
             if (tagsColumn != null)
             {
                 var tagsCellValue = row.Cell(tagsColumn).GetString();
                 if (!string.IsNullOrWhiteSpace(tagsCellValue))
                 {
-                    tags.AddRange(tagsCellValue.Split(',').Select(t => new LocalTestCaseTag(t.Trim())));
+                    tags.AddRange(tagsCellValue.Split(',').Select(t => new LocalArtifactTag(t.Trim())));
                 }
             }
 
             bool HasStepData(IXLRow r) => !stepIndicatorColumns.All(c => r.Cell(c).IsEmpty());
-            var steps = new List<TestStepSourceData>();
+            var steps = new List<TestCaseStepSyncData>();
             var readFirstStepFromTestCaseRow = HasStepData(row);
             while (readFirstStepFromTestCaseRow || 
                    (rowIndex < testCaseRows.Length - 1 && 
@@ -121,24 +111,24 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
                 var stepRow = testCaseRows[rowIndex];
                 var stepAction = stepRow.Cell(stepActionColumn).GetString();
                 if (!string.IsNullOrWhiteSpace(stepAction))
-                    steps.Add(new TestStepSourceData
+                    steps.Add(new TestCaseStepSyncData
                     {
                         Text = new ParameterizedText(stepAction),
-                        IsExpectedResult = false
+                        IsOutcomeStep = false
                     });
                 if (stepExpectedValueColumn != null)
                 {
                     var expectedResult = stepRow.Cell(stepExpectedValueColumn).GetString();
                     if (!string.IsNullOrWhiteSpace(expectedResult))
-                        steps.Add(new TestStepSourceData
+                        steps.Add(new TestCaseStepSyncData
                         {
                             Text = new ParameterizedText(expectedResult),
-                            IsThenStep = true
+                            IsOutcomeStep = true
                         });
                 }
             }
 
-            string description = null;
+            string? description = null;
             if (descriptionColumn != null)
             {
                 description = row.Cell(descriptionColumn).GetString();
@@ -148,22 +138,22 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
             {
                 var automationStatus = row.Cell(automationStatusColumn).GetString();
                 if (!"automated".Equals(automationStatus, StringComparison.InvariantCultureIgnoreCase))
-                    tags.Add(new LocalTestCaseTag(ExcelTestSourcePlugin.ManualTagName));
+                    tags.Add(new LocalArtifactTag(ExcelTestSourcePlugin.ManualTagName));
             }
 
-            string automatedTestName = null;
+            string? automatedTestName = null;
             if (automatedTestNameColumn != null)
             {
                 automatedTestName = row.Cell(automatedTestNameColumn).GetString();
             }
 
-            foreach (var fieldUpdaterColumnParameter in _parameters.FieldUpdaterColumnParameters)
+            foreach (var fieldUpdaterColumnParameter in parameters.FieldUpdateColumns)
             {
                 var column = GetFieldColumn(headerRow, fieldUpdaterColumnParameter.ColumnName, false);
                 if (column != null)
                 {
                     var value = row.Cell(column).GetString() ?? "";
-                    tags.Add(new LocalTestCaseTag($"{fieldUpdaterColumnParameter.TagNamePrefix ?? fieldUpdaterColumnParameter.GeneratedTagNamePrefix}{value}"));
+                    tags.Add(new LocalArtifactTag($"{fieldUpdaterColumnParameter.TagNamePrefix ?? fieldUpdaterColumnParameter.GeneratedTagNamePrefix}{value}"));
                 }
             }
 
@@ -174,24 +164,24 @@ public class ExcelTestCaseSourceParser : ILocalTestCaseContainerParser
         }
     }
 
-    private static TestCaseLink GetTestCaseLink(string idCellValue, ITagServices tagServices)
+    private static IdLink? GetTestCaseLink(string idCellValue, ITagServices tagServices)
     {
         if (string.IsNullOrWhiteSpace(idCellValue))
             return null;
 
-        var tags = new ILocalTestCaseTag[] {new LocalTestCaseTag(idCellValue) };
+        var tags = new ILocalArtifactTag[] {new LocalArtifactTag(idCellValue) };
         var testCaseLink = tagServices.GetTestCaseLinkFromTags(tags);
 
         if (testCaseLink == null)
         {
             var testCaseId = int.Parse(idCellValue);
-            testCaseLink = new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(testCaseId), "");
+            testCaseLink = new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(testCaseId), "");
         }
 
         return testCaseLink;
     }
 
-    private XLWorkbook OpenWorkbook(string filePath, out bool isReadOnly, LocalTestCaseContainerParseArgs args)
+    private XLWorkbook OpenWorkbook(string filePath, out bool isReadOnly, SourceDocumentParserArgs args)
     {
         isReadOnly = false;
         try

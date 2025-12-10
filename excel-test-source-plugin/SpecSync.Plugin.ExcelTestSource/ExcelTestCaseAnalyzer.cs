@@ -1,26 +1,23 @@
-﻿using System;
-using System.Linq;
-using SpecSync.Analyzing;
+﻿using SpecSync.Analyzing;
 
 namespace SpecSync.Plugin.ExcelTestSource;
 
-public class ExcelTestCaseAnalyzer : ILocalTestCaseAnalyzer
+public class ExcelTestCaseAnalyzer : ILocalArtifactAnalyzer
 {
     public string ServiceDescription => "Excel Test Case analyzer";
 
-    public bool CanProcess(LocalTestCaseAnalyzerArgs args)
-        => args.LocalTestCase is ExcelLocalTestCase;
+    public bool CanProcess(LocalArtifactAnalyzerArgs args)
+        => args.LocalArtifact is ExcelLocalTestCase;
 
-    public TestCaseSourceData Analyze(LocalTestCaseAnalyzerArgs args)
+    public ArtifactSyncData Analyze(LocalArtifactAnalyzerArgs args)
     {
-        var excelLocalTestCase = (ExcelLocalTestCase)args.LocalTestCase;
-        return new TestCaseSourceData
+        var excelLocalTestCase = (ExcelLocalTestCase)args.LocalArtifact;
+        return new ArtifactSyncData
         {
             Title = excelLocalTestCase.Name,
-            Links = args.TagServices.GetLinkData(excelLocalTestCase),
-            Tags = args.TagServices.GetTagData(args.TestCaseSyncContext),
-            TestSteps = excelLocalTestCase.Steps.ToList(),
-            ParamValues = Array.Empty<TestCaseParameters>()
+            Links = args.TagServices.GetLinkData(args.ArtifactSyncContext),
+            Tags = args.TagServices.GetTagData(args.ArtifactSyncContext),
+            TestSteps = excelLocalTestCase.Steps.ToList()
         };
     }
 }

@@ -1,59 +1,51 @@
-﻿using System;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using SpecSync.Configuration;
 using SpecSync.Parsing;
 
 namespace SpecSync.Plugin.ExcelTestSource;
 
-public class ExcelUpdater : LocalTestCaseContainerUpdaterBase
+public class ExcelUpdater(
+    XLWorkbook workbook,
+    string filePath,
+    SpecSyncConfiguration configuration,
+    ExcelTestSourceParameters parameters)
+    : SourceDocumentUpdaterBase
 {
-    private readonly XLWorkbook _workbook;
-    private readonly string _filePath;
-    private readonly SpecSyncConfiguration _configuration;
-    private readonly ExcelTestSourceParameters _parameters;
     private bool _isDirty = false;
 
     public override bool IsDirty => _isDirty;
-
-    public ExcelUpdater(XLWorkbook workbook, string filePath, SpecSyncConfiguration configuration, ExcelTestSourceParameters parameters)
-    {
-        _workbook = workbook;
-        _filePath = filePath;
-        _configuration = configuration;
-        _parameters = parameters;
-    }
 
     public override bool Flush()
     {
         if (!IsDirty)
             return false;
 
-        _workbook.SaveAs(_filePath);
+        workbook.SaveAs(filePath);
         _isDirty = false;
         return true;
     }
 
-    public override void SetTestCaseLink(ILocalTestCase localTestCase, TestCaseLink testCaseLink)
+    public override void SetArtifactLink(ILocalArtifact localArtifact, IdLink testCaseLink)
     {
         _isDirty = true;
-        var excelLocalTestCase = (ExcelLocalTestCase)localTestCase;
+        var excelLocalTestCase = (ExcelLocalTestCase)localArtifact;
 
         var row = excelLocalTestCase.Worksheet.Row(excelLocalTestCase.TestCaseRowNumber);
-        row.Cell(excelLocalTestCase.IdColumn).Value = GetTestCaseLinkValue(testCaseLink);
+        row.Cell(excelLocalTestCase.IdColumn).Value = XLCellValue.FromObject(GetTestCaseLinkValue(testCaseLink));
     }
 
-    private object GetTestCaseLinkValue(TestCaseLink testCaseLink)
+    private object GetTestCaseLinkValue(IdLink testCaseLink)
     {
-        if (_parameters.WriteIdWithPrefix)
+        if (parameters.WriteIdWithPrefix)
         {
             return GetTagName(testCaseLink);
         }
 
-        return testCaseLink.TestCaseId.GetNumericId();
+        return testCaseLink.Id.GetNumericId();
     }
 
-    protected string GetTagName(TestCaseLink testCaseLink)
+    protected string GetTagName(IdLink testCaseLink)
     {
-        return $"{testCaseLink.LinkPrefix}{_configuration.Synchronization.TagPrefixSeparators[0]}{testCaseLink.TestCaseId}";
+        return $"{testCaseLink.LinkPrefix}{configuration.Synchronization.TagPrefixSeparators[0]}{testCaseLink.Id}";
     }
 }

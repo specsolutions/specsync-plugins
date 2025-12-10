@@ -1,15 +1,9 @@
 ﻿using SpecSync.Utils;
 
 namespace SpecSync.Plugin.ExcelTestSource;
-public class MissingColumnException : SpecSyncException
+public class MissingColumnException(string columnName, string worksheetName)
+    : SpecSyncException($"Unable to find column '{columnName}' on worksheet {worksheetName}")
 {
-    public string ColumnName { get; }
-    public string WorksheetName { get; }
-
-    public MissingColumnException(string columnName, string worksheetName)
-        : base($"Unable to find column '{columnName}' on worksheet {worksheetName}")
-    {
-        ColumnName = columnName;
-        WorksheetName = worksheetName;
-    }
+    public string ColumnName { get; } = columnName;
+    public string WorksheetName { get; } = worksheetName;
 }

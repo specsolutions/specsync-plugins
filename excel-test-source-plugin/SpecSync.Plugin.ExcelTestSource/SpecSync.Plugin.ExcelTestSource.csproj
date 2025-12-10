@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>10</LangVersion>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <LangVersion>13</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
 
-    <VersionPrefix>1.1.0</VersionPrefix>
+    <VersionPrefix>5.0.0</VersionPrefix>
     <VersionSuffix>local</VersionSuffix>
 
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -13,6 +15,7 @@
     <RepositoryUrl>https://github.com/specsolutions/specsync-sample-plugins</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>SpecSync-Icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://speclink.me/specsync</PackageProjectUrl>
     <Copyright>Copyright © 2016-$([System.DateTime]::UtcNow.ToString("yyyy")) Spec Solutions</Copyright>
     <PackageTags>specsync plugin excel</PackageTags>
@@ -21,12 +24,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.97.0" />
-    <PackageReference Include="SpecSync.PluginDependency" Version="3.4.0" />
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="SpecSync.PluginDependency" Version="5.0.0-local" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)\..\..\Resources\SpecSync-Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>.</PackagePath>
+      <Visible>false</Visible>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)\..\README.md">
       <Pack>True</Pack>
       <PackagePath>.</PackagePath>
       <Visible>false</Visible>
@@ -38,11 +46,17 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <_PackageFiles Include="$(OutputPath)\ClosedXML.dll;$(OutputPath)\DocumentFormat.OpenXml.dll;$(OutputPath)\SixLabors.Fonts.dll;$(OutputPath)\System.IO.Packaging.dll;$(OutputPath)\*.deps.json;$(OutputPath)\*.pdb">
-      <BuildAction>None</BuildAction>
-      <PackagePath>lib\netstandard2.0\</PackagePath>
-    </_PackageFiles>
-  </ItemGroup>
+  <PropertyGroup>
+    <GenerateNuspecDependsOn>$(GenerateNuspecDependsOn);IncludeAdditionalFilesToPackage</GenerateNuspecDependsOn>
+  </PropertyGroup>
+
+  <Target Name="IncludeAdditionalFilesToPackage">
+    <ItemGroup>
+      <_PackageFiles Include="$(OutputPath)\ClosedXML.dll;$(OutputPath)\DocumentFormat.OpenXml.dll;$(OutputPath)\SixLabors.Fonts.dll;$(OutputPath)\System.IO.Packaging.dll;$(OutputPath)\*.deps.json;$(OutputPath)\*.pdb">
+        <BuildAction>None</BuildAction>
+        <PackagePath>lib\netstandard2.0\</PackagePath>
+      </_PackageFiles>
+    </ItemGroup>
+  </Target>
 
 </Project>
