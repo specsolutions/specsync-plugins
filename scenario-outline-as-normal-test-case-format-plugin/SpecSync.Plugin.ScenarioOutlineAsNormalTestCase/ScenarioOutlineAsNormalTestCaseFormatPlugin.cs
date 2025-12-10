@@ -1,5 +1,4 @@
-﻿using System;
-using SpecSync.Plugin.ScenarioOutlineAsNormalTestCase;
+﻿using SpecSync.Plugin.ScenarioOutlineAsNormalTestCase;
 using SpecSync.Plugins;
 
 [assembly: SpecSyncPlugin(typeof(ScenarioOutlineAsNormalTestCaseFormatPlugin))]
@@ -13,7 +12,7 @@ public class ScenarioOutlineAsNormalTestCaseFormatPlugin : ISpecSyncPlugin
     public void Initialize(PluginInitializeArgs args)
     {
         args.Tracer.LogVerbose($"Initializing '{Name}' plugin...");
-        args.ServiceRegistry.LocalTestCaseAnalyzerProvider
+        args.ServiceRegistry.LocalArtifactAnalyzerProvider
             .Register(new ScenarioOutlineAsNormalTestCaseGherkinAnalyzer(), ServicePriority.High);
     }
 }
