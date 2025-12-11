@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using SpecSync.Plugin.PostmanTestSource.Postman;
 using SpecSync.Projects;
 
 namespace SpecSync.Plugin.PostmanTestSource.Projects;
 
-public class PostmanProject : IBddProject
+public class PostmanProject : ISyncProject
 {
     public string Type => "Postman";
-    public CultureInfo DefaultCulture => null;
-    IEnumerable<ISourceFile> IBddProject.LocalTestContainerFiles => FolderItems;
+    public CultureInfo? DefaultCulture => null;
+    public IEnumerable<ISourceReference> SourceReferences => FolderItems;
     public PostmanFolderItem[] FolderItems { get; }
     public string ProjectFolder { get; }
 
@@ -25,8 +22,8 @@ public class PostmanProject : IBddProject
         Parameters = parameters;
         FolderItems = folderCollections.ToArray();
         foreach (var collection in FolderItems)
-            collection.BddProject = this;
+            collection.Project = this;
     }
 
-    public string GetFullPath(string projectRelativePath) => projectRelativePath;
+    public string GetFullPath(ISourceReference sourceReference) => sourceReference.ProjectRelativePath;
 }

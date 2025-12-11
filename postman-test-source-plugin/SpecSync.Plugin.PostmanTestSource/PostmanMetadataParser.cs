@@ -1,39 +1,27 @@
 ﻿using SpecSync.Plugin.PostmanTestSource.Projects;
 using SpecSync.Utils.Code;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System;
-using System.Linq;
 using System.Text;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
+using SpecSync.Projects;
 using SpecSync.Utils;
 
 namespace SpecSync.Plugin.PostmanTestSource;
 
-public class PostmanMetadataParser
+public class PostmanMetadataParser(PostmanTestSourcePlugin.Parameters parameters)
 {
     private static readonly Regex MarkdownHeadingLine = new(@"^#+\s+(?<name>.*?)\s*$");
     private static readonly Regex MarkdownListLine = new(@"^(?<indent>\s*)-\s+((?<key>[^:]+?)\s*:\s*)?(?<value>\S.*?)?\s*$");
     private static readonly Regex MarkdownLinkRe = new(@"^\[(?<linkText>.+)\]\((?<url>.+)\)$");
 
-    private readonly PostmanTestSourcePlugin.Parameters _parameters;
-
-    public PostmanMetadataParser(PostmanTestSourcePlugin.Parameters parameters)
+    public PostmanItemMetadata ParseMetadata(Item item, SyncProjectLoaderArgs args)
     {
-        _parameters = parameters;
-    }
-
-    public PostmanItemMetadata ParseMetadata(Item item)
-    {
-        var metadata = new PostmanItemMetadata();
-
         var documentation = item.Request?.Description ?? item.Description ?? "";
-        var documentationContent = new EditableCodeFile(new InMemoryWritableTextFile(documentation));
-        metadata.DocumentationContent = documentationContent;
-        metadata.MetadataHeadingName = _parameters.MetadataHeading;
+        var documentationContent = new EditableCodeFile(new InMemoryWritableTextFile(args.CommandContext.FileSystem, documentation));
         var docProperties = ParseMetadataFromDocumentation(documentationContent, out var metaHeadingSpan, out var cleanedDocumentation);
-        metadata.MetaHeadingSpan = metaHeadingSpan;
-        metadata.CleanedDocumentation = cleanedDocumentation;
+
+        var metadata = new PostmanItemMetadata(documentationContent, parameters.MetadataHeading, metaHeadingSpan, cleanedDocumentation);
+
         foreach (var property in docProperties)
         {
             metadata.AddProperty(property);
@@ -42,7 +30,7 @@ public class PostmanMetadataParser
         return metadata;
     }
 
-    private List<MetadataProperty> ParseMetadataFromDocumentation(EditableCodeFile documentationContent, out CodeSpan metaHeadingSpan, out string cleanedDocumentation)
+    private List<MetadataProperty> ParseMetadataFromDocumentation(EditableCodeFile documentationContent, out CodeSpan? metaHeadingSpan, out string cleanedDocumentation)
     {
         CodeSpan GetSpan(Group match, int lineIndex)
         {
@@ -78,8 +66,8 @@ public class PostmanMetadataParser
                 {
                     var level = listLine.Groups["indent"].Length == 0 ? 0 : 1;
                     var parentList = listsOfLevels[level];
-                    IMetadataValue value = null;
-                    CodeSpan valueSpan = null;
+                    IMetadataValue? value = null;
+                    CodeSpan? valueSpan = null;
                     if (listLine.Groups["value"].Success)
                     {
                         var stringValue = listLine.Groups["value"].Value;
@@ -101,7 +89,7 @@ public class PostmanMetadataParser
                             value = list;
                         }
 
-                        CodeSpan span = null;
+                        CodeSpan? span = null;
                         if (valueSpan != null)
                             span = new CodeSpan(documentationContent, keySpan.Start, valueSpan.End);
 
@@ -125,7 +113,7 @@ public class PostmanMetadataParser
 
     private bool IsMetaHeading(string value)
     {
-        return value.Equals(_parameters.MetadataHeading, StringComparison.InvariantCultureIgnoreCase);
+        return value.Equals(parameters.MetadataHeading, StringComparison.InvariantCultureIgnoreCase);
     }
 
 }

@@ -1,6 +1,4 @@
 ﻿using SpecSync.Parsing;
-using System;
-using System.Linq;
 
 namespace SpecSync.Plugin.PostmanTestSource;
 
@@ -10,7 +8,7 @@ namespace SpecSync.Plugin.PostmanTestSource;
 public class PostmanKeywordParser : IKeywordParser
 {
     public static readonly PostmanKeywordParser Instance = new();
-    public bool TryParseStepKeyword(string text, out string keyword, out string remainingText, out string stepPrefix)
+    public bool TryParseStepKeyword(string text, out string? keyword, out string remainingText, out string? stepPrefix)
     {
         keyword = null;
         remainingText = text;
@@ -29,7 +27,7 @@ public class PostmanKeywordParser : IKeywordParser
         return true;
     }
 
-    public string GetPrimaryLocalTestCaseKeyword(bool isDataDriven) => null;
-    public string[] GetLocalTestCaseKeywords(bool isDataDriven) => Array.Empty<string>();
-    public string GetPrimaryLocalTestCaseParametersKeyword() => null;
+    public string? GetPrimaryLocalTestCaseKeyword(bool isDataDriven) => null;
+    public string[] GetLocalTestCaseKeywords(bool isDataDriven) => [];
+    public string? GetPrimaryLocalTestCaseParametersKeyword() => null;
 }

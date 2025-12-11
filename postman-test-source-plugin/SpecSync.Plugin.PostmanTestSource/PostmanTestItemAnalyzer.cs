@@ -1,39 +1,37 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using SpecSync.Analyzing;
 using SpecSync.Plugin.PostmanTestSource.Projects;
 
 namespace SpecSync.Plugin.PostmanTestSource;
 
-public class PostmanTestItemAnalyzer : ILocalTestCaseAnalyzer
+public class PostmanTestItemAnalyzer : ILocalArtifactAnalyzer
 {
     public string ServiceDescription => "Postman Test Analyzer";
 
-    public bool CanProcess(LocalTestCaseAnalyzerArgs args)
-        => args.LocalTestCase is PostmanTestItem;
+    public bool CanProcess(LocalArtifactAnalyzerArgs args)
+        => args.LocalArtifact is PostmanTestItem;
 
-    public TestCaseSourceData Analyze(LocalTestCaseAnalyzerArgs args)
+    public ArtifactSyncData Analyze(LocalArtifactAnalyzerArgs args)
     {
-        var testItem = (PostmanTestItem)args.LocalTestCase;
+        var testItem = (PostmanTestItem)args.LocalArtifact;
 
-        return new TestCaseSourceData
+        return new ArtifactSyncData
         {
             Title = testItem.Name,
-            Links = args.TagServices.GetLinkData(testItem),
-            Tags = args.TagServices.GetTagData(args.TestCaseSyncContext),
+            Links = args.TagServices.GetLinkData(args.ArtifactSyncContext),
+            Tags = args.TagServices.GetTagData(args.ArtifactSyncContext),
             TestSteps = GetSteps(testItem).ToList(),
             AttachedFiles = args.TagServices.GetAttachedFileData(testItem, args),
         };
     }
 
-    private IEnumerable<TestStepSourceData> GetSteps(PostmanTestItem testItem)
+    private IEnumerable<TestCaseStepSyncData> GetSteps(PostmanTestItem testItem)
     {
         foreach (var requestItem in testItem.GetRequestItems())
         {
             if (requestItem.Request != null)
             {
-                yield return new TestStepSourceData
+                yield return new TestCaseStepSyncData
                 {
                     Keyword = (requestItem.Request.Method ?? "GET") + " ",
                     Text = new ParameterizedText(requestItem.Request.Url?.Raw ?? "???")
@@ -44,13 +42,13 @@ public class PostmanTestItemAnalyzer : ILocalTestCaseAnalyzer
             {
                 foreach (var testEvent in requestItem.Events.Where(e => "test".Equals(e.Listen) && e.Script?.Exec != null))
                 {
-                    foreach (var execLine in testEvent.Script.Exec)
+                    foreach (var execLine in testEvent.Script!.Exec)
                     {
                         var match = Regex.Match(execLine, @"^(?<before>.*)\bpm\.test\((?<expected>.+),");
                         if (match.Success && !match.Groups["before"].Value.Contains("//"))
-                            yield return new TestStepSourceData
+                            yield return new TestCaseStepSyncData
                             {
-                                IsThenStep = true,
+                                IsOutcomeStep = true,
                                 Keyword = "pm.test ",
                                 Text = new ParameterizedText(SimplifyJsString(match.Groups["expected"].Value))
                             };

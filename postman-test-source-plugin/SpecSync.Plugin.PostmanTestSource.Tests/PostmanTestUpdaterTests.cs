@@ -1,9 +1,7 @@
-﻿using FluentAssertions;
+﻿using AwesomeAssertions;
 using Newtonsoft.Json.Linq;
-using SpecSync.Configuration;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Projects;
-using SpecSync.Projects;
 using SpecSync.Synchronization;
 
 namespace SpecSync.Plugin.PostmanTestSource.Tests;
@@ -15,8 +13,9 @@ public class PostmanTestUpdaterTests : TestBase
 
     public PostmanTestUpdaterTests()
     {
+        Parameters.CheckParameters("plugin", CreatePluginInitArgs());
         var loader = new PostmanCollectionLoader(Parameters);
-        var project = loader.LoadProject(new BddProjectLoaderArgs(SynchronizationContextStub.Object, new LocalConfiguration(), Path.GetTempPath()));
+        var project = loader.LoadProject(CreateLoaderArgs());
         _postmanProject = (PostmanProject)project;
     }
 
@@ -33,7 +32,7 @@ public class PostmanTestUpdaterTests : TestBase
         updatedCollection.ToString().Should().Contain("## Metadata\\n\\n- tc: [1234]");
     }
 
-    private PostmanTestUpdater CreateSut() => new(PostmanApi, Parameters, SyncSettingsStub.Object);
+    private PostmanTestUpdater CreateSut() => new(PostmanApi, Parameters);
 
     [TestMethod]
     public void Should_update_test_case_id_for_request_without_metadata()
@@ -41,7 +40,7 @@ public class PostmanTestUpdaterTests : TestBase
         var sut = CreateSut();
         var testItem = GetTest("Request Methods", "GET Request");
 
-        sut.SetTestCaseLink(testItem, new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(1234), "tc"));
+        sut.SetArtifactLink(testItem, new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(1234), "tc"));
         sut.Flush();
 
         AssertTestCaseId(testItem);
@@ -53,7 +52,7 @@ public class PostmanTestUpdaterTests : TestBase
         var sut = CreateSut();
         var testItem = GetTest("Request Methods", "POST Raw Text");
 
-        sut.SetTestCaseLink(testItem, new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(1234), "tc"));
+        sut.SetArtifactLink(testItem, new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(1234), "tc"));
         sut.Flush();
 
         AssertTestCaseId(testItem);
@@ -66,7 +65,7 @@ public class PostmanTestUpdaterTests : TestBase
         var sut = CreateSut();
         var testItem = GetTest("Postman Echo", "Headers");
 
-        sut.SetTestCaseLink(testItem, new TestCaseLink(TestCaseIdentifier.CreateExistingFromNumericId(1234), "tc"));
+        sut.SetArtifactLink(testItem, new IdLink(TestCaseIdentifier.CreateExistingFromNumericId(1234), "tc"));
         sut.Flush();
 
         AssertTestCaseId(testItem);

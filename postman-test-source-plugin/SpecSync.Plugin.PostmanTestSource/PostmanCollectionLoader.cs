@@ -1,8 +1,5 @@
 ﻿using SpecSync.Projects;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using SpecSync.Expressions;
 using SpecSync.Integration.RestApiServices;
 using SpecSync.Plugin.PostmanTestSource.Postman;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
@@ -11,27 +8,27 @@ using SpecSync.Utils;
 
 namespace SpecSync.Plugin.PostmanTestSource;
 
-public class PostmanCollectionLoader : IBddProjectLoader
+public class PostmanCollectionLoader : ISyncProjectLoader
 {
     private readonly PostmanTestSourcePlugin.Parameters _parameters;
     private readonly PostmanMetadataParser _postmanMetadataParser;
-    public bool CanProcess(BddProjectLoaderArgs args) => true;
+    public bool CanProcess(SyncProjectLoaderArgs args) => true;
 
     public string ServiceDescription => "Postman Collection Loader";
 
-    public PostmanCollectionLoader(PostmanTestSourcePlugin.Parameters parameters, PostmanMetadataParser postmanMetadataParser = null)
+    public PostmanCollectionLoader(PostmanTestSourcePlugin.Parameters parameters, PostmanMetadataParser? postmanMetadataParser = null)
     {
         _parameters = parameters;
         _postmanMetadataParser = postmanMetadataParser ?? new PostmanMetadataParser(_parameters);
     }
 
-    private bool IsTestItem(Item item, PostmanItemMetadata metadata, BddProjectLoaderArgs args, Stack<PostmanItemMetadata> parentMetadata)
+    private bool IsTestItem(Item item, PostmanItemMetadata metadata, SyncProjectLoaderArgs args, Stack<PostmanItemMetadata> parentMetadata)
     {
         // if it is already linked to a Test Case
         if (PostmanFolderItemParser.GetTestCaseLinkFromMetadata(metadata, parentMetadata, args.Configuration) != null)
             return true;
 
-        bool MatchTestByRegex(string value, Regex regex)
+        bool MatchTestByRegex(string? value, Regex? regex)
         {
             if (regex != null && value != null)
             {
@@ -63,10 +60,10 @@ public class PostmanCollectionLoader : IBddProjectLoader
         return false;
     }
 
-    private IPostmanItem ProcessItem(Item item, List<PostmanFolderItem> folderItems, string rootName, BddProjectLoaderArgs args, Stack<PostmanItemMetadata> parentMetadata)
+    private IPostmanItem ProcessItem(Item item, List<PostmanFolderItem> folderItems, string? rootName, SyncProjectLoaderArgs args, Stack<PostmanItemMetadata> parentMetadata)
     {
         var itemPath = rootName == null ? item.Name : $"{rootName}/{item.Name}";
-        var metadata = _postmanMetadataParser.ParseMetadata(item);
+        var metadata = _postmanMetadataParser.ParseMetadata(item, args);
 
         var isTestItem = IsTestItem(item, metadata, args, parentMetadata);
         if (isTestItem)
@@ -92,7 +89,7 @@ public class PostmanCollectionLoader : IBddProjectLoader
         return folderItem;
     }
 
-    public IBddProject LoadProject(BddProjectLoaderArgs args)
+    public ISyncProject LoadProject(SyncProjectLoaderArgs args)
     {
         var api = new PostmanApi(PostmanApiConnectionFactory.Instance.Create(args.Tracer, _parameters.PostmanApiKey));
 
@@ -113,6 +110,6 @@ public class PostmanCollectionLoader : IBddProjectLoader
         return new PostmanProject(folderItems, args.BaseFolder, api, _parameters);
     }
 
-    public string GetSourceDescription(BddProjectLoaderArgs args) 
+    public string GetProjectDescription(SyncProjectLoaderArgs args)
         => $"Postman Collection '{_parameters.CollectionId}'";
 }

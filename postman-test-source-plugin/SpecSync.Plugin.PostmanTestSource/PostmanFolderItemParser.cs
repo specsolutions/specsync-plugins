@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SpecSync.Configuration;
+﻿using SpecSync.Configuration;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Projects;
 using SpecSync.Synchronization;
@@ -9,54 +6,55 @@ using SpecSync.Utils;
 
 namespace SpecSync.Plugin.PostmanTestSource;
 
-public class PostmanFolderItemParser : ILocalTestCaseContainerParser
+public class PostmanFolderItemParser : ISourceDocumentParser
 {
-    private readonly ISyncSettings _syncSettings;
     public string ServiceDescription => "Postman Collection Parser";
 
-    public bool CanProcess(LocalTestCaseContainerParseArgs args)
-        => args.SourceFile is PostmanFolderItem;
+    public bool CanProcess(SourceDocumentParserArgs args)
+        => args.SourceReference is PostmanFolderItem;
 
-    public PostmanFolderItemParser(ISyncSettings syncSettings)
+    public ISourceDocument Parse(SourceDocumentParserArgs args)
     {
-        _syncSettings = syncSettings;
-    }
-
-    public ILocalTestCaseContainer Parse(LocalTestCaseContainerParseArgs args)
-    {
-        var folderItem = args.SourceFile as PostmanFolderItem ?? throw new SpecSyncException("The parser can only be used for Postman projects");
+        var folderItem = args.SourceReference as PostmanFolderItem ?? throw new SpecSyncException("The parser can only be used for Postman projects");
 
         foreach (var testItem in folderItem.Tests)
         {
             testItem.Tags = ParseTagsFromMetadata(testItem.Metadata, testItem.ParentMetadata);
-            testItem.TestCaseLink = ParseTestCaseLinkFromMetadata(testItem, args);
+            testItem.IdLink = ParseTestCaseLinkFromMetadata(testItem, args);
         }
 
-        var postmanProject = (PostmanProject)args.BddProject;
-        folderItem.Updater = new PostmanTestUpdater(postmanProject.PostmanApi, postmanProject.Parameters, _syncSettings);
+        var postmanProject = (PostmanProject)args.Project;
+        folderItem.Updater = new PostmanTestUpdater(postmanProject.PostmanApi, postmanProject.Parameters);
         return folderItem;
     }
 
-    private ILocalTestCaseTag[] ParseTagsFromMetadata(PostmanItemMetadata itemMetadata, PostmanItemMetadata[] parentMetadata)
+    private ILocalArtifactTag[] ParseTagsFromMetadata(PostmanItemMetadata itemMetadata, PostmanItemMetadata[] parentMetadata)
     {
         var metadataList = GetMetadataList(itemMetadata, parentMetadata);
 
-        var result = new List<ILocalTestCaseTag>();
+        var result = new List<ILocalArtifactTag>();
 
         foreach (var metadata in metadataList)
         {
-            if (metadata.TryGetValue("tags", out MetadataListValue tagsValue))
+            ILocalArtifactTag CreateTag(IMetadataValue value)
             {
-                foreach (var item in tagsValue.Items)
+                return value.Span != null ? 
+                    new CodeFileLocalArtifactTag(value.StringValue, value.Span) : 
+                    new LocalArtifactTag(value.StringValue);
+            }
+
+            if (metadata.TryGetValue("tags", out MetadataListValue? tagsValue))
+            {
+                foreach (var item in tagsValue!.Items)
                 {
-                    result.Add(new CodeFileLocalTestCaseTag(item.StringValue, item.Span));
+                    result.Add(CreateTag(item));
                 }
             }
-            if (metadata.TryGetValue("links", out MetadataListValue linksValue))
+            if (metadata.TryGetValue("links", out MetadataListValue? linksValue))
             {
-                foreach (var item in linksValue.Items)
+                foreach (var item in linksValue!.Items)
                 {
-                    result.Add(new CodeFileLocalTestCaseTag(item.StringValue, item.Span));
+                    result.Add(CreateTag(item));
                 }
             }
         }
@@ -64,12 +62,12 @@ public class PostmanFolderItemParser : ILocalTestCaseContainerParser
         return result.GroupBy(t => t.Name).Select(g => g.First()).ToArray();
     }
 
-    private TestCaseLink ParseTestCaseLinkFromMetadata(PostmanTestItem testItem, LocalTestCaseContainerParseArgs args)
+    private IdLink? ParseTestCaseLinkFromMetadata(PostmanTestItem testItem, SourceDocumentParserArgs args)
     {
         return GetTestCaseLinkFromMetadata(testItem.Metadata, testItem.ParentMetadata, args.Configuration);
     }
 
-    public static TestCaseLink GetTestCaseLinkFromMetadata(PostmanItemMetadata itemMetadata, IEnumerable<PostmanItemMetadata> parentMetadata, SpecSyncConfiguration configuration)
+    public static IdLink? GetTestCaseLinkFromMetadata(PostmanItemMetadata itemMetadata, IEnumerable<PostmanItemMetadata> parentMetadata, SpecSyncConfiguration configuration)
     {
         var metadataList = GetMetadataList(itemMetadata, parentMetadata);
 
@@ -78,13 +76,13 @@ public class PostmanFolderItemParser : ILocalTestCaseContainerParser
             if (configuration.Customizations.BranchTag.Enabled &&
                 metadata.TryGetValue(configuration.Customizations.BranchTag.Prefix, out var branchTagValue))
             {
-                return new TestCaseLink(TestCaseIdentifier.CreateExisting(branchTagValue.StringValue),
+                return new IdLink(TestCaseIdentifier.CreateExisting(branchTagValue!.StringValue),
                     configuration.Synchronization.TestCaseTagPrefix);
             }
 
             if (metadata.TryGetValue(configuration.Synchronization.TestCaseTagPrefix, out var value))
             {
-                return new TestCaseLink(TestCaseIdentifier.CreateExisting(value.StringValue),
+                return new IdLink(TestCaseIdentifier.CreateExisting(value!.StringValue),
                     configuration.Synchronization.TestCaseTagPrefix);
             }
         }

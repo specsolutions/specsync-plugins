@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using SpecSync.Parsing;
 using SpecSync.PublishTestResults;
 using SpecSync.PublishTestResults.Matchers;
@@ -16,8 +14,8 @@ public class NewmanJUnitXmlResultMatcher : ITestRunnerResultMatcher
     public bool CanProcess(TestRunnerResultMatcherArgs args) 
         => args.TestFrameworkIdentifier.Equals(TestFrameworkIdentifier, StringComparison.InvariantCultureIgnoreCase);
 
-    public MatchResultSelector GetLocalTestCaseResultSelector(ILocalTestCase localTestCase,
-        ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
+    public MatchResultSelector GetLocalTestCaseResultSelector(ILocalTestCase localTestCase, ISourceDocument sourceDocument,
+        TestRunnerResultMatcherArgs args)
     {
         var localTestCaseName = Regex.Escape(localTestCase.Name);
         var regexString = @$"^(.*\/\s*)?{localTestCaseName}$";
@@ -26,8 +24,7 @@ public class NewmanJUnitXmlResultMatcher : ITestRunnerResultMatcher
             td => regex.IsMatch(td.Name ?? ""));
     }
 
-    public IDictionary<string, string> GetDataRow(TestRunTestResult testResult, TestRunTestDefinition testDefinition,
-        ILocalTestCase localTestCase,
-        ILocalTestCaseContainer localTestCaseContainer, TestRunnerResultMatcherArgs args)
+    public IDictionary<string, string>? GetInvocationArguments(LocalTestResult testResult, ILocalTestCase localTestCase,
+        ISourceDocument sourceDocument, TestRunnerResultMatcherArgs args)
         => null;
 }

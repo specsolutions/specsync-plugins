@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using AwesomeAssertions;
 using SpecSync.Configuration;
 using SpecSync.PublishTestResults;
 using SpecSync.PublishTestResults.Loaders;
@@ -11,7 +11,7 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
     private TestResultLoaderProviderArgs CreateArgs(string? testFilePath = null)
     {
         testFilePath ??= "sample_newman_result.xml";
-        return new TestResultLoaderProviderArgs(SynchronizationContextStub.Object, new TestResultConfiguration(), testFilePath);
+        return new TestResultLoaderProviderArgs(CommandContextStub.Object, new TestResultConfiguration(), testFilePath);
     }
 
     [TestMethod]
@@ -22,8 +22,8 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         var result = sut.LoadTestResult(CreateArgs());
 
         result.Should().NotBeNull();
-        result.TestDefinitions.Should().HaveCountGreaterThan(0);
-        var testWithTwoPassingPmTestCheck = result.TestDefinitions[0].Results.First();
+        result.TestResults.Should().HaveCountGreaterThan(0);
+        var testWithTwoPassingPmTestCheck = result.TestResults[0];
         testWithTwoPassingPmTestCheck.Outcome.Should().Be(TestOutcome.Passed);
         testWithTwoPassingPmTestCheck.StepResults.Should().HaveCount(3)
             .And.AllSatisfy(r => r.Outcome.Should().Be(TestOutcome.Passed));
@@ -37,8 +37,8 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         var result = sut.LoadTestResult(CreateArgs());
 
         result.Should().NotBeNull();
-        result.TestDefinitions.Should().HaveCountGreaterThan(1);
-        var testWithTwoFailingPmTestCheck = result.TestDefinitions[1].Results.First();
+        result.TestResults.Should().HaveCountGreaterThan(1);
+        var testWithTwoFailingPmTestCheck = result.TestResults[1];
         testWithTwoFailingPmTestCheck.Outcome.Should().Be(TestOutcome.Failed);
         testWithTwoFailingPmTestCheck.StepResults.Should().HaveCount(3);
         testWithTwoFailingPmTestCheck.StepResults[0].Outcome.Should().Be(TestOutcome.Passed);
@@ -56,8 +56,8 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         var result = sut.LoadTestResult(CreateArgs());
 
         result.Should().NotBeNull();
-        result.TestDefinitions.Should().HaveCountGreaterThan(4);
-        var passingSimpleRequest = result.TestDefinitions[4].Results.First();
+        result.TestResults.Should().HaveCountGreaterThan(4);
+        var passingSimpleRequest = result.TestResults[4];
         passingSimpleRequest.Outcome.Should().Be(TestOutcome.Passed);
         passingSimpleRequest.StepResults.Should().HaveCount(1);
         passingSimpleRequest.StepResults[0].Outcome.Should().Be(TestOutcome.Passed);
@@ -71,8 +71,8 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         var result = sut.LoadTestResult(CreateArgs());
 
         result.Should().NotBeNull();
-        result.TestDefinitions.Should().HaveCountGreaterThan(3);
-        var failingSimpleRequest = result.TestDefinitions[3].Results.First();
+        result.TestResults.Should().HaveCountGreaterThan(3);
+        var failingSimpleRequest = result.TestResults[3];
         failingSimpleRequest.Name.Should().Be("Server Events / GET Server events");
         failingSimpleRequest.Outcome.Should().Be(TestOutcome.Failed);
         failingSimpleRequest.ErrorMessage.Should().Be("Error: getaddrinfo ENOTFOUND postman-echox.com");
@@ -91,8 +91,7 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         var result = sut.LoadTestResult(CreateArgs());
 
         result.Should().NotBeNull();
-        var serverEventsTestDefinition = result.TestDefinitions.Should().Contain(td => td.Name == "Server Events").Subject;
-        var serverEventsResults = serverEventsTestDefinition.Results.First();
+        var serverEventsResults = result.TestResults.Should().Contain(td => td.Name == "Server Events").Subject;
         serverEventsResults.Outcome.Should().Be(TestOutcome.Failed);
         serverEventsResults.StepResults.Should().HaveCount(2);
         serverEventsResults.StepResults[0].Outcome.Should().Be(TestOutcome.Failed);
@@ -109,9 +108,9 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         var result = sut.LoadTestResult(CreateArgs());
 
         result.Should().NotBeNull();
-        result.TestDefinitions.Should().ContainSingle(td => td.Name == "Helpers / Date and Time / Current UTC time");
-        result.TestDefinitions.Should().ContainSingle(td => td.Name == "Helpers / Date and Time");
-        result.TestDefinitions.Should().ContainSingle(td => td.Name == "Helpers");
+        result.TestResults.Should().ContainSingle(td => td.Name == "Helpers / Date and Time / Current UTC time");
+        result.TestResults.Should().ContainSingle(td => td.Name == "Helpers / Date and Time");
+        result.TestResults.Should().ContainSingle(td => td.Name == "Helpers");
     }
 
     [TestMethod]
@@ -122,7 +121,7 @@ public class NewmanJUnitXmlResultLoaderTests : TestBase
         var result = sut.LoadTestResult(CreateArgs());
 
         result.Should().NotBeNull();
-        var testResult = result.TestDefinitions.Should().ContainSingle(td => td.Name == "Utilities / Get UTF8 Encoded Response (Fail First)").Subject;
-        testResult.Results.Should().ContainSingle().Subject.Outcome.Should().Be(TestOutcome.Failed);
+        var testResult = result.TestResults.Should().ContainSingle(td => td.Name == "Utilities / Get UTF8 Encoded Response (Fail First)").Subject;
+        testResult.Outcome.Should().Be(TestOutcome.Failed);
     }
 }

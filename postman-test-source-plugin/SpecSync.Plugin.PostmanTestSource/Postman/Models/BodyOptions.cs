@@ -1,4 +1,5 @@
-﻿namespace SpecSync.Plugin.PostmanTestSource.Postman.Models;
+﻿#nullable disable
+namespace SpecSync.Plugin.PostmanTestSource.Postman.Models;
 
 public class BodyOptions
 {

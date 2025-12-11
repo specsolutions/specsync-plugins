@@ -1,14 +1,15 @@
 ﻿{
-  "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-latest.json",
-  "compatibilityVersion": "3.4",
-
+  "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-v5-latest.json",
+  "compatibilityVersion": "5",
+  "configurationKey": "postman-test-source-plugin-sample",
   "toolSettings": {
     "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
     "plugins": [
       {
         "packageId": "SpecSync.Plugin.PostmanTestSource",
-        "packageVersion": "1.0.3-local",
+        "packageVersion": "5.0.0-local",
         "packageSource": "..\\SpecSync.Plugin.PostmanTestSource\\bin\\Debug",
+
         "parameters": {
           "collectionId": "26495037-5c8d6f15-b2a3-4b47-ae1d-72dd3bc1b49b",
           "metadataHeading": "Metadata",
@@ -19,13 +20,12 @@
     ]
   },
   "local": {
-    "tags": "not @legacy"
+    "condition": "not @legacy"
   },
   "remote": {
     "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
-    "testSuite": {
-      "name": "PostmanTestSource",
-      "testPlanId": 198
+    "scope": {
+      "type": "tag"
     }
   },
   "synchronization": {
@@ -44,5 +44,15 @@
     "fieldUpdates": {
       "Description": "{local-test-case-description:HTML}"
     }
-  }
+  },
+  "hierarchies": [
+    {
+      "name": "PostmanTestSource",
+      "type": "single",
+      "node": {
+        "testPlan": "PostmanTestSourcePlan",
+        "titleSearch": "PostmanTestSource"
+      }
+    }
+  ]
 }

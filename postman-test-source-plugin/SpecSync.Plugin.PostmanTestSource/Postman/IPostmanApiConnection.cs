@@ -2,6 +2,4 @@
 
 namespace SpecSync.Plugin.PostmanTestSource.Postman;
 
-public interface IPostmanApiConnection : IRestApiConnection
-{
-}
+public interface IPostmanApiConnection : IRestApiConnection;

@@ -1,7 +1,8 @@
-﻿using FluentAssertions;
+﻿using AwesomeAssertions;
 using Moq;
 using SpecSync.Analyzing;
 using SpecSync.Parsing;
+using SpecSync.Plugin.PostmanTestSource.Postman;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
 using SpecSync.Plugin.PostmanTestSource.Projects;
 using SpecSync.Synchronization;
@@ -13,7 +14,7 @@ public class PostmanTestItemAnalyzerTests : TestBase
 {
     private ILocalTestCase GetLocalTestCase(PostmanTestItem testItem)
     {
-        var parser = new PostmanFolderItemParser(SyncSettingsStub.Object);
+        var parser = new PostmanFolderItemParser();
         var folderCollection = new PostmanFolderItem("path", new List<IPostmanItem>
             {
                 testItem
@@ -25,7 +26,7 @@ public class PostmanTestItemAnalyzerTests : TestBase
                     Name = "My collection",
                     Description = "Some text"
                 }
-            });
+            }.ToItem(), null!);
         var result = parser.Parse(CreateParserArgs(folderCollection));
         result.Should().NotBeNull();
         result.LocalTestCases.Should().HaveCount(1);
@@ -60,10 +61,10 @@ This is the documentation
             }
         });
 
-        TagServicesStub.Setup(ts => ts.GetTagData(It.IsAny<ITestCaseSyncContext>()))
-            .Returns(new[] { "tag1", "tag2" });
+        TagServicesStub.Setup(ts => ts.GetTagData(It.IsAny<IArtifactSyncContext>()))
+            .Returns(["tag1", "tag2"]);
 
-        var result = sut.Analyze(new LocalTestCaseAnalyzerArgs(GetLocalTestCase(testItem), TestCaseSyncContextStub.Object));
+        var result = sut.Analyze(new LocalArtifactAnalyzerArgs(GetLocalTestCase(testItem), ArtifactSyncContextStub.Object));
         result.Should().NotBeNull();
         result.Title.Should().Be("Test 1");
         result.Tags.Should().ContainInOrder("tag1", "tag2");
@@ -92,16 +93,16 @@ This is the documentation
 - tc: 1234
 "
             },
-            Events = new []
-            {
+            Events =
+            [
                 new Event
                 {
                     Listen = "test",
                     Script = new Script
                     {
                         Type = "text/javascript",
-                        Exec = new []
-                        {
+                        Exec =
+                        [
                             "pm.test(\"response is ok\", function () {",
                             "    pm.response.to.have.status(200);",
                             "});",
@@ -110,13 +111,13 @@ This is the documentation
                             "    pm.response.to.have.jsonBody('args.foo1', 'bar1')",
                             "        .and.have.jsonBody('args.foo2', 'bar2');",
                             "});"
-                        }
+                        ]
                     }
                 }
-            }
+            ]
         });
 
-        var result = sut.Analyze(new LocalTestCaseAnalyzerArgs(GetLocalTestCase(testItem), TestCaseSyncContextStub.Object));
+        var result = sut.Analyze(new LocalArtifactAnalyzerArgs(GetLocalTestCase(testItem), ArtifactSyncContextStub.Object));
         result.Should().NotBeNull();
         result.TestSteps.Should().HaveCount(3);
         result.TestSteps[0].Keyword.Should().Be("GET ");
@@ -142,8 +143,8 @@ This is the documentation
 
 - tc: 1234
 ",
-            Items = new []
-            {
+            Items =
+            [
                 new Item
                 {
                     Name = "Request 1",
@@ -155,23 +156,23 @@ This is the documentation
                             Raw = "https://postman-echo.com/get?foo1=bar1&foo2=bar2"
                         }
                     },
-                    Events = new []
-                    {
+                    Events =
+                    [
                         new Event
                         {
                             Listen = "test",
                             Script = new Script
                             {
                                 Type = "text/javascript",
-                                Exec = new []
-                                {
+                                Exec =
+                                [
                                     "pm.test(\"response is ok\", function () {",
                                     "    pm.response.to.have.status(200);",
                                     "});"
-                                }
+                                ]
                             }
                         }
-                    }
+                    ]
                 },
                 new Item
                 {
@@ -184,30 +185,30 @@ This is the documentation
                             Raw = "https://postman-echo.com/get?foo3=bar1&foo4=bar2"
                         }
                     },
-                    Events = new []
-                    {
+                    Events =
+                    [
                         new Event
                         {
                             Listen = "test",
                             Script = new Script
                             {
                                 Type = "text/javascript",
-                                Exec = new []
-                                {
+                                Exec =
+                                [
                                     "pm.test(\"response body has json with request queries\", function () {",
                                     "    pm.response.to.have.jsonBody('args.foo1', 'bar1')",
                                     "        .and.have.jsonBody('args.foo2', 'bar2');",
                                     "});"
-                                }
+                                ]
                             }
                         }
-                    }
-                },
-            }
+                    ]
+                }
+            ]
         }
         );
 
-        var result = sut.Analyze(new LocalTestCaseAnalyzerArgs(GetLocalTestCase(testItem), TestCaseSyncContextStub.Object));
+        var result = sut.Analyze(new LocalArtifactAnalyzerArgs(GetLocalTestCase(testItem), ArtifactSyncContextStub.Object));
         result.Should().NotBeNull();
         result.TestSteps.Should().HaveCount(4);
         result.TestSteps[0].Keyword.Should().Be("GET ");
@@ -238,21 +239,21 @@ This is the documentation
         {
             Name = "Test 1",
             Request = new Request(),
-            Events = new[]
-            {
+            Events =
+            [
                 new Event
                 {
                     Listen = "test",
                     Script = new Script
                     {
                         Type = "text/javascript",
-                        Exec = new []{ pmTestLine, "});" }
+                        Exec = [pmTestLine, "});"]
                     }
                 }
-            }
+            ]
         });
 
-        var result = sut.Analyze(new LocalTestCaseAnalyzerArgs(GetLocalTestCase(testItem), TestCaseSyncContextStub.Object));
+        var result = sut.Analyze(new LocalArtifactAnalyzerArgs(GetLocalTestCase(testItem), ArtifactSyncContextStub.Object));
         result.Should().NotBeNull();
         result.TestSteps.Should().HaveCount(2);
         result.TestSteps[1].Keyword.Should().Be("pm.test ");
@@ -271,21 +272,21 @@ This is the documentation
         {
             Name = "Test 1",
             Request = new Request(),
-            Events = new[]
-            {
+            Events =
+            [
                 new Event
                 {
                     Listen = "test",
                     Script = new Script
                     {
                         Type = "text/javascript",
-                        Exec = new []{ pmTestLine, "});" }
+                        Exec = [pmTestLine, "});"]
                     }
                 }
-            }
+            ]
         });
 
-        var result = sut.Analyze(new LocalTestCaseAnalyzerArgs(GetLocalTestCase(testItem), TestCaseSyncContextStub.Object));
+        var result = sut.Analyze(new LocalArtifactAnalyzerArgs(GetLocalTestCase(testItem), ArtifactSyncContextStub.Object));
         result.Should().NotBeNull();
         result.TestSteps.Should().HaveCount(1);
     }

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using AwesomeAssertions;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Postman;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
@@ -9,7 +9,7 @@ namespace SpecSync.Plugin.PostmanTestSource.Tests;
 [TestClass]
 public class PostmanCollectionParserTests : TestBase
 {
-    private PostmanFolderItemParser CreateSut() => new PostmanFolderItemParser(SyncSettingsStub.Object);
+    private PostmanFolderItemParser CreateSut() => new PostmanFolderItemParser();
 
     [TestMethod]
     public void Should_parse_tests_with_name_and_description()
@@ -34,12 +34,11 @@ public class PostmanCollectionParserTests : TestBase
             {
                 Info = new Info
                 {
-                    Name = "My collection",
-                    Description = "Some text"
+                    Name = "My collection"
                 }
-            });
+            }.ToItem(), GetEmptyMetadata("Some text"));
         var result = sut.Parse(CreateParserArgs(folderCollection));
-        result!.Should().NotBeNull();
+        result.Should().NotBeNull();
         result.LocalTestCases.Should().HaveCount(2);
 
         result.Name.Should().Be("My collection");
@@ -75,7 +74,7 @@ This is the documentation
 "
                     }
                 }),
-            }, new Collection());
+            }, new Collection().ToItem(), null!);
         var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
@@ -124,7 +123,7 @@ This is the documentation
 "
                     }
                 }),
-            }, new Collection());
+            }, new Collection().ToItem(), null!);
         var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
@@ -132,9 +131,9 @@ This is the documentation
         testItem!.Tags.Should().NotBeNull();
         testItem.Tags.Should().HaveCount(2);
         testItem.Tags[0].Name.Should().Be("tag1");
-        testItem.Tags[0].Should().BeOfType<CodeFileLocalTestCaseTag>().Which.SourceSpan.StartLine.Should().Be(7);
+        testItem.Tags[0].Should().BeOfType<CodeFileLocalArtifactTag>().Which.SourceSpan.StartLine.Should().Be(7);
         testItem.Tags[1].Name.Should().Be("tag2");
-        testItem.Tags[1].Should().BeOfType<CodeFileLocalTestCaseTag>().Which.SourceSpan.StartLine.Should().Be(8);
+        testItem.Tags[1].Should().BeOfType<CodeFileLocalArtifactTag>().Which.SourceSpan.StartLine.Should().Be(8);
     }
 
     [TestMethod]
@@ -163,7 +162,7 @@ This is the documentation
 "
                     }
                 }),
-            }, new Collection());
+            }, new Collection().ToItem(), null!);
         var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
@@ -172,10 +171,10 @@ This is the documentation
         testItem.Tags.Should().HaveCount(3);
         testItem.Tags[0].Name.Should().Be("tag1");
         testItem.Tags[1].Name.Should().Be("story:4321");
-        testItem.Tags[1].Should().BeOfType<CodeFileLocalTestCaseTag>().Which.SourceSpan.Should().NotBeNull();
-        testItem.Tags[1].Should().BeOfType<CodeFileLocalTestCaseTag>().Which.SourceSpan.StartLine.Should().Be(9);
+        testItem.Tags[1].Should().BeOfType<CodeFileLocalArtifactTag>().Which.SourceSpan.Should().NotBeNull();
+        testItem.Tags[1].Should().BeOfType<CodeFileLocalArtifactTag>().Which.SourceSpan.StartLine.Should().Be(9);
         testItem.Tags[2].Name.Should().Be("bug:4455");
-        testItem.Tags[2].Should().BeOfType<CodeFileLocalTestCaseTag>().Which.SourceSpan.StartLine.Should().Be(10);
+        testItem.Tags[2].Should().BeOfType<CodeFileLocalArtifactTag>().Which.SourceSpan.StartLine.Should().Be(10);
     }
 
     [TestMethod]
@@ -198,13 +197,13 @@ This is the documentation
 "
                     }
                 }),
-            }, new Collection());
+            }, new Collection().ToItem(), null!);
         var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
 
-        testItem!.TestCaseLink.Should().NotBeNull();
-        testItem.TestCaseLink.TestCaseId.ToString().Should().Be("1234");
+        testItem!.IdLink.Should().NotBeNull();
+        testItem.IdLink!.Id.ToString().Should().Be("1234");
     }
 
     [TestMethod]
@@ -228,15 +227,15 @@ This is the documentation
 "
                     }
                 }),
-            }, new Collection());
+            }, new Collection().ToItem(), null!);
         Configuration.Customizations.BranchTag.Enabled = true;
         Configuration.Customizations.BranchTag.Prefix = "branchTc";
         var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();
 
-        testItem!.TestCaseLink.Should().NotBeNull();
-        testItem.TestCaseLink.TestCaseId.ToString().Should().Be("2345");
+        testItem!.IdLink.Should().NotBeNull();
+        testItem.IdLink!.Id.ToString().Should().Be("2345");
     }
     [TestMethod]
     public void Should_parse_tags_and_links_from_parent_doc_metadata_section()
@@ -280,8 +279,8 @@ This is the documentation
     - bug:[4455](https://dev.azure.com/specsync-demo/specsync-plugins-demo/_workitems/edit/4455)
 "
                 }
-            }, _postmanMetadataParser.ParseMetadata(collection.ToItem())),
-        }, collection);
+            }, PostmanMetadataParser.ParseMetadata(collection.ToItem(), CreateLoaderArgs())),
+        }, collection.ToItem(), null!);
         var result = sut.Parse(CreateParserArgs(folderCollection));
         var testItem = result.LocalTestCases.ElementAtOrDefault(0) as PostmanTestItem;
         testItem.Should().NotBeNull();

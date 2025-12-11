@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using SpecSync.Parsing;
 using SpecSync.Plugin.PostmanTestSource.Postman.Models;
 
 namespace SpecSync.Plugin.PostmanTestSource.Projects;
 
 [DebuggerDisplay("{Name}")]
-public class PostmanTestItem : IPostmanItem, ILocalTestCase
+public class PostmanTestItem(
+    Item modelItem,
+    PostmanItemMetadata metadata,
+    PostmanItemMetadata[]? parentMetadata = null)
+    : IPostmanItem, ILocalTestCase
 {
-    public Item ModelItem { get; }
-    public PostmanItemMetadata[] ParentMetadata { get; }
-    public PostmanItemMetadata Metadata { get; }
-
-    public PostmanTestItem(Item modelItem, PostmanItemMetadata metadata, PostmanItemMetadata[] parentMetadata = null)
-    {
-        ModelItem = modelItem;
-        ParentMetadata = parentMetadata ?? Array.Empty<PostmanItemMetadata>();
-        Metadata = metadata ?? new PostmanItemMetadata();
-    }
+    public Item ModelItem { get; } = modelItem;
+    public PostmanItemMetadata[] ParentMetadata { get; } = parentMetadata ?? [];
+    public PostmanItemMetadata Metadata { get; } = metadata;
 
     public IEnumerable<Item> GetRequestItems()
     {
@@ -42,13 +36,13 @@ public class PostmanTestItem : IPostmanItem, ILocalTestCase
 
     #region ILocalTestCase implementation
 
-    public ILocalTestCaseTag[] Tags { get; set; }
-    public TestCaseLink TestCaseLink { get; set; }
+    public ILocalArtifactTag[] Tags { get; set; } = [];
+    public IdLink? IdLink { get; set; } = null;
     public string Name => ModelItem.Name;
-    public string Description => Metadata.CleanedDocumentation ?? ModelItem.Description ?? ModelItem.Request?.Description;
-    public string TestedRule => null;
-    public bool IsDataDrivenTest => false;
-    public LocalTestCaseDataRow[] DataRows => null;
+    public string Description => Metadata.CleanedDocumentation;
+    public AcceptanceCriterion? TestedRule => null;
+    public LocalTestCaseDataRow[]? DataRows => null;
+    public string[]? ParameterNames => null;
     public int TestCount => 1;
 
     #endregion
