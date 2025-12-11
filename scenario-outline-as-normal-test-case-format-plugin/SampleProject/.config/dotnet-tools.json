@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "specsync.azuredevops": {
-      "version": "5.0.0-local",
+      "version": "5.0.0-pre20251211-1",
       "commands": [
         "specsync"
       ]
