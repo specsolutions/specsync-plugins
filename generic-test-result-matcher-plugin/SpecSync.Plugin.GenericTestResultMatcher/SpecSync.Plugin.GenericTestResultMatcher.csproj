@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SpecSync.PluginDependency" Version="5.0.0-pre20251211-1" />
+    <PackageReference Include="SpecSync.PluginDependency" Version="5.0.0" />
   </ItemGroup>
 
 
