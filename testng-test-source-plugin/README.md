@@ -8,9 +8,9 @@ Allows synchronizing "Java TestNG Tests" and publish test result files.
 * Plugin source: [SpecSync.Plugin.TestNGTestSource](SpecSync.Plugin.TestNGTestSource)
 * Sample project: [SampleProject](SampleProject)
 
-The plugin require a SpecSync Enterprise license to run. Please [contact us](https://specsolutions.gitbook.io/specsync/contact/specsync-support) to get an evaluation license that you can use to try out this plugin.
+The plugin requires a SpecSync Enterprise license to run. Please [contact us](https://specsolutions.gitbook.io/specsync/contact/specsync-support) to get an evaluation license that you can use to try out this plugin.
 
-## Synchronizing Postman Tests
+## Synchronizing Java TestNG Tests
 
 The plugin processes the Java files in the configured folder tree and searches for *TestNG* test methods, like:
 
