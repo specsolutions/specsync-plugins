@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="13" failures="1" errors="0" time="1.41">
+  <testsuite name="sum utility [@describeTag]" errors="0" failures="1" skipped="0" timestamp="2026-04-22T15:43:11" time="0.726" tests="11">
+    <testcase classname="sum utility [@describeTag] adds two numbers [@tc:251 @testTag]" name="sum utility [@describeTag] adds two numbers [@tc:251 @testTag]" time="0.002">
+    </testcase>
+    <testcase classname="sum utility [@describeTag] adds negative numbers [@tc:252 @important]" name="sum utility [@describeTag] adds negative numbers [@tc:252 @important]" time="0.001">
+    </testcase>
+    <testcase classname="sum utility [@describeTag] adds other numbers [@tc:253]" name="sum utility [@describeTag] adds other numbers [@tc:253]" time="0.001">
+    </testcase>
+    <testcase classname="sum utility [@describeTag] adds 1 and 2 to equal 3 [@tc:262]" name="sum utility [@describeTag] adds 1 and 2 to equal 3 [@tc:262]" time="0">
+    </testcase>
+    <testcase classname="sum utility [@describeTag] adds 0 and 0 to equal 0 [@tc:262]" name="sum utility [@describeTag] adds 0 and 0 to equal 0 [@tc:262]" time="0">
+    </testcase>
+    <testcase classname="sum utility [@describeTag] adds -3 and 7 to equal 4 [@tc:262]" name="sum utility [@describeTag] adds -3 and 7 to equal 4 [@tc:262]" time="0">
+    </testcase>
+    <testcase classname="isEven utility returns true for even values [@tc:254]" name="isEven utility returns true for even values [@tc:254]" time="0">
+    </testcase>
+    <testcase classname="isEven utility returns false for odd values like 1 [@tc:263]" name="isEven utility returns false for odd values like 1 [@tc:263]" time="0">
+    </testcase>
+    <testcase classname="isEven utility returns false for odd values like 3 [@tc:263]" name="isEven utility returns false for odd values like 3 [@tc:263]" time="0.001">
+    </testcase>
+    <testcase classname="isEven utility returns false for odd values like 5 [@tc:263]" name="isEven utility returns false for odd values like 5 [@tc:263]" time="0">
+    </testcase>
+    <testcase classname="isEven utility returns false for odd numbers (failing) [@tc:255]" name="isEven utility returns false for odd numbers (failing) [@tc:255]" time="0.002">
+      <failure>Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+    at Object.toBe (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\src\sum.test.ts:35:23)
+    at Promise.then.completed (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-circus\build\utils.js:298:28)
+    at new Promise (&lt;anonymous&gt;)
+    at callAsyncCircusFn (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-circus\build\utils.js:231:10)
+    at _callCircusTest (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-circus\build\run.js:316:40)
+    at _runTest (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-circus\build\run.js:252:3)
+    at _runTestsForDescribeBlock (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-circus\build\run.js:126:9)
+    at _runTestsForDescribeBlock (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-circus\build\run.js:121:9)
+    at run (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-circus\build\run.js:71:3)
+    at runAndTransformResultsToJestFormat (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:122:21)
+    at jestAdapter (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:79:19)
+    at runTestInternal (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-runner\build\runTest.js:367:16)
+    at runTest (W:\SpecSync\SpecSync\Plugins\jest-test-source-plugin\SampleProject\node_modules\jest-runner\build\runTest.js:444:34)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="App rendering" errors="0" failures="0" skipped="0" timestamp="2026-04-22T15:43:12" time="0.201" tests="2">
+    <testcase classname="App rendering shows the default heading" name="App rendering shows the default heading" time="0.057">
+    </testcase>
+    <testcase classname="App rendering lists the sample investigation items" name="App rendering lists the sample investigation items" time="0.011">
+    </testcase>
+  </testsuite>
+</testsuites>

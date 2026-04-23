@@ -1,0 +1,51 @@
+﻿{
+  "$schema": "https://schemas.specsolutions.eu/specsync4azuredevops-config-v5-latest.json",
+  "compatibilityVersion": "5",
+  "configurationKey": "jest-test-source-plugin-sample",
+  "toolSettings": {
+    "disablePluginCache": true, // this is needed for plugin development only, otherwise you would need to change the package version each time.
+    "plugins": [
+      {
+        "packageId": "SpecSync.Plugin.JestTestSource",
+        "packageVersion": "5.0.0-local",
+        "packageSource": "..\\SpecSync.Plugin.JestTestSource\\bin\\Debug"
+      }
+    ]
+  },
+  "remote": {
+    "projectUrl": "https://dev.azure.com/specsync-demo/specsync-plugins-demo",
+    "scope": {
+      "type": "tag"
+    }
+  },
+  "local": {
+    "folder": "src",
+    "sourceFiles": [
+      "src/**/*.test.ts"
+    ]
+  },
+  "synchronization": {
+    "links": [
+      {
+        "tagPrefix": "story"
+      }
+    ],
+    "automation": {
+      "enabled": true,
+      "automatedTestType": "Jest Unit Test"
+    },
+    "fieldUpdates": {
+      "Description": "<b>describe: {rule-name}</b>{br:HTML}<pre>{local-test-case-container-source-file-path:HtmlEncode}:{br}{local-test-case-source:HtmlEncode}</pre>"
+    }
+  },
+  "hierarchies": [
+    {
+      "name": "Jest Tests",
+      "type": "single",
+      "node": {
+        "testPlan": "JestPlan",
+        "path": "Jest Tests"
+      }
+    }
+  ]
+}
