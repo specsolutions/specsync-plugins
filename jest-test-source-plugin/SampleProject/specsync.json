@@ -21,7 +21,7 @@
   "local": {
     "folder": "src",
     "sourceFiles": [
-      "src/**/*.test.ts"
+      "src/**/*.test.ts*"
     ]
   },
   "synchronization": {

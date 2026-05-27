@@ -1,13 +1,13 @@
 using Antlr4.Runtime.Tree;
 using AwesomeAssertions;
 using SpecSync.Plugin.JestTestSource.TypeScriptCode;
-using SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TypeScriptGrammar;
+using SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TsxGrammar;
 using System.Text;
 
 namespace SpecSync.PluginDependency.TypeScriptSource.Tests;
 
 [TestClass]
-public class TypeScriptFunctionCallBlockParserTests
+public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBase
 {
     TypeScriptFunctionCallBlockParser CreateSut() => new();
 
@@ -35,7 +35,7 @@ public class TypeScriptFunctionCallBlockParserTests
         Console.WriteLine(result);
     }
 
-    public void DumpAstNode(TypeScriptParser parser, IParseTree node, int indent = 0)
+    public void DumpAstNode(TsxParser parser, IParseTree node, int indent = 0)
     {
         Console.Write(new string(' ', indent * 2));
         if (node is IRuleNode ruleNode)
@@ -66,53 +66,77 @@ public class TypeScriptFunctionCallBlockParserTests
         Console.WriteLine(")");
     }
 
-    private void OnAstParsed(IParseTree tree, TypeScriptParser parser)
+    private void OnAstParsed(IParseTree tree, TsxParser parser, string output)
     {
+        Console.WriteLine($"Output: {output}");
         DumpAstNode(parser, tree);
     }
 
+    private int GetTotalCallBlocks(TypeScriptFunctionCallBlock[] callBlocks)
+    {
+        return callBlocks.Length +
+               callBlocks
+                   .SelectMany(cb => cb.CallArguments)
+                   .Sum(ca => GetTotalCallBlocks(ca.NestedCallBlocks?.ToArray() ?? []));
+    }
 
     [TestMethod]
     public void PlaygroundTest()
     {
         var sut = CreateSut();
         var code = """
-                   describe("sum utility", () => {
-                     test.each([1, 3, 5])("returns false for odd values like %i", (value: number) => {
-                       expect(isEven(value)).toBe(false);
+                   import { render, screen } from "@testing-library/react";
+                   import App from "./App";
+                   
+                   describe("App rendering", () => {
+                     test("shows the default heading", () => {
+                       render(<App />);
+                   
+                       expect(
+                         screen.getByRole("heading", { name: "Jest Explorer" })
+                       ).toBeInTheDocument();
                      });
-                     test("adds two numbers", () => {
-                       expect(sum(2, 3)).toBe(5);
-                       aaa(2).bbb().cc();
-                       ccc().ddd();
-                       expect(1 / 0).toBe(Infinity);
-                       for (let i = 0; i < 5; i++) {
-                         text += "The number is " + i + "<br>";
-                         eee();
-                       }    
+                   
+                     test("lists the sample investigation items", () => {
+                       render(<App />);
+                   
+                       expect(screen.getAllByRole("listitem")).toHaveLength(3);
                      });
-                     test.each([
-                       [1, 2, 3],
-                       [0, 0, 0],
-                       [-3, 7, 4],
-                     ])("adds %i and %i to equal %i", (left: number, right: number, expected: number) => {
-                       expect(sum(left, right)).toBe(expected);
-                     });
-                     test.each`
-                       a    | b    | expected
-                       ${1} | ${1} | ${2}
-                       ${1} | ${2} | ${3}
-                       ${2} | ${1} | ${3}
-                     `('returns $expected when $a is added to $b', ({a, b, expected}) => {
-                       expect(a + b).toBe(expected);
-                     });  
                    });
                    """;
         var result = sut.Parse(code, OnAstParsed);
         result.Should().HaveCountGreaterThan(0);
 
         DumpCallBlocks(result);
+        GetTotalCallBlocks(result).Should().Be(7);
     }
+
+    [TestMethod]
+    [DataRow("App.tsx", 0)]
+    [DataRow("App.test.tsx", 7)]
+    [DataRow("FileInput.tsx", 11)]
+    [DataRow("OptionField.tsx", 6)]
+    [DataRow("SummaryContainer.tsx", 0)]
+    [DataRow("SummaryContainerComment.tsx", 0)]
+    [DataRow("TestCases.tsx", 0)]
+    public void TsxSmokeTest(string testFile, int expectedCallBlockCount)
+    {
+        var sut = CreateSut();
+        var code = GetFile(testFile);
+        string outputText = "";
+        var result = sut.Parse(code, (tree, parser, s) =>
+        {
+            outputText = s;
+            //OnAstParsed(tree, parser, s);
+        });
+
+        outputText.Should().BeNullOrWhiteSpace();
+
+        DumpCallBlocks(result);
+        GetTotalCallBlocks(result).Should().Be(expectedCallBlockCount);
+    }
+
+
 
     [TestMethod]
     public void Should_parse_function_call_with_parameters()

@@ -33,11 +33,11 @@
 // $antlr-format alignTrailingComments true, columnLimit 150, minEmptyLines 1, maxEmptyLinesToKeep 1, reflowComments false, useTab false
 // $antlr-format allowShortRulesOnASingleLine false, allowShortBlocksOnASingleLine true, alignSemicolons hanging, alignColons hanging
 
-parser grammar TypeScriptParser;
+parser grammar TsxParser;
 
 options {
-    tokenVocab = TypeScriptLexer;
-    superClass = TypeScriptParserBase;
+    tokenVocab = TsxLexer;
+    superClass = TsxParserBase;
 }
 
 // SupportSyntax
@@ -514,6 +514,7 @@ breakStatement
 
 returnStatement
     : Return ({this.notLineTerminator()}? expressionSequence)? eos
+    | Return '(' jsxElements ')' eos
     ;
 
 yieldStatement
@@ -790,7 +791,89 @@ singleExpression
     | singleExpression As asExpression                                # CastAsExpression
 // TypeScript v2.0
     | singleExpression '!'                                            # NonNullAssertionExpression
+    | jsxElements                                                          # jsxElementExpression
     ;
+
+// TSX
+
+jsxElements
+    : jsxElement+
+    ;
+
+jsxElementBegin
+    : JsxElementBegin
+    | JsxOpeningElementBegin
+    | JsxChildrenOpeningElementBegin
+    ;
+
+jsxElement
+    : jsxSelfClosingElement
+    | jsxOpeningElement jsxChildren jsxClosingElement
+    ;
+
+jsxSelfClosingElement
+    : jsxElementBegin jsxSelfClosingElementName jsxAttributes? JsxOpeningElementSlashEnd
+    ;
+
+jsxOpeningElement
+    : jsxElementBegin jsxOpeningElementName jsxAttributes? JsxOpeningElementEnd
+    ;
+
+jsxClosingElement
+    : JsxChildrenClosingElementSlashBegin jsxClosingElementName JsxClosingElementEnd
+    ;
+
+jsxChildren
+    : HtmlChardata? ((jsxElement | objectExpressionSequence) HtmlChardata?)*
+    ;
+
+jsxSelfClosingElementName
+    : JsxOpeningElementId
+    ;
+
+jsxOpeningElementName
+    : JsxOpeningElementId {this.PushHtmlTagName($JsxOpeningElementId.text);}
+    ;
+
+jsxClosingElementName
+    : JsxClosingElementId {this.PopHtmlTagName($JsxClosingElementId.text)}?
+    ;
+
+jsxAttributes
+    : jsxSpreadAttribute jsxAttributes?
+    | jsxAttribute jsxAttributes?
+    ;
+
+jsxSpreadAttribute
+    : JsxOpeningElementOpenBrace Ellipsis singleExpression CloseBrace
+    ;
+
+jsxAttribute
+    : jsxAttributeName JsxAssign jsxAttributeValue
+    | jsxAttributeName
+    ;
+
+jsxAttributeName
+    : JsxOpeningElementId
+    ;
+
+jsxAttributeValue
+    : JsxAttributeValue
+    | jsxElement
+    | objectExpressionSequence
+    ;
+
+openBrace
+    : OpenBrace
+    | JsxOpeningElementOpenBrace    
+    | JsxChildrenOpenBrace
+    ;
+
+objectExpressionSequence
+    : openBrace expressionSequence CloseBrace
+    ;
+
+// TSX end
 
 asExpression
     : predefinedType ('[' ']')?

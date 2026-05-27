@@ -1,14 +1,14 @@
 ﻿using Antlr4.Runtime;
-using SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TypeScriptGrammar;
+using SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TsxGrammar;
 using SpecSync.Utils;
 using SpecSync.Utils.Code;
 using static SpecSync.Plugin.JestTestSource.TypeScriptCode.TypeScriptFunctionCallArgument;
-using static SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TypeScriptGrammar.TypeScriptParser;
+using static SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TsxGrammar.TsxParser;
 
 namespace SpecSync.Plugin.JestTestSource.TypeScriptCode;
 
 internal class TypeScriptFunctionCallBlockParserVisitor(CodeFile codeFile, CommonTokenStream tokenStream)
-    : TypeScriptParserBaseVisitor<object>
+    : TsxParserBaseVisitor<object>
 {
     class CallContext
     {
@@ -41,7 +41,7 @@ internal class TypeScriptFunctionCallBlockParserVisitor(CodeFile codeFile, Commo
 
         var comments = tokenStream
             .GetHiddenTokensToLeft(context.Start.TokenIndex)?
-            .Where(t => t.Type == TypeScriptLexer.SingleLineComment || t.Type == TypeScriptLexer.MultiLineComment)
+            .Where(t => t.Type == TsxLexer.SingleLineComment || t.Type == TsxLexer.MultiLineComment)
             .ToArray();
         if (comments != null && comments.Any())
             callContext.Comments = comments;

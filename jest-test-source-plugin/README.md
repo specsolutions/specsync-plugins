@@ -15,6 +15,7 @@ The plugin requires a SpecSync Enterprise license to run. Please [contact us](ht
 The plugin scans configured TypeScript source files (for example `src/**/*.test.ts`) and parses Jest test declarations.
 
 It supports:
+- JavaScript (.js), TypeScript (.ts), JSX (.jsx) and TSX (.tsx) files
 - `test(...)` and `it(...)`
 - describe blocks including nested describes
 - common Jest extensions, e.g. `describe.each`, `describe.only`, `test.concurrent`, `test.only`, `test.todo`

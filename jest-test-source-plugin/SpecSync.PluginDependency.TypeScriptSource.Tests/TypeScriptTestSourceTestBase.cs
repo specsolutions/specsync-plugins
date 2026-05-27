@@ -18,7 +18,7 @@ public abstract class TypeScriptTestSourceTestBase
     protected string GetProjectFolder()
     {
         var testAssemblyFolder = Path.GetDirectoryName(GetType().Assembly.Location);
-        var projectFolder = Path.Combine(testAssemblyFolder!, "TestContent", "SampleProject");
+        var projectFolder = Path.Combine(testAssemblyFolder!, "TestContent");
         return projectFolder;
     }
 }

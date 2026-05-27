@@ -39,6 +39,12 @@
     <Antlr4 Include="TypeScriptCode\TypeScriptGrammar\TypeScriptParser.g4">
       <Package>SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TypeScriptGrammar</Package>
     </Antlr4>
+    <Antlr4 Include="TypeScriptCode\TsxGrammar\TsxLexer.g4">
+      <Package>SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TsxGrammar</Package>
+    </Antlr4>
+    <Antlr4 Include="TypeScriptCode\TsxGrammar\TsxParser.g4">
+      <Package>SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TsxGrammar</Package>
+    </Antlr4>
   </ItemGroup>
 
   <ItemGroup>

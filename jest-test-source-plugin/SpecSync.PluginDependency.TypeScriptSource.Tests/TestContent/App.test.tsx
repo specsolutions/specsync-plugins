@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import App from "./App";
 
 describe("App rendering", () => {
-  test("shows the default heading [@tc:266]", () => {
+  test("shows the default heading", () => {
     render(<App />);
 
     expect(
@@ -10,7 +10,7 @@ describe("App rendering", () => {
     ).toBeInTheDocument();
   });
 
-  test("lists the sample investigation items [@tc:267]", () => {
+  test("lists the sample investigation items", () => {
     render(<App />);
 
     expect(screen.getAllByRole("listitem")).toHaveLength(3);

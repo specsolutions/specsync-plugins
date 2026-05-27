@@ -46,7 +46,7 @@ public class JestTestClassParser : TypeScriptTestFunctionParserBase
 
     protected internal override IEnumerable<TestMethodLocalTestCase> GetTestMethodLocalTestCases(SourceDocumentParserArgs args, EditableCodeFile codeFile)
     {
-        var callBlocks = ParseCallBlocks(codeFile);
+        var callBlocks = ParseCallBlocks(codeFile, args);
 
         (string Title, string OriginalTitle)[] ancestors = [];
         CodeFileLocalArtifactTag[] ancestorTags = [];
