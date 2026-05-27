@@ -1,4 +1,5 @@
 ﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Tree;
 using SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TsxGrammar;
 using SpecSync.Utils;
 using SpecSync.Utils.Code;
@@ -24,7 +25,7 @@ internal class TypeScriptFunctionCallBlockParserVisitor(CodeFile codeFile, Commo
     private readonly Stack<ArrayArgument> _arrayStack = new();
     private bool _inCallTarget = false;
     private ArrayArgument? _lastArray = null;
-    private List<string> _lambdaArgNames = new();
+    private readonly List<string> _lambdaArgNames = new();
 
     public List<TypeScriptFunctionCallBlock> Result { get; } = new();
 
@@ -85,6 +86,8 @@ internal class TypeScriptFunctionCallBlockParserVisitor(CodeFile codeFile, Commo
     {
         var callArguments = new List<TypeScriptFunctionCallArgument>();
         _argumentListStack.Push(callArguments);
+        if (_callContextStack.Any())
+            _callContextStack.Peek().CallArgumentsList.Add(callArguments);
 
         foreach (var arg in arguments)
         {
@@ -116,8 +119,6 @@ internal class TypeScriptFunctionCallBlockParserVisitor(CodeFile codeFile, Commo
             }
         }
 
-        if (_callContextStack.Any())
-            _callContextStack.Peek().CallArgumentsList.Add(callArguments);
         if (_argumentListStack.Pop() != callArguments)
             throw new SpecSyncException("Invalid call nesting");
     }
@@ -142,6 +143,31 @@ internal class TypeScriptFunctionCallBlockParserVisitor(CodeFile codeFile, Commo
         else
         {
             base.VisitVariableDeclaration(context);
+        }
+
+        return DefaultResult;
+    }
+
+    private bool IsReturn(IdentifierNameContext targetContext)
+    {
+        return targetContext.GetChild(0) is ReservedWordContext reservedWordContext &&
+               reservedWordContext.GetChild(0) is KeywordContext keywordContext &&
+               keywordContext.GetChild(0) is ITerminalNode terminal &&
+               terminal.Symbol.Type == TsxLexer.Return;
+    }
+
+    public override object VisitIdentifierExpression(IdentifierExpressionContext context)
+    {
+        if (!_inCallTarget &&
+            context.GetChild(0) is IdentifierNameContext targetContext &&
+                !IsReturn(targetContext) &&
+            context.GetChild(1) is ParenthesizedExpressionContext arguments)
+        {
+            VisitCallInternal(context, targetContext, () => VisitParenthesizedExpression(arguments));
+        }
+        else
+        {
+            base.VisitIdentifierExpression(context);
         }
 
         return DefaultResult;

@@ -114,9 +114,9 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
     [TestMethod]
     [DataRow("App.tsx", 0)]
     [DataRow("App.test.tsx", 7)]
-    [DataRow("FileInput.tsx", 11)]
+    [DataRow("FileInput.tsx", 29)]
     [DataRow("OptionField.tsx", 6)]
-    [DataRow("SummaryContainer.tsx", 0)]
+    [DataRow("SummaryContainer.tsx", 1)]
     [DataRow("SummaryContainerComment.tsx", 0)]
     [DataRow("TestCases.tsx", 0)]
     public void TsxSmokeTest(string testFile, int expectedCallBlockCount)
@@ -426,5 +426,25 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
         result[5].CallArguments.ElementAtOrDefault(1).Should().NotBeNull();
         result[5].CallArguments[1].IsLambda.Should().BeTrue();
         result[5].CallArguments[1].LambdaArgNames.Should().BeEquivalentTo("p1", "p2");
+    }
+
+    [TestMethod]
+    public void Should_handle_edge_case()
+    {
+        var sut = CreateSut();
+        var code = """
+                   it("test1", () => {
+                     const { result } = someFunc(() => otherFunc());
+                   });
+                   it("test2", () => {
+                     someFunc(() => otherFunc());
+                   });
+                   """;
+        var result = sut.Parse(code, OnAstParsed);
+        result.Should().HaveCount(2);
+        DumpCallBlocks(result);
+
+        result[1].CallArguments[0].StringLiteral.Should().Be("test2");
+        result[0].CallArguments[0].StringLiteral.Should().Be("test1");
     }
 }
