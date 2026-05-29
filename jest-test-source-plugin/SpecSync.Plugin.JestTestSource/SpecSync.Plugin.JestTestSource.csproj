@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <NoWarn>CS3021</NoWarn>
 
-    <VersionPrefix>5.1.0</VersionPrefix>
+    <VersionPrefix>5.2.0</VersionPrefix>
     <VersionSuffix>local</VersionSuffix>
 
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -26,25 +26,6 @@
 
   <ItemGroup>
     <PackageReference Include="SpecSync.PluginDependency" Version="5.0.0" />
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-    <PackageReference Include="Antlr4BuildTasks" Version="12.11.0">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Antlr4 Include="TypeScriptCode\TypeScriptGrammar\TypeScriptLexer.g4">
-      <Package>SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TypeScriptGrammar</Package>
-    </Antlr4>
-    <Antlr4 Include="TypeScriptCode\TypeScriptGrammar\TypeScriptParser.g4">
-      <Package>SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TypeScriptGrammar</Package>
-    </Antlr4>
-    <Antlr4 Include="TypeScriptCode\TsxGrammar\TsxLexer.g4">
-      <Package>SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TsxGrammar</Package>
-    </Antlr4>
-    <Antlr4 Include="TypeScriptCode\TsxGrammar\TsxParser.g4">
-      <Package>SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TsxGrammar</Package>
-    </Antlr4>
   </ItemGroup>
 
   <ItemGroup>
@@ -72,7 +53,7 @@
 
   <Target Name="IncludeAdditionalFilesToPackage">
     <ItemGroup>
-      <_PackageFiles Include="$(OutputPath)\Antlr*.dll;$(OutputPath)\SpecSync.PluginDependency.CSharpSource*.dll;$(OutputPath)\*.deps.json;$(OutputPath)\*.pdb">
+      <_PackageFiles Include="$(OutputPath)\*.deps.json;$(OutputPath)\*.pdb">
         <BuildAction>None</BuildAction>
         <PackagePath>lib\netstandard2.0\</PackagePath>
       </_PackageFiles>

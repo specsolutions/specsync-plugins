@@ -46,16 +46,15 @@ public abstract class TypeScriptTestFunctionParserBase : ISourceDocumentParser
         try
         {
             var parser = new TypeScriptFunctionCallBlockParser();
-            return parser.Parse(codeFile, (_, innerParser, output) =>
+            var result = parser.Parse(codeFile);
+            if (!string.IsNullOrWhiteSpace(result.OutputMessages))
+                args.Tracer.LogVerbose($"Parser output: {result.OutputMessages.Trim()}");
+            if (!result.Success)
             {
-                if (!string.IsNullOrWhiteSpace(output))
-                    args.Tracer.LogVerbose($"Parser output: {output.Trim()}");
-                if (innerParser.NumberOfSyntaxErrors > 0)
-                {
-                    args.Tracer.TraceWarning(new TraceWarningItem(
-                        $"Invalid TypeScript syntax.{Environment.NewLine}Parser errors:{Environment.NewLine}{output.TrimEnd()}"));
-                }
-            });
+                args.Tracer.TraceWarning(new TraceWarningItem(
+                    $"Invalid TypeScript syntax.{Environment.NewLine}Parser errors:{Environment.NewLine}{result.OutputMessages.TrimEnd()}"));
+            }
+            return result.Result;
         }
         finally
         {

@@ -362,6 +362,20 @@ public class JestTestClassParserJestTests : TypeScriptTestSourceTestBase
     }
 
     [TestMethod]
+    [DataRow("App.test.tsx", 2)]
+    [DataRow("sum.test.ts", 7)]
+    [DataRow("special.test.ts", 2)]
+    public void Should_find_a_tests_in_sample_files(string fileName, int expectedCount)
+    {
+        var code = GetFile(fileName);
+        var sut = CreateSut(code);
+        var result = sut.Parse(new SourceDocumentParserArgs(_stubSyncProject, _stubSyncProject.SourceReferences.First(), _commandContextMock.Object));
+
+        result.LocalTestCases.Should().NotBeEmpty();
+        result.LocalTestCases.Should().HaveCount(expectedCount);
+    }
+
+    [TestMethod]
     [DataRow(".each([1,3,5])")]
     [DataRow(".only")]
     [DataRow(".only.each([1,3,5])")]

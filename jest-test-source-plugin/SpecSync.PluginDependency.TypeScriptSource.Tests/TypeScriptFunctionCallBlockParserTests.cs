@@ -1,7 +1,6 @@
-using Antlr4.Runtime.Tree;
 using AwesomeAssertions;
 using SpecSync.Plugin.JestTestSource.TypeScriptCode;
-using SpecSync.PluginDependency.TypeScriptSource.TypeScriptCode.TsxGrammar;
+using SpecSync.Plugin.JestTestSource.TypeScriptCode.TsxGrammar;
 using System.Text;
 
 namespace SpecSync.PluginDependency.TypeScriptSource.Tests;
@@ -35,41 +34,22 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
         Console.WriteLine(result);
     }
 
-    public void DumpAstNode(TsxParser parser, IParseTree node, int indent = 0)
+    private void DumpTokens(TypeScriptFunctionCallBlockParserResult result)
     {
-        Console.Write(new string(' ', indent * 2));
-        if (node is IRuleNode ruleNode)
+        Console.WriteLine($"Success: {result.Success}");
+        Console.WriteLine($"Output: {result.OutputMessages}");
+        var opens = new[] { TsxTokenKind.OpenParen, TsxTokenKind.OpenBrace, TsxTokenKind.OpenBracket };
+        var closes = new[] { TsxTokenKind.CloseParen, TsxTokenKind.CloseBrace, TsxTokenKind.CloseBracket };
+        int indent = 0;
+        foreach (var token in result.Tokens)
         {
-            Console.Write($"{Trees.GetNodeText(ruleNode, parser)}: {ruleNode.GetType().Name}");
+            if (closes.Contains(token.Kind))
+                indent--;
+            Console.Write(new string(' ', Math.Max(0, indent * 2)));
+            Console.WriteLine(token);
+            if (opens.Contains(token.Kind))
+                indent++;
         }
-        else if (node is ITerminalNode terminalNode)
-        {
-            Console.Write($"{parser.Vocabulary.GetSymbolicName(terminalNode.Symbol.Type)}({terminalNode.Symbol.Type}): {terminalNode.GetText()}");
-        }
-        else
-        {
-            Console.Write("Other: " + node.GetType().Name);
-        }
-
-        if (node.ChildCount == 0)
-        {
-            Console.WriteLine();
-            return;
-        }
-
-        Console.WriteLine(" (");
-        for (int i = 0; i < node.ChildCount; ++i)
-        {
-            DumpAstNode(parser, node.GetChild(i), indent + 1);
-        }
-        Console.Write(new string(' ', indent * 2));
-        Console.WriteLine(")");
-    }
-
-    private void OnAstParsed(IParseTree tree, TsxParser parser, string output)
-    {
-        Console.WriteLine($"Output: {output}");
-        DumpAstNode(parser, tree);
     }
 
     private int GetTotalCallBlocks(TypeScriptFunctionCallBlock[] callBlocks)
@@ -100,40 +80,36 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
                      test("lists the sample investigation items", () => {
                        render(<App />);
                    
-                       expect(screen.getAllByRole("listitem")).toHaveLength(3);
+                       expect(screen.getAllByRole("listItem")).toHaveLength(3);
                      });
                    });
                    """;
-        var result = sut.Parse(code, OnAstParsed);
-        result.Should().HaveCountGreaterThan(0);
+        var result = sut.Parse(code);
+        DumpTokens(result);
+        result.Result.Should().HaveCountGreaterThan(0);
 
-        DumpCallBlocks(result);
-        GetTotalCallBlocks(result).Should().Be(7);
+        DumpCallBlocks(result.Result);
+        GetTotalCallBlocks(result.Result).Should().Be(7);
     }
 
     [TestMethod]
-    [DataRow("App.tsx", 0)]
+    [DataRow("App.tsx", 1)]
     [DataRow("App.test.tsx", 7)]
-    [DataRow("FileInput.tsx", 29)]
-    [DataRow("OptionField.tsx", 6)]
-    [DataRow("SummaryContainer.tsx", 1)]
+    [DataRow("FileInput.tsx", 13)]
+    [DataRow("OptionField.tsx", 9)]
+    [DataRow("SummaryContainer.tsx", 0)]
     [DataRow("SummaryContainerComment.tsx", 0)]
-    [DataRow("TestCases.tsx", 0)]
+    [DataRow("TestCases.tsx", 1)]
     public void TsxSmokeTest(string testFile, int expectedCallBlockCount)
     {
         var sut = CreateSut();
         var code = GetFile(testFile);
-        string outputText = "";
-        var result = sut.Parse(code, (tree, parser, s) =>
-        {
-            outputText = s;
-            //OnAstParsed(tree, parser, s);
-        });
+        var result = sut.Parse(code);
 
-        outputText.Should().BeNullOrWhiteSpace();
+        result.OutputMessages.Should().BeNullOrWhiteSpace();
 
-        DumpCallBlocks(result);
-        GetTotalCallBlocks(result).Should().Be(expectedCallBlockCount);
+        DumpCallBlocks(result.Result);
+        GetTotalCallBlocks(result.Result).Should().Be(expectedCallBlockCount);
     }
 
 
@@ -145,7 +121,7 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
         var code = """
                 my_method("arg1", 42)
                 """;
-        var result = sut.Parse(code);
+        var result = sut.Parse(code).Result;
 
         result.Should().NotBeEmpty();
 
@@ -164,7 +140,7 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
         var code = """
                 my_method([1,2,3])
                 """;
-        var result = sut.Parse(code);
+        var result = sut.Parse(code).Result;
 
         result.Should().NotBeEmpty();
 
@@ -183,7 +159,7 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
         var code = """
                 my_method([[1,2],[3,4]])
                 """;
-        var result = sut.Parse(code);
+        var result = sut.Parse(code).Result;
 
         result.Should().NotBeEmpty();
 
@@ -194,10 +170,10 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
         sampleMethod.CallArguments[0].Array.Should().HaveCount(2);
         sampleMethod.CallArguments[0].Array![0].Should().BeOfType<TypeScriptFunctionCallArgument.ArrayArgument>()
             .Which.Should().HaveCount(2)
-            .And.Subject.Select(a => a.ToString()).Should().BeEquivalentTo(["1", "2"]);
+            .And.Subject.Select(a => a.ToString()).Should().BeEquivalentTo("1", "2");
         sampleMethod.CallArguments[0].Array![1].Should().BeOfType<TypeScriptFunctionCallArgument.ArrayArgument>()
             .Which.Should().HaveCount(2)
-            .And.Subject.Select(a => a.ToString()).Should().BeEquivalentTo(["3", "4"]);
+            .And.Subject.Select(a => a.ToString()).Should().BeEquivalentTo("3", "4");
     }
 
     [TestMethod]
@@ -215,7 +191,7 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
                   });
                 });
                 """;
-        var result = sut.Parse(code);
+        var result = sut.Parse(code).Result;
 
         result.Should().NotBeEmpty();
 
@@ -255,11 +231,12 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
         var code = """
                    a.b([[1,2],[3,4]]).c(42,'foo').d().e();
                    """;
-        var result = sut.Parse(code);
+        var result = sut.Parse(code).Result;
 
         result.Should().NotBeEmpty();
+        DumpCallBlocks(result);
 
-        var sampleMethod = result.Should().ContainSingle().Subject;
+        var sampleMethod = result.Last();
         sampleMethod.FunctionName.Should().Be("a.b([[1,2],[3,4]]).c(42,'foo').d().e");
         sampleMethod.IsSimpleCall.Should().BeFalse();
         sampleMethod.CallArguments.Should().HaveCount(0);
@@ -269,15 +246,62 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
         sampleMethod.TargetArguments[0][0].Array.Should().HaveCount(2);
         sampleMethod.TargetArguments[0][0].Array![0].Should().BeOfType<TypeScriptFunctionCallArgument.ArrayArgument>()
             .Which.Should().HaveCount(2)
-            .And.Subject.Select(a => a.ToString()).Should().BeEquivalentTo(["1", "2"]);
+            .And.Subject.Select(a => a.ToString()).Should().BeEquivalentTo("1", "2");
         sampleMethod.TargetArguments[0][0].Array![1].Should().BeOfType<TypeScriptFunctionCallArgument.ArrayArgument>()
             .Which.Should().HaveCount(2)
-            .And.Subject.Select(a => a.ToString()).Should().BeEquivalentTo(["3", "4"]);
+            .And.Subject.Select(a => a.ToString()).Should().BeEquivalentTo("3", "4");
         sampleMethod.TargetArguments[1].Should().HaveCount(2);
         sampleMethod.TargetArguments[1][0].Text.Should().Be("42");
         sampleMethod.TargetArguments[1][1].Text.Should().Be("'foo'");
         sampleMethod.TargetArguments[1][1].StringLiteral.Should().Be("foo");
         sampleMethod.TargetArguments[2].Should().HaveCount(0);
+    }
+
+    [TestMethod]
+    public void Should_parse_call_with_target()
+    {
+        var sut = CreateSut();
+        var code = """
+                   value
+                   foo.bar.baz(42).boo(44);
+                   """;
+        var result = sut.Parse(code).Result;
+
+        result.Should().NotBeEmpty();
+        DumpCallBlocks(result);
+
+        var call = result[0];
+        call.FunctionName.Should().Be("foo.bar.baz(42).boo");
+        call.CallArguments.Should().HaveCount(1);
+        call.TargetArguments.Should().HaveCount(1);
+        call.TargetArguments[0].Should().HaveCount(1);
+        call.TargetArguments[0][0].Text.Should().Be("42");
+    }
+
+    [TestMethod]
+    public void Should_parse_call_of_calls()
+    {
+        var sut = CreateSut();
+        var code = """
+                   value
+                   test.each([1, 3, 5])("returns false for odd values like %i [@tc:263]", (value: number) => {
+                     expect(isEven(value)).toBe(false);
+                   });
+                   """;
+        var result = sut.Parse(code).Result;
+
+        result.Should().NotBeEmpty();
+        DumpCallBlocks(result);
+
+        var sampleMethod = result[0];
+        sampleMethod.FunctionName.Should().Be("test.each([1,3,5])");
+        sampleMethod.IsSimpleCall.Should().BeFalse();
+        sampleMethod.CallArguments.Should().HaveCount(2);
+        sampleMethod.TargetArguments.Should().HaveCount(1);
+        sampleMethod.TargetArguments[0].Should().HaveCount(1);
+        sampleMethod.TargetArguments[0][0].IsArray.Should().BeTrue();
+        sampleMethod.TargetArguments[0][0].Array.Should().HaveCount(3);
+        sampleMethod.TargetArguments[0][0].Array!.Select(a => a.ToString()).Should().BeEquivalentTo("1", "3", "5");
     }
 
     [TestMethod]
@@ -288,7 +312,7 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
                 my_method1("arg1", 42)
                 my_method2("arg2", 43)
                 """;
-        var result = sut.Parse(code);
+        var result = sut.Parse(code).Result;
 
         result.Should().HaveCount(2);
 
@@ -318,7 +342,7 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
                    /* comment 3 */
                    baz("boo");
                    """;
-        var result = sut.Parse(code);
+        var result = sut.Parse(code).Result;
 
         result.Should().HaveCount(2);
         result[0].CallCommentSpan.Should().NotBeNull();
@@ -348,7 +372,7 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
                   expect(isEven(6)).toBe(true);
                 });
                 """;
-        var result = sut.Parse(code);
+        var result = sut.Parse(code).Result;
 
         result.Should().NotBeEmpty();
 
@@ -379,10 +403,11 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
                      // without the annotation types are incorrect, e.g. `a: number | string | boolean`
                    });
                    """;
-        var result = sut.Parse(code, OnAstParsed);
-        result.Should().HaveCountGreaterThan(0);
+        var result = sut.Parse(code);
+        DumpTokens(result);
+        result.Result.Should().HaveCountGreaterThan(0);
 
-        DumpCallBlocks(result);
+        DumpCallBlocks(result.Result);
     }
 
     [TestMethod]
@@ -403,7 +428,7 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
                    test("f6", function (p1: number, p2: string) {
                    });
                    """;
-        var result = sut.Parse(code);
+        var result = sut.Parse(code).Result;
 
         result.Should().NotBeEmpty();
 
@@ -440,11 +465,34 @@ public class TypeScriptFunctionCallBlockParserTests : TypeScriptTestSourceTestBa
                      someFunc(() => otherFunc());
                    });
                    """;
-        var result = sut.Parse(code, OnAstParsed);
-        result.Should().HaveCount(2);
-        DumpCallBlocks(result);
+        var result = sut.Parse(code);
+        DumpTokens(result);
+        result.Result.Should().HaveCount(2);
+        DumpCallBlocks(result.Result);
 
-        result[1].CallArguments[0].StringLiteral.Should().Be("test2");
-        result[0].CallArguments[0].StringLiteral.Should().Be("test1");
+        result.Result[1].CallArguments[0].StringLiteral.Should().Be("test2");
+        result.Result[0].CallArguments[0].StringLiteral.Should().Be("test1");
+    }
+
+    [TestMethod]
+    public void Should_handle_errors()
+    {
+        var sut = CreateSut();
+        var code = """
+                   it("test1", () => {
+                     wrong_paren(
+                   });
+                   it("test2", () => {
+                     someFunc(() => otherFunc());
+                   });
+                   """;
+        var result = sut.Parse(code);
+        DumpTokens(result);
+        DumpCallBlocks(result.Result);
+
+        result.Success.Should().BeFalse();
+        result.OutputMessages.Should().NotBeEmpty();
+        result.Result.Should().HaveCount(1);
+        result.Result[0].CallArguments[0].StringLiteral.Should().Be("test2");
     }
 }

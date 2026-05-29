@@ -19,7 +19,7 @@ public class TypeScriptFunctionCallArgument(string text, CodeSpan span)
     public CodeSpan Span { get; } = span;
     public string Text => text;
     public string? StringLiteral { get; set; }
-    public List<TypeScriptFunctionCallBlock>? NestedCallBlocks { get; private set; }
+    public List<TypeScriptFunctionCallBlock>? NestedCallBlocks { get; set; }
     public List<string>? LambdaArgNames { get; set; }
     public bool IsLambda { get; set; }
     public ArrayArgument? Array { get; set; }
